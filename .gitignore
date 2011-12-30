@@ -1,0 +1,17 @@
+*.suo
+*.user
+*.cache
+*.ncb
+*.log
+*.jbf
+*.sdf
+*.cachefile
+~$*.docx
+thumbs.db
+UpgradeLog.xml
+Scratch/
+Debug/
+Release/
+bin/
+obj/
+_UpgradeReport_Files/
