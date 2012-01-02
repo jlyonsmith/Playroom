@@ -130,7 +130,7 @@ namespace ToyBox
             return this.touchPanels[0];
         }
 
-        public void Update()
+        public override void Update(GameTime time)
         {
             for (int index = 0; index < this.gamePads.Count; ++index)
             {

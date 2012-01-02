@@ -55,7 +55,83 @@ namespace ToyBox
             if (MouseMoved == null && MouseButtonPressed == null && MouseButtonReleased == null && MouseWheelRotated == null)
                 return;
 
+            if (previous.X != current.X || previous.Y != current.Y)
+            {
+                RaiseMouseMoved(new Point(current.X, current.Y));
+            }
 
+            MouseButtons buttonsReleased = 0;
+            MouseButtons buttonsPressed = 0;
+
+            if (previous.LeftButton != current.LeftButton)
+            {
+                if (current.LeftButton == ButtonState.Pressed)
+                    buttonsPressed |= MouseButtons.Left;
+                else
+                    buttonsReleased |= MouseButtons.Left;
+            }
+
+            if (previous.RightButton != current.RightButton)
+            {
+                if (current.RightButton == ButtonState.Pressed)
+                    buttonsPressed |= MouseButtons.Right;
+                else
+                    buttonsReleased |= MouseButtons.Right;
+            }
+
+            if (previous.MiddleButton != current.MiddleButton)
+            {
+                if (current.MiddleButton == ButtonState.Pressed)
+                    buttonsPressed |= MouseButtons.Middle;
+                else
+                    buttonsReleased |= MouseButtons.Middle;
+            }
+
+            if (previous.XButton1 != current.XButton1)
+            {
+                if (current.XButton1 == ButtonState.Pressed)
+                    buttonsPressed |= MouseButtons.X1;
+                else
+                    buttonsReleased |= MouseButtons.X1;
+            }
+
+            if (previous.XButton2 != current.XButton2)
+            {
+                if (current.LeftButton == ButtonState.Pressed)
+                    buttonsPressed |= MouseButtons.X2;
+                else
+                    buttonsReleased |= MouseButtons.X2;
+            }
+
+            if (buttonsPressed != 0)
+                RaiseMouseButtonPressed(buttonsPressed);
+
+            if (buttonsReleased != 0)
+                RaiseMouseButtonReleased(buttonsReleased);
+        }
+
+        private void RaiseMouseButtonPressed(MouseButtons buttons)
+        {
+            if (MouseButtonPressed != null)
+            {
+                MouseButtonPressed(buttons);
+            }
+        }
+
+        private void RaiseMouseButtonReleased(MouseButtons buttons)
+        {
+            if (MouseButtonPressed != null)
+            {
+                MouseButtonReleased(buttons);
+            }
+        }
+
+        private void RaiseMouseMoved(Point point)
+        {
+            if (MouseMoved != null)
+            {
+                this.MouseMoved(point);
+            }
         }
     }
 }

@@ -18,8 +18,6 @@ namespace ToyBox
         IKeyboard GetKeyboard(PlayerIndex playerIndex);
         IGamePad GetGamePad(PlayerIndex playerIndex);
         ITouchPanel GetTouchPanel();
-
-        void Update();
     }
 
 }

@@ -13,8 +13,8 @@ namespace ToyBox
             this.Game = game;
         }
 
-        event EventHandler<System.EventArgs> IUpdateable.EnabledChanged { add { } remove { } }
-        event EventHandler<System.EventArgs> IUpdateable.UpdateOrderChanged { add { } remove { } }
+        public event EventHandler<EventArgs> EnabledChanged { add { } remove { } }
+        public event EventHandler<EventArgs> UpdateOrderChanged { add { } remove { } }
 
         public void Pause()
         {
@@ -46,22 +46,22 @@ namespace ToyBox
             get { return this.paused; }
         }
 
-        void IGameState.Enter()
+        public void Enter()
         {
             OnEntered();
         }
 
-        void IGameState.Leave()
+        public void Leave()
         {
             OnLeaving();
         }
 
-        bool IUpdateable.Enabled
+        public bool Enabled
         {
             get { return true; }
         }
 
-        int IUpdateable.UpdateOrder
+        public int UpdateOrder
         {
             get { return 0; }
         }

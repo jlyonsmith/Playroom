@@ -9,7 +9,7 @@ namespace ToyBox
 {
 #if WINDOWS
 
-    public class MouseArrowComponent : DrawableGameComponent
+    public class MouseArrowComponent : GameComponent
     {
         private ISpriteService spriteService;
         private IInputService inputService;
@@ -43,6 +43,16 @@ namespace ToyBox
         private void OnMouseMoved(Point point)
         {
             this.mouseSprite.Position = point;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.spriteService.DeleteSprite(mouseSprite.SpriteIndex);
+            }
+
+            base.Dispose(disposing);
         }
     }
 
