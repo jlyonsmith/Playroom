@@ -618,6 +618,7 @@ namespace Jamoki.Tools.Pinboard
 
         private void PropertiesForm_ScreenSizeChanged(object sender, ScreenSizeChangedEventArgs args)
         {
+            /*
             SizeF scale = new SizeF(
                 (float)Data.ScreenRectInfo.Size.Width / args.OldSize.Width, 
                 (float)Data.ScreenRectInfo.Size.Height / args.OldSize.Height);
@@ -629,8 +630,9 @@ namespace Jamoki.Tools.Pinboard
                 rectInfo.Width = (int)(rectInfo.Width * scale.Width);
                 rectInfo.Height = (int)(rectInfo.Height * scale.Height);
             }
+            */
 
-            // Buffer and data are already marked as dirty elsewhere
+            // NOTE: Buffer and data MUST already be marked as dirty elsewhere.
         }
 
         private void RaiseSelectionChangedEvent()

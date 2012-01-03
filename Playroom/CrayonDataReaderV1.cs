@@ -6,28 +6,28 @@ using System.Xml;
 
 namespace Playroom
 {
-    public class RectanglesDataReaderV1
+    public class CrayonDataReaderV1
     {
         public static string rectanglesAtom;
         public static string classNamesAtom;
-        public static string fileNamesAtom;
+        public static string filesAtom;
         public static string platformsAtom;
 
-        public static RectanglesData ReadXml(XmlReader reader)
+        public static CrayonData ReadXml(XmlReader reader)
         {
             rectanglesAtom = reader.NameTable.Add("Rectangles");
             classNamesAtom = reader.NameTable.Add("ClassNames");
-            fileNamesAtom = reader.NameTable.Add("FileNames");
+            filesAtom = reader.NameTable.Add("Files");
             platformsAtom = reader.NameTable.Add("Platforms");
 
             reader.MoveToContent();
-            RectanglesData data = ReadRectanglesXml(reader);
+            CrayonData data = ReadRectanglesXml(reader);
             return data;
         }
 
-        private static RectanglesData ReadRectanglesXml(XmlReader reader)
+        private static CrayonData ReadRectanglesXml(XmlReader reader)
         {
-            RectanglesData data = new RectanglesData();
+            CrayonData data = new CrayonData();
 
             reader.ReadStartElement("Rectangles");
             reader.MoveToContent();
@@ -105,7 +105,7 @@ namespace Playroom
             platData.Symbol = reader.ReadElementContentAsString("Symbol", "");
             reader.MoveToContent();
 
-            platData.FileNames = ReadNamesXml(reader, fileNamesAtom, "FileName");
+            platData.FileNames = ReadNamesXml(reader, filesAtom, "File");
 
             reader.ReadEndElement();
             reader.MoveToContent();

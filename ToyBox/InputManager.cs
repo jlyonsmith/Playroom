@@ -33,6 +33,7 @@ namespace ToyBox
         private ReadOnlyCollection<IMouse> mice;
         private ReadOnlyCollection<IKeyboard> keyboards;
         private ReadOnlyCollection<ITouchPanel> touchPanels;
+        private Keys[] keysWanted;
 
         public InputManager(Game game) :
             this(game, AllValidKeys)
@@ -42,10 +43,7 @@ namespace ToyBox
         public InputManager(Game game, Keys[] keysWanted) :
             base(game)
         {
-            SetupGamePads();
-            SetupMouse();
-            SetupKeyboards(keysWanted);
-            SetupTouchPanels();
+            this.keysWanted = keysWanted;
 
             if (game.Services != null)
             {
@@ -87,7 +85,13 @@ namespace ToyBox
 
         public ReadOnlyCollection<IKeyboard> Keyboards
         {
-            get { return this.keyboards; }
+            get 
+            {
+                if (this.keyboards == null)
+                    SetupKeyboards();
+
+                return this.keyboards; 
+            }
         }
 
         public ReadOnlyCollection<IMouse> Mice
@@ -97,21 +101,39 @@ namespace ToyBox
 
         public ReadOnlyCollection<IGamePad> GamePads
         {
-            get { return this.gamePads; }
+            get 
+            {
+                if (this.gamePads == null)
+                    SetupGamePads();
+
+                return this.gamePads; 
+            }
         }
 
         public ReadOnlyCollection<ITouchPanel> TouchPanels
         {
-            get { return this.touchPanels; }
+            get 
+            {
+                if (this.touchPanels == null)
+                    SetupTouchPanels();
+
+                return this.touchPanels; 
+            }
         }
 
         public IMouse GetMouse()
         {
+            if (this.mice == null)
+                SetupMouse();
+
             return CollectionHelper.GetIfExists(this.mice, 0);
         }
 
         public IKeyboard GetKeyboard()
         {
+            if (this.keyboards == null)
+                SetupKeyboards();
+
             return CollectionHelper.GetIfExists(this.keyboards, 4);
         }
 
@@ -127,22 +149,41 @@ namespace ToyBox
 
         public ITouchPanel GetTouchPanel()
         {
+            if (this.touchPanels == null)
+                SetupTouchPanels();
+
             return this.touchPanels[0];
         }
 
         public override void Update(GameTime time)
         {
-            for (int index = 0; index < this.gamePads.Count; ++index)
+            if (gamePads != null)
             {
-                this.gamePads[index].Update();
+                for (int index = 0; index < this.gamePads.Count; ++index)
+                {
+                    this.gamePads[index].Update();
+                }
             }
-            for (int index = 0; index < this.mice.Count; ++index)
+            if (mice != null)
             {
-                this.mice[index].Update();
+                for (int index = 0; index < this.mice.Count; ++index)
+                {
+                    this.mice[index].Update();
+                }
             }
-            for (int index = 0; index < this.keyboards.Count; ++index)
+            if (keyboards != null)
             {
-                this.keyboards[index].Update();
+                for (int index = 0; index < this.keyboards.Count; ++index)
+                {
+                    this.keyboards[index].Update();
+                }
+            }
+            if (touchPanels != null)
+            {
+                for (int index = 0; index < this.touchPanels.Count; ++index)
+                {
+                    this.touchPanels[index].Update();
+                }
             }
         }
 
@@ -179,19 +220,19 @@ namespace ToyBox
             this.mice = new ReadOnlyCollection<IMouse>(mice);
         }
 
-        private void SetupKeyboards(Keys[] keysWanted)
+        private void SetupKeyboards()
         {
             var keyboards = new List<IKeyboard>();
 
             for (PlayerIndex player = PlayerIndex.One; player <= PlayerIndex.Four; ++player)
             {
-                keyboards.Add(new GamePadKeyboard(player, this.gamePads[(int)player], keysWanted));
+                keyboards.Add(new GamePadKeyboard(player, this.gamePads[(int)player], this.keysWanted));
             }
 #if XBOX360 || WINDOWS_PHONE
             // Add a dummy keyboard
             keyboards.Add(new NoKeyboard());
 #else 
-            keyboards.Add(new StandardKeyboard(keysWanted));
+            keyboards.Add(new StandardKeyboard(this.keysWanted));
 #endif
             this.keyboards = new ReadOnlyCollection<IKeyboard>(keyboards);
         }

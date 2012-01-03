@@ -6,7 +6,7 @@ using ToolBelt;
 
 namespace Playroom
 {
-    public class RectanglesData
+    public class CrayonData
     {
         public string Namespace { get; set; }
         public List<string> ClassNames { get; set; }

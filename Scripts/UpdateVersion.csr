@@ -22,15 +22,15 @@ using ToolBelt;
 
 public class Program
 {
-    private const string projectName = "Spider";
+    private const string projectName = "Playroom";
     private const int projectStartYear = 2011;
     
     // NOTE: Update this list of files as necessary, e.g. new projects are added to the solution
     private static string[] fileList = 
     {
-        @"WixSetup\WixSetup.wixproj",
-        @"WixSetup\Setup.wxi",
-        @"Spider\Properties\AssemblyInfo.cs", 
+        @"Playroom\Properties\AssemblyInfo.cs", 
+        @"Crayon\Properties\AssemblyInfo.cs", 
+        @"Puzzle\Properties\AssemblyInfo.cs", 
     };
 
 	public static int Main(string[] args)

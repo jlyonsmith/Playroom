@@ -82,9 +82,9 @@ namespace Crayon
 
             Output.Message(MessageImportance.Normal, "Reading rectangles file '{0}'", this.RectanglesFile);
 
-            RectanglesData rectData = ReadRectanglesData(this.RectanglesFile);
+            CrayonData rectData = ReadCrayonData(this.RectanglesFile);
 
-            Output.Message(MessageImportance.Low, "{0} class, {1} platforms", rectData.ClassNames.Count, rectData.Platforms.Count);
+            Output.Message(MessageImportance.Low, "{0} classes, {1} platforms", rectData.ClassNames.Count, rectData.Platforms.Count);
 
             foreach (var platformData in rectData.Platforms)
             {
@@ -158,15 +158,15 @@ namespace Crayon
             return data;
         }
 
-        private RectanglesData ReadRectanglesData(string fileName)
+        private CrayonData ReadCrayonData(string fileName)
         {
-            RectanglesData data = null;
+            CrayonData data = null;
 
             try
             {
                 using (XmlReader reader = XmlReader.Create(fileName))
                 {
-                    data = RectanglesDataReaderV1.ReadXml(reader);
+                    data = CrayonDataReaderV1.ReadXml(reader);
                 }
             }
             catch (Exception ex)
@@ -174,14 +174,14 @@ namespace Crayon
                 if (!(ex is XmlException || ex is FormatException))
                     throw;
 
-                Output.Error("Unable to read Pinboard file '{0}'", fileName);
+                Output.Error("Unable to read Crayon file '{0}'", fileName);
                 return null;
             }
 
             return data;
         }
 
-        private void WriteCsOutput(TextWriter writer, RectanglesData rectData)
+        private void WriteCsOutput(TextWriter writer, CrayonData rectData)
         {
             writer.WriteLine("using System;");
             writer.WriteLine("using System.Collections.Generic;");
