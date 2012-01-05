@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- 
+    Instructions for use:
+    
+    - Include this file after the Microsoft.CSharp.targets file 
+    - Add a <PuzzleFile Include="MyPuzzleFile.puzzle" /> for each .puzzle file
+  -->
+  <PropertyGroup>
+    <CoreCompileDependsOn>$(CoreCompileDependsOn);GeneratePuzzleOutput</CoreCompileDependsOn>
+    <CoreCleanDependsOn>$(CoreCleanDependsOn);CleanPuzzleOutput</CoreCleanDependsOn>
+    <PuzzleExe Condition="'$(PuzzleExe)' == ''">&quot;$(MSBuildExtensionsPath)\Playroom\Puzzle.exe&quot;</PuzzleExe>
+  </PropertyGroup>
+
+  <Target
+    Name="CleanPuzzleOutput"
+    Condition="'@(PuzzleFile)' != ''"
+    DependsOnTargets = "PreparePuzzleOutputNames">
+    <Delete
+      Files="@(PuzzleFile->'%(OutputName)')"
+      TreatErrorsAsWarnings="true"/>
+  </Target>
+
+  <Target
+    Name="PreparePuzzleOutputNames"
+    Condition="'@(PuzzleFile)' != ''">
+    <ItemGroup>
+      <!-- Add metadata to the crayon file item list for the output file names -->
+      <PuzzleFile>
+        <OutputName Condition="'%(PuzzleFile.OutputName)' == ''">$(BaseIntermediateOutputPath)%(PuzzleFile.FileName).cs</OutputName>
+      </PuzzleFile>
+      <!-- Add generated file to list of sources to be compiled-->
+      <Compile Include="%(PuzzleFile.OutputName)" />
+    </ItemGroup>
+  </Target>
+
+  <Target
+    Name="GeneratePuzzleOutput"
+    Inputs="@(PuzzleFile);"
+    Outputs="@(PuzzleFile->'%(OutputName)')"
+    Condition="'@(PuzzleFile)' != ''"
+    DependsOnTargets = "PreparePuzzleOutputNames">
+
+    <!-- Generate the wrapper class -->
+    <Exec Command="$(PuzzleExe) %(PuzzleFile.Identity) /o:%(PuzzleFile.OutputName)" />
+  </Target>
+</Project>
+

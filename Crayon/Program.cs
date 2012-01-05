@@ -84,6 +84,9 @@ namespace Crayon
 
             CrayonData rectData = ReadCrayonData(this.RectanglesFile);
 
+            if (rectData == null)
+                return;
+
             Output.Message(MessageImportance.Low, "{0} classes, {1} platforms", rectData.ClassNames.Count, rectData.Platforms.Count);
 
             foreach (var platformData in rectData.Platforms)
@@ -171,10 +174,7 @@ namespace Crayon
             }
             catch (Exception ex)
             {
-                if (!(ex is XmlException || ex is FormatException))
-                    throw;
-
-                Output.Error("Unable to read Crayon file '{0}'", fileName);
+                Output.Error("Unable to read Crayon file '{0}': {1}", fileName, ex.Message);
                 return null;
             }
 

@@ -12,8 +12,8 @@ namespace ToyBox
         private readonly Keys[] validKeys;
         private KeyboardState current;
 
-        public event KeyDelegate KeyPressed;
-        public event KeyDelegate KeyReleased;
+        public event KeyboardButtonDelegate ButtonPressed;
+        public event KeyboardButtonDelegate ButtonReleased;
         public event CharacterDelegate CharacterEntered;
         
         public StandardKeyboard(Keys[] keysWanted)
@@ -51,17 +51,17 @@ namespace ToyBox
 
         protected void RaiseKeyPressed(Keys key)
         {
-            if (KeyPressed != null)
+            if (ButtonPressed != null)
             {
-                KeyPressed(key);
+                ButtonPressed(key);
             }
         }
 
         protected void RaiseKeyReleased(Keys key)
         {
-            if (KeyReleased != null)
+            if (ButtonReleased != null)
             {
-                KeyReleased(key);
+                ButtonReleased(key);
             }
         }
 
@@ -75,7 +75,7 @@ namespace ToyBox
 
         private void GenerateEvents(ref KeyboardState previous, ref KeyboardState current)
         {
-            if ((KeyPressed == null) && (KeyReleased == null) && (CharacterEntered == null))
+            if ((ButtonPressed == null) && (ButtonReleased == null) && (CharacterEntered == null))
             {
                 return;
             }
@@ -94,7 +94,6 @@ namespace ToyBox
                     if (currentState == KeyState.Down)
                     {
                         RaiseKeyPressed(key);
-                        GenerateCharacterEvent(key);
                     }
                     else
                     {
@@ -102,11 +101,6 @@ namespace ToyBox
                     }
                 }
             }
-        }
-
-        private void GenerateCharacterEvent(Keys key)
-        {
-            throw new NotImplementedException();
         }
     }
 }

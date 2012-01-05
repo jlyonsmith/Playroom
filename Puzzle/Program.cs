@@ -31,15 +31,22 @@ namespace Puzzle
         }
     }
 
-    [CommandLineDescription("Puzzle PNG generation tool")]
+    [CommandLineDescription("Generates PNG files from SVG files using Inkscape.")]
     [CommandLineTitle("Puzzle Tool")]
     public class PaintTool : IProcessCommandLine
     {
-        [DefaultCommandLineArgument("default", Description = "Images data file", ValueHint = "<images-file>")]
-        public ParsedPath ImagesFile { get; set; }
+        [DefaultCommandLineArgument("default", Description = "Puzzle data file", ValueHint = "<puzzle-file>")]
+        public ParsedPath PuzzleFile { get; set; }
 
-        [CommandLineArgument("outdir", ShortName = "d", Description = "Output directory", ValueHint = "<out-dir>")]
-        public ParsedPath OutputFile { get; set; }
+        [CommandLineArgument("outdir", ShortName = "o", Description = "Output directory", ValueHint = "<out-dir>", 
+            Initializer = typeof(PaintTool), MethodName = "ParseOutputDir")]
+        public ParsedPath OutputDir { get; set; }
+
+        [CommandLineArgument("inkscape", ShortName = "i", Description = "Path to Inkscape executable", ValueHint = "<inkscape-exe>")]
+        public ParsedPath InkscapeFile { get; set; }
+
+        [CommandLineArgument("full", ShortName = "f", Description = "Do a full update instead of an incremental one", ValueHint = "<bool>")]
+        public bool FullUpdate { get; set; }
 
         [CommandLineArgument("help", Description = "Displays this help", ShortName = "?")]
         public bool ShowHelp { get; set; }
@@ -64,6 +71,11 @@ namespace Puzzle
             this.Output = new OutputHelper(outputter);
         }
 
+        private static ParsedPath ParseOutputDir(string arg)
+        {
+            return new ParsedPath(arg, PathType.Directory);
+        }
+
         public void Execute()
         {
             Console.WriteLine(Parser.LogoBanner);
@@ -74,15 +86,15 @@ namespace Puzzle
                 return;
             }
 
-            if (String.IsNullOrEmpty(ImagesFile))
+            if (String.IsNullOrEmpty(PuzzleFile))
             {
-                Output.Error("An images file must be specified");
+                Output.Error("An puzzle file must be specified");
                 return;
             }
 
-            Output.Message(MessageImportance.Normal, "Reading paintbrush file '{0}'", this.ImagesFile);
+            Output.Message(MessageImportance.Normal, "Reading puzzle file '{0}'", this.PuzzleFile);
 
-            PuzzleData data = ReadPuzzleData(this.ImagesFile);
+            PuzzleData data = ReadPuzzleData(this.PuzzleFile);
 
             foreach (var pair in data.PuzzlePinboards)
             {

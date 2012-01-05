@@ -37,10 +37,10 @@ namespace ToyBox
 
             IMouse mouse = this.inputService.GetMouse();
 
-            mouse.MouseMoved += new MouseMoveDelegate(OnMouseMoved);
+            mouse.Moved += new MouseMovedDelegate(Mouse_Moved);
         }
 
-        private void OnMouseMoved(Point point)
+        private void Mouse_Moved(Point point)
         {
             this.mouseSprite.Position = point;
         }

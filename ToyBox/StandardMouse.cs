@@ -16,10 +16,10 @@ namespace ToyBox
     {
         private MouseState current;
 
-        public event MouseMoveDelegate MouseMoved;
-        public event MouseButtonDelegate MouseButtonPressed;
-        public event MouseButtonDelegate MouseButtonReleased;
-        public event MouseWheelDelegate MouseWheelRotated;
+        public event MouseMovedDelegate Moved;
+        public event MouseButtonDelegate ButtonPressed;
+        public event MouseButtonDelegate ButtonReleased;
+        public event MouseWheelDelegate WheelRotated;
 
         public MouseState GetState()
         {
@@ -52,7 +52,7 @@ namespace ToyBox
 
         private void GenerateEvents(ref MouseState previous, ref MouseState current)
         {
-            if (MouseMoved == null && MouseButtonPressed == null && MouseButtonReleased == null && MouseWheelRotated == null)
+            if (Moved == null && ButtonPressed == null && ButtonReleased == null && WheelRotated == null)
                 return;
 
             if (previous.X != current.X || previous.Y != current.Y)
@@ -112,25 +112,25 @@ namespace ToyBox
 
         private void RaiseMouseButtonPressed(MouseButtons buttons)
         {
-            if (MouseButtonPressed != null)
+            if (ButtonPressed != null)
             {
-                MouseButtonPressed(buttons);
+                ButtonPressed(buttons);
             }
         }
 
         private void RaiseMouseButtonReleased(MouseButtons buttons)
         {
-            if (MouseButtonPressed != null)
+            if (ButtonPressed != null)
             {
-                MouseButtonReleased(buttons);
+                ButtonReleased(buttons);
             }
         }
 
         private void RaiseMouseMoved(Point point)
         {
-            if (MouseMoved != null)
+            if (Moved != null)
             {
-                this.MouseMoved(point);
+                this.Moved(point);
             }
         }
     }

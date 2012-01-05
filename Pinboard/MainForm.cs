@@ -203,7 +203,7 @@ namespace Jamoki.Tools.Pinboard
             return (result == DialogResult.Yes);
         }
 
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
 
@@ -217,11 +217,11 @@ namespace Jamoki.Tools.Pinboard
             OpenFile(fileDialog.FileName);
         }
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (fileName == null)
             {
-                saveAsToolStripMenuItem_Click(sender, e);
+                SaveAsToolStripMenuItem_Click(sender, e);
             }
             else
             {
@@ -229,7 +229,7 @@ namespace Jamoki.Tools.Pinboard
             }
         }
 
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog fileDialog = new SaveFileDialog();
 
@@ -263,7 +263,7 @@ namespace Jamoki.Tools.Pinboard
             }
         }
 
-        private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DuplicateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             pinboardControl.DuplicateSelection();
         }

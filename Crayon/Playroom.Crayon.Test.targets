@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- 
+    Use this .targets file for testing Crayon MSBuild integration.  
+    Put it in the $(MSBuildExtensionsPath)\Playroom\ directory to redirect to the debug or release build.
+  -->
+  <PropertyGroup>
+    <PlayroomPath>C:\Projects\Playroom\1.0</PlayroomPath>
+    <CrayonExe>$(PlayroomPath)\Crayon\bin\$(Configuration)\Crayon.exe</CrayonExe>
+  </PropertyGroup>
+  <Import Project="$(PlayroomPath)\Crayon\Playroom.Crayon.targets"/>
+</Project>

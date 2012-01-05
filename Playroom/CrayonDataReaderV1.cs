@@ -8,14 +8,14 @@ namespace Playroom
 {
     public class CrayonDataReaderV1
     {
-        public static string rectanglesAtom;
+        public static string crayonAtom;
         public static string classNamesAtom;
         public static string filesAtom;
         public static string platformsAtom;
 
         public static CrayonData ReadXml(XmlReader reader)
         {
-            rectanglesAtom = reader.NameTable.Add("Rectangles");
+            crayonAtom = reader.NameTable.Add("Crayon");
             classNamesAtom = reader.NameTable.Add("ClassNames");
             filesAtom = reader.NameTable.Add("Files");
             platformsAtom = reader.NameTable.Add("Platforms");
@@ -29,7 +29,7 @@ namespace Playroom
         {
             CrayonData data = new CrayonData();
 
-            reader.ReadStartElement("Rectangles");
+            reader.ReadStartElement(crayonAtom);
             reader.MoveToContent();
 
             data.Namespace = reader.ReadElementContentAsString("Namespace", "");

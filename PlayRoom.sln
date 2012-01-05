@@ -11,12 +11,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBox", "ToyBox\ToyBox.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", "..\..\Toaster\1.5\ToolBelt\ToolBelt.csproj", "{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puzzle", "Paintbrush\Puzzle.csproj", "{8CA4A573-F7D6-4889-861F-F15D9D2A1D3C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{EF23CF01-49BD-4A29-8365-804058AD5D23}"
 	ProjectSection(SolutionItems) = preProject
 		Scripts\UpdateVersion.csr = Scripts\UpdateVersion.csr
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puzzle", "Puzzle\Puzzle.csproj", "{8CA4A573-F7D6-4889-861F-F15D9D2A1D3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

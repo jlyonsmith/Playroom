@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- 
+    Use this .targets file for testing Puzzle MSBuild integration.  
+    Put it in the $(MSBuildExtensionsPath)\Playroom\ directory to redirect to the debug or release build.
+  -->
+  <PropertyGroup>
+    <PlayroomPath>C:\Projects\Playroom\1.0</PlayroomPath>
+    <PuzzleExe>$(PlayroomPath)\Puzzle\bin\$(Configuration)\Puzzle.exe</PuzzleExe>
+  </PropertyGroup>
+  <Import Project="$(PlayroomPath)\Puzzle\Playroom.Puzzle.targets"/>
+</Project>

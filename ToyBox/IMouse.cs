@@ -5,16 +5,16 @@ using Microsoft.Xna.Framework.Input;
 
 namespace ToyBox
 {
-    public delegate void MouseMoveDelegate(Point point);
+    public delegate void MouseMovedDelegate(Point point);
     public delegate void MouseButtonDelegate(MouseButtons buttons);
     public delegate void MouseWheelDelegate(float ticks);
 
     public interface IMouse : IInputDevice
     {
-        event MouseMoveDelegate MouseMoved;
-        event MouseButtonDelegate MouseButtonPressed;
-        event MouseButtonDelegate MouseButtonReleased;
-        event MouseWheelDelegate MouseWheelRotated;
+        event MouseMovedDelegate Moved;
+        event MouseButtonDelegate ButtonPressed;
+        event MouseButtonDelegate ButtonReleased;
+        event MouseWheelDelegate WheelRotated;
         MouseState GetState();
         void MoveTo(Point point);
     }

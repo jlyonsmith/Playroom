@@ -4,14 +4,13 @@ using Microsoft.Xna.Framework.Input;
 
 namespace ToyBox
 {
-    public delegate void KeyDelegate(Keys key);
+    public delegate void KeyboardButtonDelegate(Keys key);
     public delegate void CharacterDelegate(char character);
 
     public interface IKeyboard : IInputDevice
     {
-        event KeyDelegate KeyPressed;
-        event KeyDelegate KeyReleased;
-        event CharacterDelegate CharacterEntered;
+        event KeyboardButtonDelegate ButtonPressed;
+        event KeyboardButtonDelegate ButtonReleased;
         KeyboardState GetState();
     }
 }

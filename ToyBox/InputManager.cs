@@ -222,6 +222,8 @@ namespace ToyBox
 
         private void SetupKeyboards()
         {
+            SetupGamePads();
+
             var keyboards = new List<IKeyboard>();
 
             for (PlayerIndex player = PlayerIndex.One; player <= PlayerIndex.Four; ++player)
