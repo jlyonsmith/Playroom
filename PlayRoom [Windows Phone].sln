@@ -1,11 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pinboard", "Pinboard\Pinboard.csproj", "{2BB0DDC3-2982-4CEC-9E13-00479E1DE30E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playroom", "Playroom\Playroom.csproj", "{D9A6DF85-1760-45A1-A26F-598989F58A0B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crayon", "Crayon\Crayon.csproj", "{DBF99B02-4C45-4F79-A9F8-6C90446D7D85}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", "..\..\Toaster\1.4\ToolBelt\ToolBelt.csproj", "{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}"
 EndProject
