@@ -5,19 +5,19 @@ using System.Text;
 
 namespace Playroom
 {
-    public class PuzzleData
+    public class PrismData
     {
-        public IDictionary<string, PuzzlePinboard> PuzzlePinboards { get; set; }
+        public IDictionary<string, PrismPinboard> PrismPinboards { get; set; }
     }
 
-    public class PuzzlePinboard
+    public class PrismPinboard
     {
         public string FileName { get; set; }
         public PinboardData Pinboard { get; set; }
-        public IList<PuzzlePieces> Pieces { get; set; }
+        public IList<PrismPieces> Pieces { get; set; }
     }
 
-    public class PuzzlePieces
+    public class PrismPieces
     {
         public string RectangleName { get; set; }
         public string VectorFileName { get; set; }

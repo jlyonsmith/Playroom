@@ -6,30 +6,29 @@ using System.Xml;
 
 namespace Playroom
 {
-    public class PuzzleDataReaderV1
+    public class PrismDataReaderV1
     {
         public static string rectanglesAtom;
         public static string classNamesAtom;
         public static string fileNamesAtom;
         public static string platformsAtom;
 
-        public static PuzzleData ReadXml(XmlReader reader)
+        public static PrismData ReadXml(XmlReader reader)
         {
-            rectanglesAtom = reader.NameTable.Add("Rectangles");
-            classNamesAtom = reader.NameTable.Add("ClassNames");
+            rectanglesAtom = reader.NameTable.Add("Pinboards");
             fileNamesAtom = reader.NameTable.Add("FileNames");
             platformsAtom = reader.NameTable.Add("Platforms");
 
             reader.MoveToContent();
-            PuzzleData data = ReadPinboardsXml(reader);
+            PrismData data = ReadPinboardsXml(reader);
             return data;
         }
 
-        private static PuzzleData ReadPinboardsXml(XmlReader reader)
+        private static PrismData ReadPinboardsXml(XmlReader reader)
         {
-            PuzzleData data = new PuzzleData();
+            PrismData data = new PrismData();
 
-            reader.ReadStartElement("Puzzle");
+            reader.ReadStartElement("Prism");
             reader.MoveToContent();
 
             reader.ReadEndElement();

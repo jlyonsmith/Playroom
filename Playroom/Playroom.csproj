@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PaintbrushDataReaderV1.cs" />
+    <Compile Include="PrismDataReaderV1.cs" />
     <Compile Include="PuzzleData.cs" />
     <Compile Include="PinboardData.cs" />
     <Compile Include="PinboardDataReaderV1.cs" />

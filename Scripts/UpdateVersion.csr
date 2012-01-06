@@ -30,7 +30,7 @@ public class Program
     {
         @"Playroom\Properties\AssemblyInfo.cs", 
         @"Crayon\Properties\AssemblyInfo.cs", 
-        @"Puzzle\Properties\AssemblyInfo.cs", 
+        @"Prism\Properties\AssemblyInfo.cs", 
     };
 
 	public static int Main(string[] args)

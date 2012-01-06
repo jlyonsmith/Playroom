@@ -7,7 +7,7 @@ using System.IO;
 using ToolBelt;
 using Playroom;
 
-namespace Puzzle
+namespace Prism
 {
     class Program
     {
@@ -32,11 +32,11 @@ namespace Puzzle
     }
 
     [CommandLineDescription("Generates PNG files from SVG files using Inkscape.")]
-    [CommandLineTitle("Puzzle Tool")]
+    [CommandLineTitle("Prism Tool")]
     public class PaintTool : IProcessCommandLine
     {
-        [DefaultCommandLineArgument("default", Description = "Puzzle data file", ValueHint = "<puzzle-file>")]
-        public ParsedPath PuzzleFile { get; set; }
+        [DefaultCommandLineArgument("default", Description = "Prism data file", ValueHint = "<prism-file>")]
+        public ParsedPath PrismFile { get; set; }
 
         [CommandLineArgument("outdir", ShortName = "o", Description = "Output directory", ValueHint = "<out-dir>", 
             Initializer = typeof(PaintTool), MethodName = "ParseOutputDir")]
@@ -86,19 +86,19 @@ namespace Puzzle
                 return;
             }
 
-            if (String.IsNullOrEmpty(PuzzleFile))
+            if (String.IsNullOrEmpty(PrismFile))
             {
-                Output.Error("A puzzle file must be specified");
+                Output.Error("A prism file must be specified");
                 return;
             }
 
-            Output.Message(MessageImportance.Normal, "Reading puzzle file '{0}'", this.PuzzleFile);
+            Output.Message(MessageImportance.Normal, "Reading prism file '{0}'", this.PrismFile);
 
-            PuzzleData data = ReadPuzzleData(this.PuzzleFile);
+            PrismData data = ReadPrismData(this.PrismFile);
 
-            foreach (var pair in data.PuzzlePinboards)
+            foreach (var pair in data.PrismPinboards)
             {
-                PuzzlePinboard mappingData = pair.Value;
+                PrismPinboard mappingData = pair.Value;
                 
                 Output.Message(MessageImportance.Low, "Reading pinboard file '{0}'", pair.Key);
 
@@ -136,15 +136,15 @@ namespace Puzzle
             return data;
         }
 
-        private PuzzleData ReadPuzzleData(string fileName)
+        private PrismData ReadPrismData(string fileName)
         {
-            PuzzleData data = null;
+            PrismData data = null;
 
             try
             {
                 using (XmlReader reader = XmlReader.Create(fileName))
                 {
-                    data = PuzzleDataReaderV1.ReadXml(reader);
+                    data = PrismDataReaderV1.ReadXml(reader);
                 }
             }
             catch (Exception ex)

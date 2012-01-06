@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- 
-    Use this .targets file for testing Puzzle MSBuild integration.  
+    Use this .targets file for testing Prism MSBuild integration.  
     Put it in the $(MSBuildExtensionsPath)\Playroom\ directory to redirect to the debug or release build.
   -->
   <PropertyGroup>
     <PlayroomPath>C:\Projects\Playroom\1.0</PlayroomPath>
-    <PuzzleExe>$(PlayroomPath)\Puzzle\bin\$(Configuration)\Puzzle.exe</PuzzleExe>
+    <PrismExe>$(PlayroomPath)\Prism\bin\$(Configuration)\Prism.exe</PrismExe>
   </PropertyGroup>
-  <Import Project="$(PlayroomPath)\Puzzle\Playroom.Puzzle.targets"/>
+  <Import Project="$(PlayroomPath)\Prism\Playroom.Prism.targets"/>
 </Project>

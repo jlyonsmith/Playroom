@@ -4,45 +4,45 @@
     Instructions for use:
     
     - Include this file after the Microsoft.CSharp.targets file 
-    - Add a <PuzzleFile Include="MyPuzzleFile.puzzle" /> for each .puzzle file
+    - Add a <PrismFile Include="MyPrismFile.prism" /> for each .prism file
   -->
   <PropertyGroup>
-    <CoreCompileDependsOn>$(CoreCompileDependsOn);GeneratePuzzleOutput</CoreCompileDependsOn>
-    <CoreCleanDependsOn>$(CoreCleanDependsOn);CleanPuzzleOutput</CoreCleanDependsOn>
-    <PuzzleExe Condition="'$(PuzzleExe)' == ''">&quot;$(MSBuildExtensionsPath)\Playroom\Puzzle.exe&quot;</PuzzleExe>
+    <CoreCompileDependsOn>$(CoreCompileDependsOn);GeneratePrismOutput</CoreCompileDependsOn>
+    <CoreCleanDependsOn>$(CoreCleanDependsOn);CleanPrismOutput</CoreCleanDependsOn>
+    <PrismExe Condition="'$(PrismExe)' == ''">&quot;$(MSBuildExtensionsPath)\Playroom\Prism.exe&quot;</PrismExe>
   </PropertyGroup>
 
   <Target
-    Name="CleanPuzzleOutput"
-    Condition="'@(PuzzleFile)' != ''"
-    DependsOnTargets = "PreparePuzzleOutputNames">
+    Name="CleanPrismOutput"
+    Condition="'@(PrismFile)' != ''"
+    DependsOnTargets = "PreparePrismOutputNames">
     <Delete
-      Files="@(PuzzleFile->'%(OutputName)')"
+      Files="@(PrismFile->'%(OutputName)')"
       TreatErrorsAsWarnings="true"/>
   </Target>
 
   <Target
-    Name="PreparePuzzleOutputNames"
-    Condition="'@(PuzzleFile)' != ''">
+    Name="PreparePrismOutputNames"
+    Condition="'@(PrismFile)' != ''">
     <ItemGroup>
       <!-- Add metadata to the crayon file item list for the output file names -->
-      <PuzzleFile>
-        <OutputName Condition="'%(PuzzleFile.OutputName)' == ''">$(BaseIntermediateOutputPath)%(PuzzleFile.FileName).cs</OutputName>
-      </PuzzleFile>
+      <PrismFile>
+        <OutputName Condition="'%(PrismFile.OutputName)' == ''">$(BaseIntermediateOutputPath)%(PrismFile.FileName).cs</OutputName>
+      </PrismFile>
       <!-- Add generated file to list of sources to be compiled-->
-      <Compile Include="%(PuzzleFile.OutputName)" />
+      <Compile Include="%(PrismFile.OutputName)" />
     </ItemGroup>
   </Target>
 
   <Target
-    Name="GeneratePuzzleOutput"
-    Inputs="@(PuzzleFile);"
-    Outputs="@(PuzzleFile->'%(OutputName)')"
-    Condition="'@(PuzzleFile)' != ''"
-    DependsOnTargets = "PreparePuzzleOutputNames">
+    Name="GeneratePrismOutput"
+    Inputs="@(PrismFile);"
+    Outputs="@(PrismFile->'%(OutputName)')"
+    Condition="'@(PrismFile)' != ''"
+    DependsOnTargets = "PreparePrismOutputNames">
 
     <!-- Generate the wrapper class -->
-    <Exec Command="$(PuzzleExe) %(PuzzleFile.Identity) /o:%(PuzzleFile.OutputName)" />
+    <Exec Command="$(PrismExe) %(PrismFile.Identity) /o:%(PrismFile.OutputName)" />
   </Target>
 </Project>
 

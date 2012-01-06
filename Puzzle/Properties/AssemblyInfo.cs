@@ -2,11 +2,11 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Puzzle")]
-[assembly: AssemblyDescription("Puzzle image assembler")]
+[assembly: AssemblyTitle("Prism")]
+[assembly: AssemblyDescription("Prism image assembler")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Puzzle")]
+[assembly: AssemblyProduct("Prism")]
 [assembly: AssemblyCopyright("Copyright © 2012, John Lyon-Smith.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
