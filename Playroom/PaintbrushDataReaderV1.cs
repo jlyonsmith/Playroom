@@ -21,11 +21,11 @@ namespace Playroom
             platformsAtom = reader.NameTable.Add("Platforms");
 
             reader.MoveToContent();
-            PuzzleData data = ReadRectanglesXml(reader);
+            PuzzleData data = ReadPinboardsXml(reader);
             return data;
         }
 
-        private static PuzzleData ReadRectanglesXml(XmlReader reader)
+        private static PuzzleData ReadPinboardsXml(XmlReader reader)
         {
             PuzzleData data = new PuzzleData();
 

@@ -88,7 +88,7 @@ namespace Puzzle
 
             if (String.IsNullOrEmpty(PuzzleFile))
             {
-                Output.Error("An puzzle file must be specified");
+                Output.Error("A puzzle file must be specified");
                 return;
             }
 
@@ -149,10 +149,7 @@ namespace Puzzle
             }
             catch (Exception ex)
             {
-                if (!(ex is XmlException || ex is FormatException))
-                    throw;
-
-                Output.Error("Unable to read Pinboard file '{0}'", fileName);
+                Output.Error("Unable to read Pinboard file '{0}': {1}", fileName, ex.Message);
                 return null;
             }
 
