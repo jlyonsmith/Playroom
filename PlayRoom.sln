@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pinboard", "Pinboard\Pinboa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playroom", "Playroom\Playroom.csproj", "{D9A6DF85-1760-45A1-A26F-598989F58A0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crayon", "Crayon\Crayon.csproj", "{DBF99B02-4C45-4F79-A9F8-6C90446D7D85}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pinata", "Pinata\Pinata.csproj", "{DBF99B02-4C45-4F79-A9F8-6C90446D7D85}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBox", "ToyBox\ToyBox.csproj", "{ED1275A0-44FC-4019-A742-4A7EB3F00678}"
 EndProject

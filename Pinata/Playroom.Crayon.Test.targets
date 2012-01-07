@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- 
-    Use this .targets file for testing Crayon MSBuild integration.  
+    Use this .targets file for testing Pinata MSBuild integration.  
     Put it in the $(MSBuildExtensionsPath)\Playroom\ directory to redirect to the debug or release build.
   -->
   <PropertyGroup>
     <PlayroomPath>C:\Projects\Playroom\1.0</PlayroomPath>
-    <CrayonExe>$(PlayroomPath)\Crayon\bin\$(Configuration)\Crayon.exe</CrayonExe>
+    <PinataExe>$(PlayroomPath)\Pinata\bin\$(Configuration)\Pinata.exe</PinataExe>
   </PropertyGroup>
-  <Import Project="$(PlayroomPath)\Crayon\Playroom.Crayon.targets"/>
+  <Import Project="$(PlayroomPath)\Pinata\Playroom.Pinata.targets"/>
 </Project>

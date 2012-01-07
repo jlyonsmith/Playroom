@@ -6,30 +6,30 @@ using System.Xml;
 
 namespace Playroom
 {
-    public class CrayonDataReaderV1
+    public class PinataDataReaderV1
     {
-        public static string crayonAtom;
+        public static string pinataAtom;
         public static string classNamesAtom;
         public static string filesAtom;
         public static string platformsAtom;
 
-        public static CrayonData ReadXml(XmlReader reader)
+        public static PinataData ReadXml(XmlReader reader)
         {
-            crayonAtom = reader.NameTable.Add("Crayon");
+            pinataAtom = reader.NameTable.Add("Pinata");
             classNamesAtom = reader.NameTable.Add("ClassNames");
             filesAtom = reader.NameTable.Add("Files");
             platformsAtom = reader.NameTable.Add("Platforms");
 
             reader.MoveToContent();
-            CrayonData data = ReadRectanglesXml(reader);
+            PinataData data = ReadRectanglesXml(reader);
             return data;
         }
 
-        private static CrayonData ReadRectanglesXml(XmlReader reader)
+        private static PinataData ReadRectanglesXml(XmlReader reader)
         {
-            CrayonData data = new CrayonData();
+            PinataData data = new PinataData();
 
-            reader.ReadStartElement(crayonAtom);
+            reader.ReadStartElement(pinataAtom);
             reader.MoveToContent();
 
             data.Namespace = reader.ReadElementContentAsString("Namespace", "");

@@ -25,7 +25,7 @@
     Name="PreparePrismOutputNames"
     Condition="'@(PrismFile)' != ''">
     <ItemGroup>
-      <!-- Add metadata to the crayon file item list for the output file names -->
+      <!-- Add metadata to the pinata file item list for the output file names -->
       <PrismFile>
         <OutputName Condition="'%(PrismFile.OutputName)' == ''">$(BaseIntermediateOutputPath)%(PrismFile.FileName).cs</OutputName>
       </PrismFile>

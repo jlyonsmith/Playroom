@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- 
+    Instructions for use:
+    
+    - Include this file after the Microsoft.CSharp.targets file 
+    - Add a <PinataFile Include="MyPinataFile.pinata" /> for each .pinata file
+  -->
+  <PropertyGroup>
+    <CoreCompileDependsOn>$(CoreCompileDependsOn);GeneratePinataOutput</CoreCompileDependsOn>
+    <CoreCleanDependsOn>$(CoreCleanDependsOn);CleanPinataOutput</CoreCleanDependsOn>
+    <PinataExe Condition="'$(PinataExe)' == ''">&quot;$(MSBuildExtensionsPath)\Playroom\Pinata.exe&quot;</PinataExe>
+  </PropertyGroup>
+
+  <Target
+    Name="CleanPinataOutput"
+    Condition="'@(PinataFile)' != ''" 
+    DependsOnTargets = "PreparePinataOutputNames">
+    <Delete
+      Files="@(PinataFile->'%(OutputName)')"
+      TreatErrorsAsWarnings="true"/>
+  </Target>
+
+  <Target
+    Name="PreparePinataOutputNames"
+    Condition="'@(PinataFile)' != ''">
+    <ItemGroup>
+      <!-- Add metadata to the pinata file item list for the output file names -->
+      <PinataFile>
+        <OutputName Condition="'%(PinataFile.OutputName)' == ''">$(BaseIntermediateOutputPath)%(PinataFile.FileName).cs</OutputName>
+      </PinataFile>
+      <!-- Add generated file to list of sources to be compiled-->
+      <Compile Include="%(PinataFile.OutputName)" />
+    </ItemGroup>
+  </Target>
+
+  <Target
+    Name="GeneratePinataOutput"
+    Inputs="@(PinataFile);"
+    Outputs="@(PinataFile->'%(OutputName)')"
+    Condition="'@(PinataFile)' != ''"
+    DependsOnTargets = "PreparePinataOutputNames">
+
+    <!-- Generate the wrapper class -->
+    <Exec Command="$(PinataExe) %(PinataFile.Identity) /o:%(PinataFile.OutputName)" />
+  </Target>
+</Project>
+

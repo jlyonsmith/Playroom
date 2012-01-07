@@ -7,13 +7,13 @@ using ToolBelt;
 using Playroom;
 using System.Xml;
 
-namespace Crayon
+namespace Pinata
 {
     class Program
     {
         public static int Main(string[] args)
         {
-            CrayonTool tool = new CrayonTool(new ConsoleOutputter());
+            PinataTool tool = new PinataTool(new ConsoleOutputter());
 
             if (!((IProcessCommandLine)tool).ProcessCommandLine(args))
                 return 1;
@@ -32,8 +32,8 @@ namespace Crayon
     }
 
     [CommandLineDescription("Pinboard to code converter")]
-    [CommandLineTitle("Crayon Tool")]
-    public class CrayonTool : IProcessCommandLine
+    [CommandLineTitle("Pinata Tool")]
+    public class PinataTool : IProcessCommandLine
     {
         [DefaultCommandLineArgument("default", Description = "Rectangles data file", ValueHint = "<rectangles-file>")]
         public ParsedPath RectanglesFile { get; set; }
@@ -59,7 +59,7 @@ namespace Crayon
             }
         }
 
-        public CrayonTool(IOutputter outputter)
+        public PinataTool(IOutputter outputter)
         {
             this.Output = new OutputHelper(outputter);
         }
@@ -82,7 +82,7 @@ namespace Crayon
 
             Output.Message(MessageImportance.Normal, "Reading rectangles file '{0}'", this.RectanglesFile);
 
-            CrayonData rectData = ReadCrayonData(this.RectanglesFile);
+            PinataData rectData = ReadPinataData(this.RectanglesFile);
 
             if (rectData == null)
                 return;
@@ -161,27 +161,27 @@ namespace Crayon
             return data;
         }
 
-        private CrayonData ReadCrayonData(string fileName)
+        private PinataData ReadPinataData(string fileName)
         {
-            CrayonData data = null;
+            PinataData data = null;
 
             try
             {
                 using (XmlReader reader = XmlReader.Create(fileName))
                 {
-                    data = CrayonDataReaderV1.ReadXml(reader);
+                    data = PinataDataReaderV1.ReadXml(reader);
                 }
             }
             catch (Exception ex)
             {
-                Output.Error("Unable to read Crayon file '{0}': {1}", fileName, ex.Message);
+                Output.Error("Unable to read Pinata file '{0}': {1}", fileName, ex.Message);
                 return null;
             }
 
             return data;
         }
 
-        private void WriteCsOutput(TextWriter writer, CrayonData rectData)
+        private void WriteCsOutput(TextWriter writer, PinataData rectData)
         {
             writer.WriteLine("using System;");
             writer.WriteLine("using System.Collections.Generic;");
