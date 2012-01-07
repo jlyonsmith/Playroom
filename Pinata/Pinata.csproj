@@ -66,8 +66,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Playroom.Crayon.targets" />
-    <None Include="Playroom.Crayon.Test.targets" />
+    <None Include="Playroom.Pinata.targets" />
+    <None Include="Playroom.Pinata.Test.targets" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
