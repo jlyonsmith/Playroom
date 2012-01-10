@@ -25,6 +25,7 @@ namespace ToyBox
         public float Rotation { get; set; }
         public abstract Rectangle Box { get; }
         public bool Visible { get; set; }
+        public Color TintColor { get; set; }
         public int Depth 
         {
             get
@@ -52,6 +53,7 @@ namespace ToyBox
             this.ActiveAnimation = null;
             this.GameObject = gameObject;
             this.SpriteIndex = index;
+            this.TintColor = Color.White;
         }
 
         public abstract void Draw(SpriteBatch spriteBatch);
@@ -60,6 +62,7 @@ namespace ToyBox
     public class TextureSprite : Sprite
     {
         public ReadOnlyCollection<SpriteTexture> SpriteTextures { get; private set; }
+        public bool OwnsTextures { get; set; }
         public int ActiveTextureIndex { get; set; }
         public override Rectangle Box
         {
@@ -86,7 +89,7 @@ namespace ToyBox
                 texture.Texture,
                 new Vector2(Position.X, Position.Y),
                 texture.Rectangle,
-                Color.White,
+                TintColor,
                 this.Rotation,
                 Vector2.Zero,
                 this.Scale,

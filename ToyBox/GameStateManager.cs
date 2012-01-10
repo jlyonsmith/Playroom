@@ -100,17 +100,17 @@ namespace ToyBox
         public IGameState Pop()
         {
             int lastStateIndex = this.gameStates.Count - 1;
+            
             if (lastStateIndex < 0)
             {
                 throw new InvalidOperationException("No game states are on the stack");
             }
 
             KeyValuePair<IGameState, GameStateModality> old = this.gameStates[lastStateIndex];
-            IGameState oldState = old.Key;
 
             // Notify the currently active state that it's being left and take it
             // from the stack of active states
-            oldState.Leave();
+            old.Key.Leave();
             this.gameStates.RemoveAt(lastStateIndex);
 
             // Now we need to remove the popped state from our update and draw lists.
@@ -133,7 +133,7 @@ namespace ToyBox
             // Resume the state that has now become the top of the stack
             Resume();
 
-            return oldState;
+            return old.Key;
         }
 
         public IGameState Switch(IGameState state)

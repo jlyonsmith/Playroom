@@ -57,14 +57,14 @@ namespace ToyBox
                         
                         if (count > 0)
                         {
-                            content = Encoding.Unicode.GetString(bytes);
+                            content = Encoding.Unicode.GetString(bytes, 0, bytes.Length);
                         }
                     }
                 }
             }
             finally
             {
-                storageFile.Close();
+                storageFile.Dispose();
             }
 
             return content;
@@ -93,7 +93,7 @@ namespace ToyBox
             }
             finally
             {
-                storageFile.Close();
+                storageFile.Dispose();
             }
         }
 

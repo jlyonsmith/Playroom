@@ -20,7 +20,6 @@ namespace ToyBox
         {
             XmlReaderSettings settings = new XmlReaderSettings();
 
-            settings.ValidationType = ValidationType.None;
             settings.DtdProcessing = DtdProcessing.Parse;
 
             Dictionary<string, object> dict;
@@ -131,8 +130,7 @@ namespace ToyBox
                 t = typeof(string);
             }
 
-            string s = reader.ReadElementString();
-
+            string s = reader.ReadElementContentAsString();
             reader.MoveToContent();
 
             if (t == typeof(int))

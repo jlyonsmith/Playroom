@@ -151,6 +151,17 @@ namespace ToyBox
         public void DeleteSprite(int index)
         {
             // TODO-john-2011: Remove any animations for this sprite too?
+
+            TextureSprite textureSprite = this.sprites[index] as TextureSprite;
+
+            if (textureSprite != null && textureSprite.OwnsTextures)
+            {
+                foreach (var spriteTexture in textureSprite.SpriteTextures)
+                {
+                    spriteTexture.Texture.Dispose();
+                }
+            }
+
             this.sprites.RemoveAt(index);
         }
 
@@ -194,8 +205,6 @@ namespace ToyBox
             RenderTarget2D target = new RenderTarget2D(
                 this.Game.GraphicsDevice, width, height,
                 false, SurfaceFormat.Color, DepthFormat.None);
-
-            Game.SuppressDraw();
 
             this.Game.GraphicsDevice.SetRenderTarget(target);
 

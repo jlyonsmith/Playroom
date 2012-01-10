@@ -232,7 +232,7 @@ namespace ToyBox
             }
 #if XBOX360 || WINDOWS_PHONE
             // Add a dummy keyboard
-            keyboards.Add(new NoKeyboard());
+            keyboards.Add(new NoKeyboard(null));
 #else 
             keyboards.Add(new StandardKeyboard(this.keysWanted));
 #endif
@@ -244,8 +244,8 @@ namespace ToyBox
             var touchPanels = new List<ITouchPanel>();
 
 #if WINDOWS_PHONE
-            // Add the Windows Phone 7 touch panel
-            touchPanels.Add(new XnaTouchPanel());
+            // TODO-john-2012: Add the Windows Phone 7 touch panel
+            // touchPanels.Add(new XnaTouchPanel());
 #else
             touchPanels.Add(new NoTouchPanel());
 #endif

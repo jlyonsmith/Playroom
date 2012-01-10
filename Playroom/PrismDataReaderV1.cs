@@ -3,107 +3,127 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using ToolBelt;
 
 namespace Playroom
 {
     public class PrismDataReaderV1
     {
-        public static string rectanglesAtom;
-        public static string classNamesAtom;
-        public static string fileNamesAtom;
-        public static string platformsAtom;
+        public static string prismAtom;
+        public static string mappingsAtom;
+        public static string pinboardsAtom;
 
         public static PrismData ReadXml(XmlReader reader)
         {
-            rectanglesAtom = reader.NameTable.Add("Pinboards");
-            fileNamesAtom = reader.NameTable.Add("FileNames");
-            platformsAtom = reader.NameTable.Add("Platforms");
+            prismAtom = reader.NameTable.Add("Prism");
+            mappingsAtom = reader.NameTable.Add("Mappings");
+            pinboardsAtom = reader.NameTable.Add("Pinboards");
 
             reader.MoveToContent();
-            PrismData data = ReadPinboardsXml(reader);
-            return data;
+            
+            return ReadPrismElement(reader);
         }
 
-        private static PrismData ReadPinboardsXml(XmlReader reader)
+        private static PrismData ReadPrismElement(XmlReader reader)
         {
-            PrismData data = new PrismData();
+            PrismData prismData = new PrismData();
 
             reader.ReadStartElement("Prism");
             reader.MoveToContent();
 
-            reader.ReadEndElement();
-            reader.MoveToContent();
+            prismData.Pinboards = ReadPinboardsElement(reader);
 
-            return data;
+            reader.ReadEndElement();
+
+            return prismData;
         }
 
-        private static List<string> ReadNamesXml(XmlReader reader, string collectionName, string itemName)
+        private static List<PrismPinboard> ReadPinboardsElement(XmlReader reader)
         {
-            List<string> list = new List<string>();
+            List<PrismPinboard> list = new List<PrismPinboard>();
 
             // Read outer collection element
-            reader.ReadStartElement(collectionName);
+            reader.ReadStartElement(pinboardsAtom);
             reader.MoveToContent();
 
             while (true)
             {
-                if (String.ReferenceEquals(reader.Name, collectionName))
+                if (String.ReferenceEquals(reader.Name, pinboardsAtom))
                 {
                     reader.ReadEndElement();
                     reader.MoveToContent();
                     break;
                 }
 
-                string className = reader.ReadElementContentAsString(itemName, "");
-                reader.MoveToContent();
+                PrismPinboard prismPinboard = ReadPinboardElement(reader);
 
-                list.Add(className);
+                list.Add(prismPinboard);
             }
 
             return list;
         }
 
-        private static List<PlatformData> ReadPlatformsXml(XmlReader reader)
+        private static PrismPinboard ReadPinboardElement(XmlReader reader)
         {
-            List<PlatformData> list = new List<PlatformData>();
+            PrismPinboard prismPinboard = new PrismPinboard();
 
-            // Read outer <Platforms>
-            reader.ReadStartElement(platformsAtom);
+            reader.ReadStartElement("Pinboard");
             reader.MoveToContent();
 
-            while (true)
-            {
-                if (String.ReferenceEquals(reader.Name, platformsAtom))
-                {
-                    reader.ReadEndElement();
-                    reader.MoveToContent();
-                    break;
-                }
-
-                PlatformData platData = ReadPlatformData(reader);
-                    
-                list.Add(platData);
-            }
-
-            return list;
-        }
-
-        private static PlatformData ReadPlatformData(XmlReader reader)
-        {
-            PlatformData platData = new PlatformData();
-
-            reader.ReadStartElement("Platform");
+            prismPinboard.FileName = new ParsedPath(reader.ReadElementContentAsString("File", ""), PathType.File);
             reader.MoveToContent();
 
-            platData.Symbol = reader.ReadElementContentAsString("Symbol", "");
-            reader.MoveToContent();
-
-            platData.FileNames = ReadNamesXml(reader, fileNamesAtom, "FileName");
+            prismPinboard.Mappings = ReadMappingsElement(reader);
 
             reader.ReadEndElement();
             reader.MoveToContent();
 
-            return platData;
+            return prismPinboard;
+        }
+
+        private static List<PrismMapping> ReadMappingsElement(XmlReader reader)
+        {
+            List<PrismMapping> list = new List<PrismMapping>();
+
+            // Read outer <Platforms>
+            reader.ReadStartElement(mappingsAtom);
+            reader.MoveToContent();
+
+            while (true)
+            {
+                if (String.ReferenceEquals(reader.Name, mappingsAtom))
+                {
+                    reader.ReadEndElement();
+                    reader.MoveToContent();
+                    break;
+                }
+
+                PrismMapping prismMapping = ReadMappingElement(reader);
+
+                list.Add(prismMapping);
+            }
+
+            return list;
+        }
+
+        private static PrismMapping ReadMappingElement(XmlReader reader)
+        {
+            PrismMapping prismMapping = new PrismMapping();
+
+            reader.ReadStartElement("Mapping");
+            reader.MoveToContent();
+
+            prismMapping.RectangleName = reader.ReadElementContentAsString("Rectangle", "");
+            reader.MoveToContent();
+            prismMapping.SvgFileName = new ParsedPath(reader.ReadElementContentAsString("SvgFile", ""), PathType.File);
+            reader.MoveToContent();
+            prismMapping.PngFileName = new ParsedPath(reader.ReadElementContentAsString("PngFile", ""), PathType.File);
+            reader.MoveToContent();
+
+            reader.ReadEndElement();
+            reader.MoveToContent();
+
+            return prismMapping;
         }
     }
 }

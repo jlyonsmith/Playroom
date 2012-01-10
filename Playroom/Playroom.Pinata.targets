@@ -4,45 +4,47 @@
     Instructions for use:
     
     - Include this file after the Microsoft.CSharp.targets file 
-    - Add a <PinataFile Include="MyPinataFile.pinata" /> for each .pinata file
+    - Add a <Pinata Include="MyPinataFile.pinata" /> for each .pinata file
   -->
   <PropertyGroup>
     <CoreCompileDependsOn>$(CoreCompileDependsOn);GeneratePinataOutput</CoreCompileDependsOn>
     <CoreCleanDependsOn>$(CoreCleanDependsOn);CleanPinataOutput</CoreCleanDependsOn>
-    <PinataExe Condition="'$(PinataExe)' == ''">&quot;$(MSBuildExtensionsPath)\Playroom\Pinata.exe&quot;</PinataExe>
+    <PlayroomAssemblyFile Condition="'$(PlayroomAssemblyFile)' == ''">&quot;$(MSBuildExtensionsPath)\Playroom\Playroom.dll&quot;</PlayroomAssemblyFile>
   </PropertyGroup>
 
+  <UsingTask AssemblyFile="$(PlayroomAssemblyFile)" TaskName="Pinata" />
+  
   <Target
     Name="CleanPinataOutput"
-    Condition="'@(PinataFile)' != ''" 
+    Condition="'@(Pinata)' != ''" 
     DependsOnTargets = "PreparePinataOutputNames">
     <Delete
-      Files="@(PinataFile->'%(OutputName)')"
+      Files="@(Pinata->'%(OutputName)')"
       TreatErrorsAsWarnings="true"/>
   </Target>
 
   <Target
     Name="PreparePinataOutputNames"
-    Condition="'@(PinataFile)' != ''">
+    Condition="'@(Pinata)' != ''">
     <ItemGroup>
       <!-- Add metadata to the pinata file item list for the output file names -->
-      <PinataFile>
-        <OutputName Condition="'%(PinataFile.OutputName)' == ''">$(BaseIntermediateOutputPath)%(PinataFile.FileName).cs</OutputName>
-      </PinataFile>
+      <Pinata>
+        <OutputName Condition="'%(Pinata.OutputName)' == ''">$(IntermediateOutputPath)Rectangles.cs</OutputName>
+      </Pinata>
       <!-- Add generated file to list of sources to be compiled-->
-      <Compile Include="%(PinataFile.OutputName)" />
+      <Compile Include="%(Pinata.OutputName)" />
     </ItemGroup>
+    <Message Text="@(Pinata)" Importance="normal"/>
+    <Message Text="@(Pinata->'%(OutputName)')" Importance="normal"/>
   </Target>
 
   <Target
     Name="GeneratePinataOutput"
-    Inputs="@(PinataFile);"
-    Outputs="@(PinataFile->'%(OutputName)')"
-    Condition="'@(PinataFile)' != ''"
+    Condition="'@(Pinata)' != ''"
     DependsOnTargets = "PreparePinataOutputNames">
 
     <!-- Generate the wrapper class -->
-    <Exec Command="$(PinataExe) %(PinataFile.Identity) /o:%(PinataFile.OutputName)" />
+    <Pinata InputFile="%(Pinata.Identity)" OutputFile="%(Pinata.OutputName)" />
   </Target>
 </Project>
 
