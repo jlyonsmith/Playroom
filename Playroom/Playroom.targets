@@ -12,6 +12,8 @@
     <CoreCompileDependsOn Condition="'$(MSBuildProjectExtension)' != '.contentproj'">$(CoreCompileDependsOn);GeneratePinataOutput</CoreCompileDependsOn>
     <CoreCleanDependsOn Condition="'$(MSBuildProjectExtension)' != '.contentproj'">$(CoreCleanDependsOn);CleanPinataOutput</CoreCleanDependsOn>
     <PlayroomAssemblyFile Condition="'$(PlayroomAssemblyFile)' == ''">$(MSBuildExtensionsPath)\Playroom\Playroom.dll</PlayroomAssemblyFile>
+    <PrismAddPadding Condition = "'$(Platform)' == 'Windows Phone' And '$(PrismAddPadding)' == ''">true</PrismAddPadding>
+    <PrismAddPadding Condition = "'$(PrismAddPadding)' == ''">false</PrismAddPadding>
   </PropertyGroup>
 
   <UsingTask AssemblyFile="$(PlayroomAssemblyFile)" TaskName="Pinata" />
@@ -26,7 +28,8 @@
     <Error Condition="'$(PrismConvertExe)' == ''" Text="PrismConvertExe property must be set" />
 
     <!-- Generate the wrapper class -->
-    <Prism InputFile="%(Prism.Identity)" PngDirectory="$(PrismPngDirectory)" SvgDirectory="$(PrismSvgDirectory)" ConvertExe="$(PrismConvertExe)"/>
+    <Prism InputFile="%(Prism.Identity)" 
+           PngDirectory="$(PrismPngDirectory)" SvgDirectory="$(PrismSvgDirectory)" ConvertExe="$(PrismConvertExe)" Pad="$(PrismAddPadding)"/>
   </Target>
 
   <Target

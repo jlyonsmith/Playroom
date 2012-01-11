@@ -144,8 +144,12 @@ namespace Playroom
                 {
                     DateTime svgFileWriteTime = File.GetLastWriteTime(mapping.SvgFileName);
                     DateTime pngFileWriteTime = File.GetLastWriteTime(mapping.PngFileName);
+                    DateTime pinboardFileWriteTime = File.GetLastWriteTime(prismPinboard.FileName);
 
-                    if (Force || svgFileWriteTime > pngFileWriteTime || prismFileWriteTime > pngFileWriteTime)
+                    if (Force || // We are being forced to update
+                        svgFileWriteTime > pngFileWriteTime || // The .SVG is newer than the .PNG
+                        prismFileWriteTime > pngFileWriteTime || // The .PRISM is newer than the .PNG
+                        pinboardFileWriteTime > pngFileWriteTime) // The .PINBOARD is newer than the .PNG
                     {
                         RectangleInfo rectInfo = prismPinboard.Pinboard.RectInfos.Find(r => r.Name == mapping.RectangleName);
 

@@ -46,8 +46,8 @@ Global
 		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Release|Windows.Build.0 = Release|Any CPU
 		{8CA4A573-F7D6-4889-861F-F15D9D2A1D3C}.Debug|Windows.ActiveCfg = Debug|x86
 		{8CA4A573-F7D6-4889-861F-F15D9D2A1D3C}.Debug|Windows.Build.0 = Debug|x86
-		{8CA4A573-F7D6-4889-861F-F15D9D2A1D3C}.Release|Windows.ActiveCfg = Release|x86
-		{8CA4A573-F7D6-4889-861F-F15D9D2A1D3C}.Release|Windows.Build.0 = Release|x86
+		{8CA4A573-F7D6-4889-861F-F15D9D2A1D3C}.Release|Windows.ActiveCfg = Release|Any CPU
+		{8CA4A573-F7D6-4889-861F-F15D9D2A1D3C}.Release|Windows.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

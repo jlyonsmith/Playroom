@@ -27,6 +27,8 @@ namespace Playroom
 
         public bool Force { get; set; }
 
+        public bool Pad { get; set; }
+
         #region ITask Members
 
         public bool Execute()
@@ -39,6 +41,7 @@ namespace Playroom
             tool.PngDir = new ParsedPath(this.PngDirectory, PathType.Directory);
             tool.SvgDir = new ParsedPath(this.SvgDirectory, PathType.Directory);
             tool.ConvertExe = new ParsedPath(this.ConvertExe, PathType.File);
+            tool.Pad = this.Pad;
             tool.NoLogo = true;
 
             try
