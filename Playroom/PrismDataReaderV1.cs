@@ -115,7 +115,19 @@ namespace Playroom
 
             prismMapping.RectangleName = reader.ReadElementContentAsString("Rectangle", "");
             reader.MoveToContent();
-            prismMapping.SvgFileName = new ParsedPath(reader.ReadElementContentAsString("SvgFile", ""), PathType.File);
+
+            bool empty = reader.IsEmptyElement;
+            
+            reader.ReadStartElement("SvgFile", "");
+
+            if (empty)
+                prismMapping.SvgFileName = null;
+            else
+            {
+                prismMapping.SvgFileName = new ParsedPath(reader.ReadContentAsString(), PathType.File);
+                reader.ReadEndElement();
+            }
+
             reader.MoveToContent();
             prismMapping.PngFileName = new ParsedPath(reader.ReadElementContentAsString("PngFile", ""), PathType.File);
             reader.MoveToContent();

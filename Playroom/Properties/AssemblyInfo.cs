@@ -3,11 +3,11 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Playroom")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Playroom XNA Library")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Playroom")]
-[assembly: AssemblyCopyright("Copyright ©  2011")]
+[assembly: AssemblyCompany("Jamoki, LLC")]
+[assembly: AssemblyProduct("Playroom XNA Tools")]
+[assembly: AssemblyCopyright("Copyright © 2011, Jamoki, LLC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

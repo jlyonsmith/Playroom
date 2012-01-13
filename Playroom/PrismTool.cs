@@ -5,6 +5,8 @@ using System.Text;
 using ToolBelt;
 using System.IO;
 using System.Xml;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace Playroom
 {
@@ -28,7 +30,7 @@ namespace Playroom
         [CommandLineArgument("convert", ShortName = "c", Description = "Path to ImageMagick convert executable", ValueHint = "<convert-exe>")]
         public ParsedPath ConvertExe { get; set; }
 
-        [CommandLineArgument("force", Description = "Force a full update of all PNG's instead of an incremental one", ValueHint = "<bool>")]
+        [CommandLineArgument("force", ShortName = "f", Description = "Force a full update of all PNG's instead of an incremental one", ValueHint = "<bool>")]
         public bool Force { get; set; }
 
         [CommandLineArgument("pad", ShortName = "p", Description = "Pad the width and height of all images to a power of two", ValueHint = "<bool>")]
@@ -101,6 +103,12 @@ namespace Playroom
                 return;
             }
 
+            if (!File.Exists(this.ConvertExe))
+            {
+                Output.Error("Convert tool not found at '{0}'", this.ConvertExe);
+                return;
+            }
+
             if (!Directory.Exists(this.SvgDir))
             {
                 Directory.CreateDirectory(this.SvgDir);
@@ -115,6 +123,9 @@ namespace Playroom
 
             PrismData prismData = ReadPrismData(this.PrismFile);
 
+            if (prismData == null)
+                return;
+
             foreach (var prismPinboard in prismData.Pinboards)
             {
                 prismPinboard.FileName = prismPinboard.FileName.MakeFullPath();
@@ -122,7 +133,9 @@ namespace Playroom
                 foreach (var mapping in prismPinboard.Mappings)
                 {
                     mapping.PngFileName = mapping.PngFileName.MakeFullPath(this.PngDir);
-                    mapping.SvgFileName = mapping.SvgFileName.MakeFullPath(this.SvgDir);
+                    
+                    if (mapping.SvgFileName != null)
+                        mapping.SvgFileName = mapping.SvgFileName.MakeFullPath(this.SvgDir);
                 }
             }
 
@@ -142,7 +155,7 @@ namespace Playroom
             {
                 foreach (var mapping in prismPinboard.Mappings)
                 {
-                    DateTime svgFileWriteTime = File.GetLastWriteTime(mapping.SvgFileName);
+                    DateTime svgFileWriteTime = (mapping.SvgFileName != null ? File.GetLastWriteTime(mapping.SvgFileName) : DateTime.MinValue);
                     DateTime pngFileWriteTime = File.GetLastWriteTime(mapping.PngFileName);
                     DateTime pinboardFileWriteTime = File.GetLastWriteTime(prismPinboard.FileName);
 
@@ -151,16 +164,42 @@ namespace Playroom
                         prismFileWriteTime > pngFileWriteTime || // The .PRISM is newer than the .PNG
                         pinboardFileWriteTime > pngFileWriteTime) // The .PINBOARD is newer than the .PNG
                     {
-                        RectangleInfo rectInfo = prismPinboard.Pinboard.RectInfos.Find(r => r.Name == mapping.RectangleName);
+                        RectangleInfo rectInfo;
 
-                        if (rectInfo == null)
+                        if (mapping.RectangleName == "Screen")
+                            rectInfo = prismPinboard.Pinboard.ScreenRectInfo;
+                        else
                         {
-                            Output.Error("Rectangle '{0}' does not exist in pinboard '{1}'", mapping.RectangleName, prismPinboard.FileName);
-                            return;
+                            rectInfo = prismPinboard.Pinboard.RectInfos.Find(r => r.Name == mapping.RectangleName);
+
+                            if (rectInfo == null)
+                            {
+                                Output.Error("Rectangle '{0}' does not exist in pinboard '{1}'", mapping.RectangleName, prismPinboard.FileName);
+                                return;
+                            }
                         }
 
-                        if (!ConvertSvgToPng(mapping.SvgFileName, mapping.PngFileName, rectInfo.Width, rectInfo.Height, false))
-                            return;
+                        ParsedPath pngFileName = 
+                            (Pad ? 
+                                new ParsedPath(mapping.PngFileName.VolumeDirectoryAndFile + "_Temp" + 
+                                    mapping.PngFileName.Extension, PathType.File) : 
+                                mapping.PngFileName);
+
+                        if (mapping.SvgFileName == null)
+                        {
+                            DrawPng(pngFileName, rectInfo);
+                        }
+                        else
+                        {
+                            if (!ConvertSvgToPng(mapping.SvgFileName, pngFileName, rectInfo.Width, rectInfo.Height, false))
+                                return;
+                        }
+
+                        if (Pad)
+                        {
+                            PadPng(pngFileName, mapping.PngFileName);
+                            File.Delete(pngFileName);
+                        }
                     }
                 }
             }
@@ -170,30 +209,14 @@ namespace Playroom
         {
             Output.Message(MessageImportance.Normal, "'{0}' -> '{1}'", svgFile, pngFile);
 
-            int extentWidth;
-            int extentHeight;
-
-            if (Pad)
-            {
-                extentWidth = RoundUpToPowerOf2(width);
-                extentHeight = RoundUpToPowerOf2(height);
-            }
-            else
-            {
-                extentWidth = width;
-                extentHeight = height;
-            }
-
             string output;
-            string command = string.Format("\"{0}\" -background none \"{1}\" -resize {2}x{3}{4} -extent {5}x{6} \"{7}\"", 
+            string command = string.Format("\"{0}\" \"{1}\" -w {2} -h {3} {4} -o \"{5}\"", 
                 this.ConvertExe, // 0
                 svgFile, // 1
                 width.ToString(), // 2
                 height.ToString(), // 3
-                keepAspectRatio ? "" : "!", // 4
-                extentWidth.ToString(), // 5
-                extentHeight.ToString(), // 6
-                pngFile // 7
+                keepAspectRatio ? "-a" : "", // 4
+                pngFile // 5
                 );
 
             int ret = Command.Run(command, out output);
@@ -205,6 +228,88 @@ namespace Playroom
             }
 
             return true;
+        }
+
+        private void PadPng(string originalPngFileName, string newPngFileName)
+        {
+            using (Bitmap originalImage = new Bitmap(originalPngFileName))
+            {
+                using (Bitmap image = new Bitmap(RoundUpToPowerOf2(originalImage.Width), RoundUpToPowerOf2(originalImage.Height)))
+                {
+                    using (Graphics g = Graphics.FromImage(image))
+                    {
+                        g.DrawImage(originalImage, new Point(0, 0));
+                    }
+
+                    SavePng(image, newPngFileName);
+                }
+            }
+        }
+
+        private void SavePng(Image image, string pngFileName)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                image.Save(stream, ImageFormat.Png);
+
+                using (Stream fileStream = new FileStream(pngFileName, FileMode.Create))
+                {
+                    stream.WriteTo(fileStream);
+                }
+            }
+        }
+
+        private void DrawPng(string pngFileName, RectangleInfo rectInfo)
+        {
+            using (Bitmap image = new Bitmap(rectInfo.Width, rectInfo.Height))
+            {
+                using (Graphics g = Graphics.FromImage(image))
+                {
+                    DrawRectangleInfo(g, rectInfo.Width, rectInfo.Height, rectInfo.Color, rectInfo.Name);
+                }
+
+                SavePng(image, pngFileName);
+            }
+        }
+
+        private void DrawRectangleInfo(Graphics g, int width, int height, Color color, string name)
+        {
+            using (SolidBrush brush = new SolidBrush(color))
+            {
+                g.FillRectangle(brush, 0, 0, width, height);
+            }
+
+            float penWidth = 1.0f;
+            using (Pen blackPen = new Pen(Color.FromArgb(color.A, Color.Black), penWidth))
+            {
+                Rectangle rect = new Rectangle(0, 0, width, height);
+                
+                DrawExactRectangle(g, blackPen, ref rect);
+
+                int margin = 5;
+                RectangleF textRect = new Rectangle(
+                    margin, margin,
+                    Math.Max(width - 2 * margin, 0), Math.Max(height - 2 * margin, 0));
+
+                if (!textRect.IsEmpty)
+                {
+                    using (StringFormat format = new StringFormat())
+                    {
+                        g.DrawString(name, SystemFonts.IconTitleFont, Brushes.Black, textRect);
+                    }
+                }
+            }
+        }
+
+        private void DrawExactRectangle(Graphics g, Pen pen, ref Rectangle rect)
+        {
+            float shrinkAmount = pen.Width / 2;
+
+            g.DrawRectangle(pen,
+                rect.X + shrinkAmount,
+                rect.Y + shrinkAmount,
+                rect.Width - pen.Width,
+                rect.Height - pen.Width);
         }
 
         private PinboardData ReadPinboardData(string fileName)
@@ -273,7 +378,7 @@ namespace Playroom
             }
             catch (CommandLineArgumentException e)
             {
-                Console.WriteLine(e);
+                Output.Error(e.Message);
                 return false;
             }
 
