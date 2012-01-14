@@ -12,11 +12,13 @@ namespace Playroom
         public static string prismAtom;
         public static string mappingsAtom;
         public static string pinboardsAtom;
+        public static string compoundsAtom;
 
         public static PrismData ReadXml(XmlReader reader)
         {
             prismAtom = reader.NameTable.Add("Prism");
             mappingsAtom = reader.NameTable.Add("Mappings");
+            compoundsAtom = reader.NameTable.Add("Compounds");
             pinboardsAtom = reader.NameTable.Add("Pinboards");
 
             reader.MoveToContent();
@@ -73,6 +75,7 @@ namespace Playroom
             prismPinboard.FileName = new ParsedPath(reader.ReadElementContentAsString("File", ""), PathType.File);
             reader.MoveToContent();
 
+            prismPinboard.Compounds = ReadCompoundsElement(reader);
             prismPinboard.Mappings = ReadMappingsElement(reader);
 
             reader.ReadEndElement();
@@ -81,11 +84,60 @@ namespace Playroom
             return prismPinboard;
         }
 
+        private static List<PrismCompound> ReadCompoundsElement(XmlReader reader)
+        {
+            List<PrismCompound> list = new List<PrismCompound>();
+            bool empty = reader.IsEmptyElement;
+
+            reader.ReadStartElement(compoundsAtom);
+            reader.MoveToContent();
+
+            if (!empty)
+            {
+                while (true)
+                {
+                    if (String.ReferenceEquals(reader.Name, compoundsAtom))
+                    {
+                        reader.ReadEndElement();
+                        reader.MoveToContent();
+                        break;
+                    }
+
+                    list.Add(ReadCompoundElement(reader));
+                }
+            }
+
+            return list;
+        }
+
+        private static PrismCompound ReadCompoundElement(XmlReader reader)
+        {
+            PrismCompound prismCompound = new PrismCompound();
+
+            prismCompound.LineNumber = ((IXmlLineInfo)reader).LineNumber;
+
+            reader.ReadStartElement("Compound");
+            reader.MoveToContent();
+
+            prismCompound.RectangleName = reader.ReadElementContentAsString("Rectangle", "");
+            reader.MoveToContent();
+            prismCompound.RowCount = reader.ReadElementContentAsInt("Rows", "");
+            reader.MoveToContent();
+            prismCompound.ColumnCount = reader.ReadElementContentAsInt("Columns", "");
+            reader.MoveToContent();
+            prismCompound.PngFileName = new ParsedPath(reader.ReadElementContentAsString("PngFile", ""), PathType.File);
+            reader.MoveToContent();
+
+            reader.ReadEndElement();
+            reader.MoveToContent();
+
+            return prismCompound;
+        }
+
         private static List<PrismMapping> ReadMappingsElement(XmlReader reader)
         {
             List<PrismMapping> list = new List<PrismMapping>();
 
-            // Read outer <Platforms>
             reader.ReadStartElement(mappingsAtom);
             reader.MoveToContent();
 
@@ -110,14 +162,25 @@ namespace Playroom
         {
             PrismMapping prismMapping = new PrismMapping();
 
+            prismMapping.LineNumber = ((IXmlLineInfo)reader).LineNumber;
+
             reader.ReadStartElement("Mapping");
             reader.MoveToContent();
 
-            prismMapping.RectangleName = reader.ReadElementContentAsString("Rectangle", "");
-            reader.MoveToContent();
-
             bool empty = reader.IsEmptyElement;
-            
+
+            reader.ReadStartElement("Rectangle");
+
+            if (empty)
+                prismMapping.RectangleName = null;
+            else
+            {
+                prismMapping.RectangleName = reader.ReadContentAsString();
+                reader.ReadEndElement();
+            }
+
+            reader.MoveToContent();
+            empty = reader.IsEmptyElement;
             reader.ReadStartElement("SvgFile", "");
 
             if (empty)
