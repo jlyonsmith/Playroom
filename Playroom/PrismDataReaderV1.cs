@@ -125,7 +125,7 @@ namespace Playroom
             reader.MoveToContent();
             prismCompound.ColumnCount = reader.ReadElementContentAsInt("Columns", "");
             reader.MoveToContent();
-            prismCompound.PngFileName = new ParsedPath(reader.ReadElementContentAsString("PngFile", ""), PathType.File);
+            prismCompound.OutputFileName = new ParsedPath(reader.ReadElementContentAsString("OutputFile", ""), PathType.File);
             reader.MoveToContent();
 
             reader.ReadEndElement();
@@ -181,18 +181,18 @@ namespace Playroom
 
             reader.MoveToContent();
             empty = reader.IsEmptyElement;
-            reader.ReadStartElement("SvgFile", "");
+            reader.ReadStartElement("InputFile", "");
 
             if (empty)
-                prismMapping.SvgFileName = null;
+                prismMapping.InputFileName = null;
             else
             {
-                prismMapping.SvgFileName = new ParsedPath(reader.ReadContentAsString(), PathType.File);
+                prismMapping.InputFileName = new ParsedPath(reader.ReadContentAsString(), PathType.File);
                 reader.ReadEndElement();
             }
 
             reader.MoveToContent();
-            prismMapping.PngFileName = new ParsedPath(reader.ReadElementContentAsString("PngFile", ""), PathType.File);
+            prismMapping.OutputFileName = new ParsedPath(reader.ReadElementContentAsString("OutputFile", ""), PathType.File);
             reader.MoveToContent();
 
             reader.ReadEndElement();

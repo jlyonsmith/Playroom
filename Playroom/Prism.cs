@@ -18,14 +18,13 @@ namespace Playroom
 
         #region Public Properties
         [Required]
-        public string InputFile { get; set; }
+        public string PrismFile { get; set; }
         [Required]
-        public string PngDirectory { get; set; }
+        public string InputDirectory { get; set; }
         [Required]
-        public string SvgDirectory { get; set; }
+        public string OutputDirectory { get; set; }
         [Required]
         public string RsvgConvertExe { get; set; }
-        public string InkscapeExe { get; set; }
         public bool Force { get; set; }
         public bool Extend { get; set; }
 
@@ -39,9 +38,9 @@ namespace Playroom
 
             tool.Parser.CommandName = taskName;
             tool.Force = this.Force;
-            tool.PrismFile = new ParsedPath(this.InputFile, PathType.File);
-            tool.PngDir = new ParsedPath(this.PngDirectory, PathType.Directory);
-            tool.SvgDir = new ParsedPath(this.SvgDirectory, PathType.Directory);
+            tool.PrismFile = new ParsedPath(this.PrismFile, PathType.File);
+            tool.OutputDirectory = new ParsedPath(this.OutputDirectory, PathType.Directory);
+            tool.InputDirectory = new ParsedPath(this.InputDirectory, PathType.Directory);
             tool.RsvgConvertExe = new ParsedPath(this.RsvgConvertExe, PathType.File);
             tool.Extend = this.Extend;
             tool.NoLogo = true;

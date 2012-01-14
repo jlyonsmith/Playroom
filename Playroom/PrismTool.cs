@@ -18,11 +18,11 @@ namespace Playroom
         {
             public ImagePlacement(ParsedPath pngFile, Rectangle targetRectangle)
             {
-                this.PngFile = pngFile;
+                this.ImageFile = pngFile;
                 this.TargetRectangle = targetRectangle;
             }
 
-            public ParsedPath PngFile { get; set; }
+            public ParsedPath ImageFile { get; set; }
             public Rectangle TargetRectangle { get; set; }
         }
 
@@ -31,24 +31,21 @@ namespace Playroom
         [DefaultCommandLineArgument("default", Description = "Prism data file", ValueHint = "<prism-file>")]
         public ParsedPath PrismFile { get; set; }
 
-        [CommandLineArgument("pngdir", ShortName = "pd", Description = "Output root directory for PNG files", ValueHint = "<out-dir>",
+        [CommandLineArgument("outdir", ShortName = "od", Description = "Output file root directory", ValueHint = "<out-dir>",
             Initializer = typeof(PrismTool), MethodName = "ParseOutputDir")]
-        public ParsedPath PngDir { get; set; }
+        public ParsedPath OutputDirectory { get; set; }
 
-        [CommandLineArgument("svgdir", ShortName = "sd", Description = "Input root directory for SVG files", ValueHint = "<in-dir>",
+        [CommandLineArgument("indir", ShortName = "id", Description = "Input file root directory", ValueHint = "<in-dir>",
             Initializer = typeof(PrismTool), MethodName = "ParseOutputDir")]
-        public ParsedPath SvgDir { get; set; }
+        public ParsedPath InputDirectory { get; set; }
 
         [CommandLineArgument("rsvg", ShortName = "r", Description = "Path to rsvg-convert.exe binary", ValueHint = "<rsvg-convert-exe>")]
         public ParsedPath RsvgConvertExe { get; set; }
 
-        [CommandLineArgument("inkscape", ShortName = "i", Description = "Path to inkscape.exe binary", ValueHint = "<inkscape-exe>")]
-        public ParsedPath InkscapeExe { get; set; }
-
         [CommandLineArgument("force", ShortName = "f", Description = "Force a full update of all PNG's instead of an incremental one", ValueHint = "<bool>")]
         public bool Force { get; set; }
 
-        [CommandLineArgument("extend", ShortName = "x", Description = "Extend the width and height of all images to a power of two", ValueHint = "<bool>")]
+        [CommandLineArgument("extend", ShortName = "x", Description = "Extend the width and height of all output images to a power of two", ValueHint = "<bool>")]
         public bool Extend { get; set; }
 
         [CommandLineArgument("help", Description = "Displays this help", ShortName = "?")]
@@ -107,8 +104,8 @@ namespace Playroom
                 return;
             }
 
-            this.SvgDir = this.SvgDir.MakeFullPath();
-            this.PngDir = this.PngDir.MakeFullPath();
+            this.InputDirectory = this.InputDirectory.MakeFullPath();
+            this.OutputDirectory = this.OutputDirectory.MakeFullPath();
             this.RsvgConvertExe = this.RsvgConvertExe.MakeFullPath();
             this.PrismFile = this.PrismFile.MakeFullPath();
 
@@ -124,20 +121,14 @@ namespace Playroom
                 return;
             }
 
-            if (this.InkscapeExe != null && !File.Exists(this.InkscapeExe))
+            if (!Directory.Exists(this.InputDirectory))
             {
-                Output.Error("inkscape.exe tool not found at '{0}'", this.InkscapeExe);
-                return;
+                Directory.CreateDirectory(this.InputDirectory);
             }
 
-            if (!Directory.Exists(this.SvgDir))
+            if (!Directory.Exists(this.OutputDirectory))
             {
-                Directory.CreateDirectory(this.SvgDir);
-            }
-
-            if (!Directory.Exists(this.PngDir))
-            {
-                Directory.CreateDirectory(this.PngDir);
+                Directory.CreateDirectory(this.OutputDirectory);
             }
 
             Output.Message(MessageImportance.Low, "Reading prism file '{0}'", this.PrismFile);
@@ -153,22 +144,18 @@ namespace Playroom
 
                 foreach (var prismCompound in prismPinboard.Compounds)
                 {
-                    prismCompound.PngFileName = prismCompound.PngFileName.MakeFullPath(this.PngDir);
+                    prismCompound.OutputFileName = prismCompound.OutputFileName.MakeFullPath(this.OutputDirectory);
                 }
 
                 foreach (var mapping in prismPinboard.Mappings)
                 {
-                    mapping.PngFileName = mapping.PngFileName.MakeFullPath(this.PngDir);
+                    mapping.OutputFileName = mapping.OutputFileName.MakeFullPath(this.OutputDirectory);
+                    mapping.InputFileName = mapping.InputFileName.MakeFullPath(this.InputDirectory);
 
-                    if (mapping.SvgFileName != null)
+                    if (!File.Exists(mapping.InputFileName))
                     {
-                        mapping.SvgFileName = mapping.SvgFileName.MakeFullPath(this.SvgDir);
-
-                        if (!File.Exists(mapping.SvgFileName))
-                        {
-                            Output.Error(PrismFile, mapping.LineNumber, 0, "File '{0}' does not exist", mapping.SvgFileName);
-                            return;
-                        }
+                        Output.Error(PrismFile, mapping.LineNumber, 0, "File '{0}' does not exist", mapping.InputFileName);
+                        return;
                     }
                 }
             }
@@ -193,12 +180,12 @@ namespace Playroom
                 {
                     if (prismMapping.RectangleName == null)
                     {
-                        PrismCompound prismCompound = prismPinboard.Compounds.Find(c => c.PngFileName == prismMapping.PngFileName);
+                        PrismCompound prismCompound = prismPinboard.Compounds.Find(c => c.OutputFileName == prismMapping.OutputFileName);
 
                         if (prismCompound == null)
                         {
                             Output.Error(this.PrismFile, prismMapping.LineNumber, 0, 
-                                "Cannot find a rectangle name for compound PNG file '{0}'", prismMapping.PngFileName);
+                                "Cannot find a rectangle name for compounded output file '{0}'", prismMapping.OutputFileName);
                             return;
                         }
 
@@ -210,24 +197,21 @@ namespace Playroom
                         if (prismCompound.NextRow == prismCompound.RowCount)
                         {
                             Output.Error(this.PrismFile, prismCompound.LineNumber, 0, 
-                                "Too many mappings specified for compound image '{0}'", prismCompound.PngFileName);
+                                "Too many mappings specified for compound image '{0}'", prismCompound.OutputFileName);
                             return;
                         }
 
                         prismMapping.RectangleName = prismCompound.RectangleName;
                         prismMapping.Compound = prismCompound;
-                        prismMapping.PngFileName = new ParsedPath(
-                            prismMapping.PngFileName.VolumeDirectoryAndFile + 
+                        prismMapping.OutputFileName = new ParsedPath(
+                            prismMapping.OutputFileName.VolumeDirectoryAndFile + 
                             "_" + prismCompound.NextColumn + "_" + prismCompound.NextRow + 
-                            prismMapping.PngFileName.Extension, PathType.File);
+                            prismMapping.OutputFileName.Extension, PathType.File);
 
-                        DateTime svgFileWriteTime =
-                            (prismMapping.SvgFileName != null ?
-                            File.GetLastWriteTime(prismMapping.SvgFileName) :
-                            DateTime.MinValue);
+                        DateTime inputFileWriteTime = File.GetLastWriteTime(prismMapping.InputFileName);
 
-                        if (svgFileWriteTime > prismCompound.NewestSvgFileWriteTime)
-                            prismCompound.NewestSvgFileWriteTime = svgFileWriteTime;
+                        if (inputFileWriteTime > prismCompound.NewestInputFileWriteTime)
+                            prismCompound.NewestInputFileWriteTime = inputFileWriteTime;
 
                         prismCompound.Mappings[prismCompound.NextColumn, prismCompound.NextRow] = prismMapping;
 
@@ -261,59 +245,64 @@ namespace Playroom
                         prismCompound.NextColumn != prismCompound.ColumnCount)
                     {
                         Output.Error(this.PrismFile, prismCompound.LineNumber, 0, 
-                            "Compound image '{0}' does not have enough mappings", prismCompound.PngFileName);
+                            "Compound image '{0}' does not have enough mappings", prismCompound.OutputFileName);
                     }
                 }
 
                 foreach (var prismMapping in prismPinboard.Mappings)
                 {
-                    DateTime svgFileWriteTime = 
+                    DateTime inputFileWriteTime = 
                         (prismMapping.Compound != null ? 
-                        prismMapping.Compound.NewestSvgFileWriteTime : 
-                        prismMapping.SvgFileName != null ? 
-                        File.GetLastWriteTime(prismMapping.SvgFileName) : 
-                        DateTime.MinValue);
-                    DateTime pngFileWriteTime = 
+                            prismMapping.Compound.NewestInputFileWriteTime : 
+                            File.GetLastWriteTime(prismMapping.InputFileName));
+                    DateTime outputFileWriteTime = 
                         (prismMapping.Compound != null ?
-                        File.GetLastWriteTime(prismMapping.Compound.PngFileName) :
-                        File.GetLastWriteTime(prismMapping.PngFileName));
+                        File.GetLastWriteTime(prismMapping.Compound.OutputFileName) :
+                        File.GetLastWriteTime(prismMapping.OutputFileName));
                     DateTime pinboardFileWriteTime = File.GetLastWriteTime(prismPinboard.FileName);
 
                     if (Force || // We are being forced to update
-                        svgFileWriteTime > pngFileWriteTime || // The .SVG is newer than the .PNG
-                        prismFileWriteTime > pngFileWriteTime || // The .PRISM is newer than the .PNG
-                        pinboardFileWriteTime > pngFileWriteTime) // The .PINBOARD is newer than the .PNG
+                        inputFileWriteTime > outputFileWriteTime || // The .SVG is newer than the .PNG
+                        prismFileWriteTime > outputFileWriteTime || // The .PRISM is newer than the .PNG
+                        pinboardFileWriteTime > outputFileWriteTime) // The .PINBOARD is newer than the .PNG
                     {
-                        if (prismMapping.SvgFileName == null)
+                        if (String.Compare(prismMapping.InputFileName.Extension, ".png", StringComparison.InvariantCultureIgnoreCase) == 0)
                         {
-                            DrawPng(prismMapping.PngFileName, prismMapping.RectangleInfo);
+                            if (!ScaleImage(prismMapping.InputFileName, prismMapping.RectangleInfo.Size, prismMapping.OutputFileName))
+                                return;
                         }
-                        else
+                        else if (String.Compare(prismMapping.InputFileName.Extension, ".svg", StringComparison.InvariantCultureIgnoreCase) == 0)
                         {
                             if (!ConvertSvgToPng(
-                                prismMapping.SvgFileName, prismMapping.PngFileName,
+                                prismMapping.InputFileName, prismMapping.OutputFileName,
                                 prismMapping.RectangleInfo.Width, prismMapping.RectangleInfo.Height, false))
                             {
                                 return;
                             }
                         }
+                        else
+                        {
+                            Output.Error(PrismFile, prismMapping.LineNumber, 0, 
+                                "Unrecognized input file extension '{0}'", prismMapping.InputFileName.Extension);
+                            return;
+                        }
 
                         if (prismMapping.Compound != null)
-                            prismMapping.Compound.PngNeedsCompounding = true;
+                            prismMapping.Compound.OutputFileNeedsCompounding = true;
 
                         if (Extend)
                         {
                             if (prismMapping.Compound != null)
-                                extendPngFileNames.Add(prismMapping.Compound.PngFileName);
+                                extendPngFileNames.Add(prismMapping.Compound.OutputFileName);
                             else
-                                extendPngFileNames.Add(prismMapping.PngFileName);
+                                extendPngFileNames.Add(prismMapping.OutputFileName);
                         }
                     }
                 }
 
                 foreach (var prismCompound in prismPinboard.Compounds)
                 {
-                    if (!prismCompound.PngNeedsCompounding)
+                    if (!prismCompound.OutputFileNeedsCompounding)
                         continue;
 
                     List<ImagePlacement> placements = new List<ImagePlacement>();
@@ -325,66 +314,99 @@ namespace Playroom
                             PrismMapping prismMapping = prismCompound.Mappings[c, r];
                             RectangleInfo rectInfo = prismMapping.RectangleInfo;
 
-                            placements.Add(new ImagePlacement(prismMapping.PngFileName, 
+                            placements.Add(new ImagePlacement(prismMapping.OutputFileName, 
                                 new Rectangle(c * rectInfo.Width, r * rectInfo.Height, rectInfo.Width, rectInfo.Height)));
                         }
                     }
 
                     if (placements.Count > 0)
-                        CombinePngs(placements, prismCompound.PngFileName);
+                    {
+                        if (!CombineImages(placements, prismCompound.OutputFileName))
+                            return;
+                    }
 
                     foreach (var placement in placements)
                     {
-                        File.Delete(placement.PngFile);
+                        File.Delete(placement.ImageFile);
                     }
                }
             }
 
-            foreach (var pngFileName in extendPngFileNames)
+            foreach (var outputFileName in extendPngFileNames)
             {
-                ParsedPath tempPngFileName = new ParsedPath(
-                    pngFileName.VolumeDirectoryAndFile + "_Temp" + pngFileName.Extension, PathType.File);
-                ExtendPng(pngFileName, tempPngFileName);
-                File.Delete(pngFileName);
-                File.Move(tempPngFileName, pngFileName);
+                ParsedPath tempFileName = new ParsedPath(
+                    outputFileName.VolumeDirectoryAndFile + "_Temp" + outputFileName.Extension, PathType.File);
+                
+                if (!ExtendImage(outputFileName, tempFileName))
+                {
+                    return;
+                }
+
+                try
+                {
+                    File.Delete(outputFileName);
+                }
+                catch (Exception e)
+                {
+                    Output.Error("Unable to delete file '{0}': {2}", outputFileName, e.Message);
+                }
+
+                try
+                {
+                    File.Move(tempFileName, outputFileName);
+                }
+                catch (Exception e)
+                {
+                    Output.Error("Unable to move '{0}' to '{1}': {2}", tempFileName, outputFileName, e.Message);
+                }
             }
         }
 
-        private void CombinePngs(List<ImagePlacement> placements, ParsedPath pngFileName)
+        private bool CombineImages(List<ImagePlacement> placements, ParsedPath imageFileName)
         {
-            int width = 0;
-            int height = 0;
-            StringBuilder sb = new StringBuilder();
-
-            foreach (var placement in placements)
+            try
             {
-                if (placement.TargetRectangle.Right > width)
-                    width = placement.TargetRectangle.Right;
+                int width = 0;
+                int height = 0;
+                StringBuilder sb = new StringBuilder();
 
-                if (placement.TargetRectangle.Bottom > height)
-                    height = placement.TargetRectangle.Bottom;
-
-                sb.AppendFormat(placement.PngFile + Environment.NewLine);
-            }
-
-            using (Bitmap combinedImage = new Bitmap(width, height))
-            {
-                using (Graphics g = Graphics.FromImage(combinedImage))
+                foreach (var placement in placements)
                 {
-                    foreach (var placement in placements)
-                    {
-                        using (Bitmap image = new Bitmap(placement.PngFile))
-                        {
-                            g.DrawImage(image, new Point(placement.TargetRectangle.X, placement.TargetRectangle.Y));
-                        }
-                    }
+                    if (placement.TargetRectangle.Right > width)
+                        width = placement.TargetRectangle.Right;
+
+                    if (placement.TargetRectangle.Bottom > height)
+                        height = placement.TargetRectangle.Bottom;
+
+                    sb.AppendFormat(placement.ImageFile + Environment.NewLine);
                 }
 
-                SavePng(combinedImage, pngFileName);
+                using (Bitmap combinedImage = new Bitmap(width, height))
+                {
+                    using (Graphics g = Graphics.FromImage(combinedImage))
+                    {
+                        foreach (var placement in placements)
+                        {
+                            using (Bitmap image = new Bitmap(placement.ImageFile))
+                            {
+                                g.DrawImage(image, new Point(placement.TargetRectangle.X, placement.TargetRectangle.Y));
+                            }
+                        }
+                    }
+
+                    SavePng(combinedImage, imageFileName);
+                }
+
+                sb.AppendFormat("-> {0}", imageFileName);
+                Output.Message(sb.ToString());
+            }
+            catch (Exception e)
+            {
+                Output.Error("Unable to write compound output file '{0}': {1}", imageFileName, e.Message);
+                return false;
             }
 
-            sb.AppendFormat("-> {0}", pngFileName);
-            Output.Message(sb.ToString());
+            return true;
         }
 
         private bool ConvertSvgToPng(string svgFile, string pngFile, int width, int height, bool keepAspectRatio)
@@ -403,7 +425,8 @@ namespace Playroom
 
             if (ret != 0)
             {
-                Output.Error("Error performing conversion: {0}", output);
+                Output.Error("Error performing conversion of '{0}' into '{1}':  {2}", 
+                    svgFile, pngFile, output);
                 return false;
             }
 
@@ -411,20 +434,56 @@ namespace Playroom
             return true;
         }
 
-        private void ExtendPng(string originalPngFileName, string newPngFileName)
+        private bool ExtendImage(string originalFileName, string newFileName)
         {
-            using (Bitmap originalImage = new Bitmap(originalPngFileName))
+            try
             {
-                using (Bitmap image = new Bitmap(RoundUpToPowerOf2(originalImage.Width), RoundUpToPowerOf2(originalImage.Height)))
+                using (Bitmap originalImage = new Bitmap(originalFileName))
                 {
-                    using (Graphics g = Graphics.FromImage(image))
+                    using (Bitmap image = new Bitmap(RoundUpToPowerOf2(originalImage.Width), RoundUpToPowerOf2(originalImage.Height)))
                     {
-                        g.DrawImage(originalImage, new Point(0, 0));
-                    }
+                        using (Graphics g = Graphics.FromImage(image))
+                        {
+                            g.DrawImage(originalImage, new Point(0, 0));
+                        }
 
-                    SavePng(image, newPngFileName);
+                        SavePng(image, newFileName);
+                    }
                 }
             }
+            catch (Exception e)
+            {
+                Output.Error("Unable to extend file '{0}' into file '{1}': {2}", originalFileName, newFileName, e.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool ScaleImage(string originalFileName, Size newSize, string newFileName)
+        {
+            try
+            {
+                using (Bitmap originalImage = new Bitmap(originalFileName))
+                {
+                    using (Bitmap image = new Bitmap(originalImage, newSize))
+                    {
+                        using (Graphics g = Graphics.FromImage(image))
+                        {
+                            g.DrawImage(originalImage, new Point(0, 0));
+                        }
+
+                        SavePng(image, newFileName);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Output.Error("Unable to scale image file '{0}' to '{1}': {2}", originalFileName, newFileName, e.Message);
+                return false;
+            }
+
+            return true;
         }
 
         private void SavePng(Image image, string pngFileName)
@@ -440,59 +499,6 @@ namespace Playroom
             }
         }
 
-        private void DrawPng(string pngFileName, RectangleInfo rectInfo)
-        {
-            using (Bitmap image = new Bitmap(rectInfo.Width, rectInfo.Height))
-            {
-                using (Graphics g = Graphics.FromImage(image))
-                {
-                    DrawRectangleInfo(g, rectInfo.Width, rectInfo.Height, rectInfo.Color, rectInfo.Name);
-                }
-
-                SavePng(image, pngFileName);
-            }
-        }
-
-        private void DrawRectangleInfo(Graphics g, int width, int height, Color color, string name)
-        {
-            using (SolidBrush brush = new SolidBrush(color))
-            {
-                g.FillRectangle(brush, 0, 0, width, height);
-            }
-
-            float penWidth = 1.0f;
-            using (Pen blackPen = new Pen(Color.FromArgb(color.A, Color.Black), penWidth))
-            {
-                Rectangle rect = new Rectangle(0, 0, width, height);
-                
-                DrawExactRectangle(g, blackPen, ref rect);
-
-                int margin = 5;
-                RectangleF textRect = new Rectangle(
-                    margin, margin,
-                    Math.Max(width - 2 * margin, 0), Math.Max(height - 2 * margin, 0));
-
-                if (!textRect.IsEmpty)
-                {
-                    using (StringFormat format = new StringFormat())
-                    {
-                        g.DrawString(name, SystemFonts.IconTitleFont, Brushes.Black, textRect);
-                    }
-                }
-            }
-        }
-
-        private void DrawExactRectangle(Graphics g, Pen pen, ref Rectangle rect)
-        {
-            float shrinkAmount = pen.Width / 2;
-
-            g.DrawRectangle(pen,
-                rect.X + shrinkAmount,
-                rect.Y + shrinkAmount,
-                rect.Width - pen.Width,
-                rect.Height - pen.Width);
-        }
-
         private PinboardData ReadPinboardData(string fileName)
         {
             PinboardData data = null;
@@ -504,12 +510,9 @@ namespace Playroom
                     data = PinboardDataReaderV1.ReadXml(reader);
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                if (!(ex is XmlException || ex is FormatException))
-                    throw;
-
-                Output.Error("Unable to read Pinboard file '{0}'", fileName);
+                Output.Error("Unable to read file '{0}': {1}", fileName, e.Message);
                 return null;
             }
 
@@ -527,9 +530,9 @@ namespace Playroom
                     data = PrismDataReaderV1.ReadXml(reader);
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Output.Error("Unable to read Pinboard file '{0}': {1}", fileName, ex.Message);
+                Output.Error("Unable to read file '{0}': {1}", fileName, e.Message);
                 return null;
             }
 

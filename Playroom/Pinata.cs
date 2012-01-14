@@ -14,10 +14,10 @@ namespace Playroom
         readonly string taskName = "Pinata";
 
         [Required]
-        public string InputFile { get; set; }
+        public string PinataFile { get; set; }
 
         [Required]
-        public string OutputFile { get; set; }
+        public string CsFile { get; set; }
 
         public bool Force { get; set; }
 
@@ -29,8 +29,8 @@ namespace Playroom
 
             tool.Parser.CommandName = taskName;
             tool.Force = this.Force;
-            tool.PinataFile = new ParsedPath(this.InputFile, PathType.File);
-            tool.OutputFile = new ParsedPath(this.OutputFile, PathType.File);
+            tool.PinataFile = new ParsedPath(this.PinataFile, PathType.File);
+            tool.CsFile = new ParsedPath(this.CsFile, PathType.File);
             tool.NoLogo = true;
 
             try

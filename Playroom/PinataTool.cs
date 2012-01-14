@@ -17,8 +17,8 @@ namespace Playroom
         [DefaultCommandLineArgument("default", Description = "Input Pinata data file", ValueHint = "<pinata-file>")]
         public ParsedPath PinataFile { get; set; }
 
-        [CommandLineArgument("out", ShortName = "o", Description = "Output C# file", ValueHint = "<output-file>")]
-        public ParsedPath OutputFile { get; set; }
+        [CommandLineArgument("csfile", ShortName = "cs", Description = "Output C# file", ValueHint = "<cs-file>")]
+        public ParsedPath CsFile { get; set; }
 
         [CommandLineArgument("help", Description = "Displays this help", ShortName = "?")]
         public bool ShowHelp { get; set; }
@@ -93,7 +93,7 @@ namespace Playroom
 
             if (!doCompile)
             {
-                DateTime outputFileWriteTime = File.GetLastWriteTime(OutputFile);
+                DateTime outputFileWriteTime = File.GetLastWriteTime(CsFile);
                 doCompile = (File.GetLastWriteTime(this.PinataFile) > outputFileWriteTime);
 
                 if (!doCompile)
@@ -128,11 +128,11 @@ namespace Playroom
             TextWriter writer;
             bool closeWriter = true;
 
-            if (!String.IsNullOrEmpty(OutputFile))
+            if (!String.IsNullOrEmpty(CsFile))
             {
-                Output.Message(MessageImportance.Normal, "Writing output file '{0}'", OutputFile);
+                Output.Message(MessageImportance.Normal, "Writing output file '{0}'", CsFile);
 
-                writer = new StreamWriter(OutputFile, false, Encoding.UTF8);
+                writer = new StreamWriter(CsFile, false, Encoding.UTF8);
             }
             else
             {

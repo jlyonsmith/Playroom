@@ -24,13 +24,16 @@
     Name="GeneratePrismOutput"
     Condition="'@(Prism)' != ''">
 
-    <Error Condition="'$(PrismSvgDirectory)' == ''" Text="PrismSvgDirectory property must be set" />
-    <Error Condition="'$(PrismPngDirectory)' == ''" Text="PrismPngDirectory property must be set" />
+    <Error Condition="'$(PrismInputDirectory)' == ''" Text="PrismInputDirectory property must be set" />
+    <Error Condition="'$(PrismOutputDirectory)' == ''" Text="PrismOutputDirectory property must be set" />
     <Error Condition="'$(PrismRsvgConvertExe)' == ''" Text="PrismRsvgConvertExe property must be set" />
 
     <!-- Generate the wrapper class -->
-    <Prism InputFile="%(Prism.Identity)" 
-           PngDirectory="$(PrismPngDirectory)" SvgDirectory="$(PrismSvgDirectory)" RsvgConvertExe="$(PrismRsvgConvertExe)" Extend="$(PrismExtendImages)"/>
+    <Prism PrismFile="%(Prism.Identity)" 
+           OutputDirectory="$(PrismOutputDirectory)" 
+           InputDirectory="$(PrismInputDirectory)" 
+           RsvgConvertExe="$(PrismRsvgConvertExe)" 
+           Extend="$(PrismExtendImages)"/>
   </Target>
 
   <Target
@@ -61,7 +64,7 @@
     DependsOnTargets = "PreparePinataOutputNames">
 
     <!-- Generate the wrapper class -->
-    <Pinata InputFile="%(Pinata.Identity)" OutputFile="%(Pinata.OutputName)" />
+    <Pinata PinataFile="%(Pinata.Identity)" CsFile="%(Pinata.OutputName)" />
   </Target>
 </Project>
 
