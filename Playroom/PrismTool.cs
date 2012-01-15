@@ -398,7 +398,7 @@ namespace Playroom
                 }
 
                 sb.AppendFormat("-> {0}", imageFileName);
-                Output.Message(sb.ToString());
+                Output.Message(MessageImportance.Normal, sb.ToString());
             }
             catch (Exception e)
             {
