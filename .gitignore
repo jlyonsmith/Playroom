@@ -6,7 +6,7 @@
 *.jbf
 *.sdf
 *.cachefile
-~$*.docx
+*.orig
 thumbs.db
 UpgradeLog.xml
 Scratch/
