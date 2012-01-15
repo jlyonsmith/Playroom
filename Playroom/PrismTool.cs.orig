@@ -5,8 +5,11 @@ using System.Text;
 using ToolBelt;
 using System.IO;
 using System.Xml;
+<<<<<<< HEAD
+=======
 using System.Drawing;
 using System.Drawing.Imaging;
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
 
 namespace Playroom
 {
@@ -14,6 +17,8 @@ namespace Playroom
     [CommandLineTitle("Prism Tool")]
     public class PrismTool : ITool, IProcessCommandLine
     {
+<<<<<<< HEAD
+=======
         private class ImagePlacement
         {
             public ImagePlacement(ParsedPath pngFile, Rectangle targetRectangle)
@@ -26,6 +31,7 @@ namespace Playroom
             public Rectangle TargetRectangle { get; set; }
         }
 
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
         private bool runningFromCommandLine = false;
 
         [DefaultCommandLineArgument("default", Description = "Prism data file", ValueHint = "<prism-file>")]
@@ -39,6 +45,16 @@ namespace Playroom
             Initializer = typeof(PrismTool), MethodName = "ParseOutputDir")]
         public ParsedPath SvgDir { get; set; }
 
+<<<<<<< HEAD
+        [CommandLineArgument("convert", ShortName = "c", Description = "Path to ImageMagick convert executable", ValueHint = "<convert-exe>")]
+        public ParsedPath ConvertExe { get; set; }
+
+        [CommandLineArgument("force", Description = "Force a full update of all PNG's instead of an incremental one", ValueHint = "<bool>")]
+        public bool Force { get; set; }
+
+        [CommandLineArgument("pad", ShortName = "p", Description = "Pad the width and height of all images to a power of two", ValueHint = "<bool>")]
+        public bool Pad { get; set; }
+=======
         [CommandLineArgument("rsvg", ShortName = "r", Description = "Path to rsvg-convert.exe binary", ValueHint = "<rsvg-convert-exe>")]
         public ParsedPath RsvgConvertExe { get; set; }
 
@@ -50,6 +66,7 @@ namespace Playroom
 
         [CommandLineArgument("extend", ShortName = "x", Description = "Extend the width and height of all images to a power of two", ValueHint = "<bool>")]
         public bool Extend { get; set; }
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
 
         [CommandLineArgument("help", Description = "Displays this help", ShortName = "?")]
         public bool ShowHelp { get; set; }
@@ -109,7 +126,11 @@ namespace Playroom
 
             this.SvgDir = this.SvgDir.MakeFullPath();
             this.PngDir = this.PngDir.MakeFullPath();
+<<<<<<< HEAD
+            this.ConvertExe = this.ConvertExe.MakeFullPath();
+=======
             this.RsvgConvertExe = this.RsvgConvertExe.MakeFullPath();
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
             this.PrismFile = this.PrismFile.MakeFullPath();
 
             if (!File.Exists(this.PrismFile))
@@ -118,6 +139,8 @@ namespace Playroom
                 return;
             }
 
+<<<<<<< HEAD
+=======
             if (!File.Exists(this.RsvgConvertExe))
             {
                 Output.Error("rsvg-convert.exe tool not found at '{0}'", this.RsvgConvertExe);
@@ -130,6 +153,7 @@ namespace Playroom
                 return;
             }
 
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
             if (!Directory.Exists(this.SvgDir))
             {
                 Directory.CreateDirectory(this.SvgDir);
@@ -144,13 +168,22 @@ namespace Playroom
 
             PrismData prismData = ReadPrismData(this.PrismFile);
 
+<<<<<<< HEAD
+=======
             if (prismData == null)
                 return;
 
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
             foreach (var prismPinboard in prismData.Pinboards)
             {
                 prismPinboard.FileName = prismPinboard.FileName.MakeFullPath();
 
+<<<<<<< HEAD
+                foreach (var mapping in prismPinboard.Mappings)
+                {
+                    mapping.PngFileName = mapping.PngFileName.MakeFullPath(this.PngDir);
+                    mapping.SvgFileName = mapping.SvgFileName.MakeFullPath(this.SvgDir);
+=======
                 foreach (var prismCompound in prismPinboard.Compounds)
                 {
                     prismCompound.PngFileName = prismCompound.PngFileName.MakeFullPath(this.PngDir);
@@ -170,6 +203,7 @@ namespace Playroom
                             return;
                         }
                     }
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
                 }
             }
 
@@ -185,6 +219,60 @@ namespace Playroom
                     return;
             }
 
+<<<<<<< HEAD
+            foreach (var prismPinboard in prismData.Pinboards)
+            {
+                foreach (var mapping in prismPinboard.Mappings)
+                {
+                    DateTime svgFileWriteTime = File.GetLastWriteTime(mapping.SvgFileName);
+                    DateTime pngFileWriteTime = File.GetLastWriteTime(mapping.PngFileName);
+
+                    if (Force || svgFileWriteTime > pngFileWriteTime || prismFileWriteTime > pngFileWriteTime)
+                    {
+                        RectangleInfo rectInfo = prismPinboard.Pinboard.RectInfos.Find(r => r.Name == mapping.RectangleName);
+
+                        if (rectInfo == null)
+                        {
+                            Output.Error("Rectangle '{0}' does not exist in pinboard '{1}'", mapping.RectangleName, prismPinboard.FileName);
+                            return;
+                        }
+
+                        if (!ConvertSvgToPng(mapping.SvgFileName, mapping.PngFileName, rectInfo.Width, rectInfo.Height, false))
+                            return;
+                    }
+                }
+            }
+        }
+
+        private bool ConvertSvgToPng(string svgFile, string pngFile, int width, int height, bool keepAspectRatio)
+        {
+            Output.Message(MessageImportance.Normal, "'{0}' -> '{1}'", svgFile, pngFile);
+
+            int extentWidth;
+            int extentHeight;
+
+            if (Pad)
+            {
+                extentWidth = RoundUpToPowerOf2(width);
+                extentHeight = RoundUpToPowerOf2(height);
+            }
+            else
+            {
+                extentWidth = width;
+                extentHeight = height;
+            }
+
+            string output;
+            string command = string.Format("\"{0}\" -background none \"{1}\" -resize {2}x{3}{4} -extent {5}x{6} \"{7}\"", 
+                this.ConvertExe, // 0
+                svgFile, // 1
+                width.ToString(), // 2
+                height.ToString(), // 3
+                keepAspectRatio ? "" : "!", // 4
+                extentWidth.ToString(), // 5
+                extentHeight.ToString(), // 6
+                pngFile // 7
+=======
             List<ParsedPath> extendPngFileNames = new List<ParsedPath>();
 
             foreach (var prismPinboard in prismData.Pinboards)
@@ -397,6 +485,7 @@ namespace Playroom
                 height.ToString(), // 3
                 keepAspectRatio ? "-a" : "", // 4
                 pngFile // 5
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
                 );
 
             int ret = Command.Run(command, out output);
@@ -407,6 +496,11 @@ namespace Playroom
                 return false;
             }
 
+<<<<<<< HEAD
+            return true;
+        }
+
+=======
             Output.Message(MessageImportance.Normal, "'{0}' -> '{1}'", svgFile, pngFile);
             return true;
         }
@@ -493,6 +587,7 @@ namespace Playroom
                 rect.Height - pen.Width);
         }
 
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
         private PinboardData ReadPinboardData(string fileName)
         {
             PinboardData data = null;
@@ -559,7 +654,11 @@ namespace Playroom
             }
             catch (CommandLineArgumentException e)
             {
+<<<<<<< HEAD
+                Console.WriteLine(e);
+=======
                 Output.Error(e.Message);
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
                 return false;
             }
 

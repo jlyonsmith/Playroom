@@ -12,10 +12,14 @@
     <CoreCompileDependsOn Condition="'$(MSBuildProjectExtension)' != '.contentproj'">$(CoreCompileDependsOn);GeneratePinataOutput</CoreCompileDependsOn>
     <CoreCleanDependsOn Condition="'$(MSBuildProjectExtension)' != '.contentproj'">$(CoreCleanDependsOn);CleanPinataOutput</CoreCleanDependsOn>
     <PlayroomAssemblyFile Condition="'$(PlayroomAssemblyFile)' == ''">$(MSBuildExtensionsPath)\Playroom\Playroom.dll</PlayroomAssemblyFile>
+<<<<<<< HEAD
+  </PropertyGroup>
+=======
     <PrismExtendImages Condition = "'$(Platform)' == 'Windows Phone' And '$(PrismExtendImages)' == ''">true</PrismExtendImages>
     <PrismExtendImages Condition = "'$(PrismExtendImages)' == ''">false</PrismExtendImages>
   
 </PropertyGroup>
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
 
   <UsingTask AssemblyFile="$(PlayroomAssemblyFile)" TaskName="Pinata" />
   <UsingTask Condition="'$(MSBuildProjectExtension)' == '.contentproj'" AssemblyFile="$(PlayroomAssemblyFile)" TaskName="Prism" />
@@ -26,11 +30,18 @@
 
     <Error Condition="'$(PrismSvgDirectory)' == ''" Text="PrismSvgDirectory property must be set" />
     <Error Condition="'$(PrismPngDirectory)' == ''" Text="PrismPngDirectory property must be set" />
+<<<<<<< HEAD
+    <Error Condition="'$(PrismConvertExe)' == ''" Text="PrismConvertExe property must be set" />
+
+    <!-- Generate the wrapper class -->
+    <Prism InputFile="%(Prism.Identity)" PngDirectory="$(PrismPngDirectory)" SvgDirectory="$(PrismSvgDirectory)" ConvertExe="$(PrismConvertExe)"/>
+=======
     <Error Condition="'$(PrismRsvgConvertExe)' == ''" Text="PrismRsvgConvertExe property must be set" />
 
     <!-- Generate the wrapper class -->
     <Prism InputFile="%(Prism.Identity)" 
            PngDirectory="$(PrismPngDirectory)" SvgDirectory="$(PrismSvgDirectory)" RsvgConvertExe="$(PrismRsvgConvertExe)" Extend="$(PrismExtendImages)"/>
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
   </Target>
 
   <Target

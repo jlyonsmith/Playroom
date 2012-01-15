@@ -9,6 +9,25 @@ namespace Playroom
 {
     public class Prism : ITask
     {
+<<<<<<< HEAD
+        IBuildEngine buildEngine;
+        ITaskHost taskHost;
+        readonly string taskName = "Prism";
+
+        [Required]
+        public string InputFile { get; set; }
+
+        [Required]
+        public string PngDirectory { get; set; }
+
+        [Required]
+        public string SvgDirectory { get; set; }
+
+        [Required]
+        public string ConvertExe { get; set; }
+
+        public bool Force { get; set; }
+=======
         #region Fields
         private IBuildEngine buildEngine;
         private ITaskHost taskHost;
@@ -30,6 +49,7 @@ namespace Playroom
         public bool Extend { get; set; }
 
         #endregion
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
 
         #region ITask Members
 
@@ -42,8 +62,12 @@ namespace Playroom
             tool.PrismFile = new ParsedPath(this.InputFile, PathType.File);
             tool.PngDir = new ParsedPath(this.PngDirectory, PathType.Directory);
             tool.SvgDir = new ParsedPath(this.SvgDirectory, PathType.Directory);
+<<<<<<< HEAD
+            tool.ConvertExe = new ParsedPath(this.ConvertExe, PathType.File);
+=======
             tool.RsvgConvertExe = new ParsedPath(this.RsvgConvertExe, PathType.File);
             tool.Extend = this.Extend;
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
             tool.NoLogo = true;
 
             try

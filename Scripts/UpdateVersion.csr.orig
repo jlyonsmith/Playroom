@@ -1,3 +1,268 @@
+<<<<<<< HEAD
+/// <script>
+///  <vs>10.0</vs>
+///  <clr>4.0</clr>
+///  <fx>4.0</fx>
+///  <refs>
+///   <ref>$(FxReferenceAssemblyPath)Microsoft.CSharp.dll</ref>
+///   <ref>$(FxReferenceAssemblyPath)System.Core.dll</ref>
+///   <ref>$(FxReferenceAssemblyPath)System.dll</ref>
+///   <ref>$(FxReferenceAssemblyPath)System.Xml.dll</ref>
+///   <ref>$(CodeRunnerPath)CodeRunner.dll</ref>
+///   <ref>$(CodeRunnerPath)ToolBelt.dll</ref>
+///  </refs>
+/// </script>
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.IO;
+using CodeRunner;
+using ToolBelt;
+
+public class Program
+{
+    private const string projectName = "Playroom";
+    private const int projectStartYear = 2011;
+    
+    // NOTE: Update this list of files as necessary, e.g. new projects are added to the solution
+    private static string[] fileList = 
+    {
+        @"Playroom\Properties\AssemblyInfo.cs", 
+        @"Pinata\Properties\AssemblyInfo.cs", 
+        @"Prism\Properties\AssemblyInfo.cs", 
+    };
+
+	public static int Main(string[] args)
+	{
+        if (args.Length != 0 && (args[0] == "-h" || args[0] == "-?"))
+		{
+            Console.WriteLine(@"Usage: {0} [stepping]
+
+Name of solution parent directory must be the major minor version number. 
+The stepping value can be used to generate inter-day builds.", 
+				ScriptEnvironment.ScriptPath.FileAndExtension);
+			return 0;
+		}
+
+        ParsedPath projectRoot = GetProjectRootDirectory();
+
+		if (projectRoot == null)
+		{
+            ConsoleUtility.WriteMessage(MessageType.Error, "Cannot find .sln file to determine project root.");
+			return 1;
+		}
+
+		Console.WriteLine("Project root is '{0}'", projectRoot);
+
+        // Create all the different version bits
+        string versionMajorMinor = projectRoot.LastDirectoryNoSeparator;
+
+		if (!Regex.IsMatch(versionMajorMinor, @"[0-9]{1,2}\.[0-9]{1}"))
+		{
+			ConsoleUtility.WriteMessage(MessageType.Error,
+				@"Version must be in the form <major>.<minor> where major and minor are numbers and minor is 0 to 9.
+Please correct the solution files parent folder name.");
+			return 0;
+		}
+        
+        string versionStepping = args.Length == 1 ? args[0] : "0";
+
+
+        if (!Regex.IsMatch(versionStepping, @"[0-9]|[1-9][0-9]"))
+        {
+            ConsoleUtility.WriteMessage(MessageType.Error,
+                "Stepping must be in the range 0 - 99 and not start with zero");
+            return 0;
+        }
+
+		string versionBuild = JDate(projectStartYear);
+        string versionBuildStepping = String.Format("{0}.{1}", versionBuild, versionStepping);
+		string version = String.Format("{0}.{1}", versionMajorMinor, versionBuildStepping);
+		string versionCsv = version.Replace('.', ',');
+		string versionMajorMinorBuild = String.Format("{0}.{1}", versionMajorMinor, versionBuild);
+
+        Console.WriteLine("New version is {0}", version);
+
+		Console.WriteLine("Versions updated:");
+		
+		foreach (string file in fileList)
+		{
+            string path = projectRoot + file;
+
+            if (!File.Exists(path))
+            {
+                ConsoleUtility.WriteMessage(MessageType.Error, "File '{0}' does not exist", path);
+                break;
+            }
+
+			switch (Path.GetExtension(file))
+			{
+				case ".cs":
+                UpdateCSVersion(path, version, version);
+					break;
+					
+				case ".rc":
+					UpdateRCVersion(path, version, versionCsv);
+					break;
+
+				case ".wxi":
+					UpdateWxiVersion(path, versionMajorMinor, versionBuildStepping);
+					break;
+
+				case ".wixproj":
+				case ".proj":
+					UpdateProjVersion(path, version);
+					break;
+
+				case ".vsixmanifest":
+					UpdateVsixManifestVersion(path, version);
+					break;
+
+                case ".config":
+                    UpdateConfigVersion(path, versionMajorMinor);
+                    break;
+			}
+
+			Console.WriteLine("  {0}{1}", projectRoot, file);
+		}
+		
+		return 0;
+	}
+
+    static void UpdateCSVersion(string file, string version, string versionMajorMinorFull)
+	{
+		string contents = File.ReadAllText(file);
+
+		// Note that we use named substitutions because otherwise Regex gets confused.  "$1" + "1.0.0.0" = "$11.0.0.0".  There is no $11.
+		
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'AssemblyVersion\("")([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?'after'""\))",
+            "${before}" + versionMajorMinorFull + "${after}");
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'AssemblyFileVersion\("")([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?'after'""\))",
+			"${before}" + version + "${after}");
+
+		File.WriteAllText(file, contents);
+	}
+
+	static void UpdateRCVersion(string file, string version, string versionCsv)
+	{
+		string contents = File.ReadAllText(file);
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'FILEVERSION )([0-9]+,[0-9]+,[0-9]+,[0-9]+)",
+			"${before}" + versionCsv);
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'PRODUCTVERSION )([0-9]+,[0-9]+,[0-9]+,[0-9]+)",
+			"${before}" + versionCsv);
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'""FileVersion"",[ \t]*"")([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?'after'"")",
+			"${before}" + version + "${after}");
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'""ProductVersion"",[ \t]*"")([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?'after'"")",
+			"${before}" + version + "${after}");
+
+		File.WriteAllText(file, contents);
+	}
+
+	static void UpdateWxiVersion(string file, string versionMajorMinor, string versionBuildStepping)
+	{
+		string contents = File.ReadAllText(file);
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'ProductVersion = "")([0-9]+\.[0-9]+)(?'after'"")",
+			"${before}" + versionMajorMinor + "${after}");
+
+		contents = Regex.Replace(
+			contents,
+            @"(?'before'ProductBuild = "")([0-9]+\.([0-9]|[1-9][0-9]))(?'after'"")",
+			"${before}" + versionBuildStepping + "${after}");
+
+		File.WriteAllText(file, contents);
+	}
+
+    static void UpdateConfigVersion(string file, string versionMajorMinor)
+    {
+        // In .config files we are looking for the section that contains an assembly reference 
+        // for the section handler.
+        string contents = File.ReadAllText(file);
+
+        contents = Regex.Replace(
+            contents,
+            @"(?'before', +Version=)\d+\.\d+(?'after'\.0\.0 *,)",
+            "${before}" + versionMajorMinor + "${after}");
+
+        File.WriteAllText(file, contents);
+    }
+
+	static void UpdateProjVersion(string file, string version)
+	{
+		string contents = File.ReadAllText(file);
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'<OutputName>" + projectName + @"_)([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?'after'</OutputName>)",
+			"${before}" + version + "${after}");
+
+		File.WriteAllText(file, contents);
+	}
+
+	static void UpdateVsixManifestVersion(string file, string version)
+	{
+		string contents = File.ReadAllText(file);
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'<Version>)([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?'after'</Version>)",
+			"${before}" + version + "${after}");
+
+		File.WriteAllText(file, contents);
+	}
+
+	static private ParsedPath GetProjectRootDirectory()
+	{
+		try
+		{
+			string rootFile = "*.sln";
+
+			FileInfo[] files = DirectoryUtility.GetFiles(rootFile, SearchScope.RecurseParentDirectories);
+
+			if (files.Length == 0)
+			{
+				Console.WriteLine("Unable to find file '{0}' to determine project root", rootFile);
+				return null;
+			}
+
+            return new ParsedPath(files[0].DirectoryName, PathType.Directory);
+			// The root directory of the drive will never be the project root
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	static private string JDate(int startYear)
+	{
+		DateTime today = DateTime.Today;
+		
+		return (((today.Year - startYear + 1) * 10000) + (today.Month * 100) + today.Day).ToString();
+	}
+}
+=======
 /// <script>
 ///  <vs>10.0</vs>
 ///  <clr>4.0</clr>
@@ -262,3 +527,4 @@ Please correct the solution files parent folder name.");
 		return (((today.Year - startYear + 1) * 10000) + (today.Month * 100) + today.Day).ToString();
 	}
 }
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672

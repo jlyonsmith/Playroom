@@ -123,7 +123,11 @@ namespace ToyBox
                 this.Font, 
                 this.Text,
                 new Vector2(Position.X, Position.Y),
+<<<<<<< HEAD
+                Color.White,
+=======
                 this.TintColor,
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
                 this.Rotation,
                 Vector2.Zero,
                 this.Scale,

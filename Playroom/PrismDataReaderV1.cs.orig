@@ -12,13 +12,19 @@ namespace Playroom
         public static string prismAtom;
         public static string mappingsAtom;
         public static string pinboardsAtom;
+<<<<<<< HEAD
+=======
         public static string compoundsAtom;
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
 
         public static PrismData ReadXml(XmlReader reader)
         {
             prismAtom = reader.NameTable.Add("Prism");
             mappingsAtom = reader.NameTable.Add("Mappings");
+<<<<<<< HEAD
+=======
             compoundsAtom = reader.NameTable.Add("Compounds");
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
             pinboardsAtom = reader.NameTable.Add("Pinboards");
 
             reader.MoveToContent();
@@ -75,7 +81,10 @@ namespace Playroom
             prismPinboard.FileName = new ParsedPath(reader.ReadElementContentAsString("File", ""), PathType.File);
             reader.MoveToContent();
 
+<<<<<<< HEAD
+=======
             prismPinboard.Compounds = ReadCompoundsElement(reader);
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
             prismPinboard.Mappings = ReadMappingsElement(reader);
 
             reader.ReadEndElement();
@@ -84,6 +93,8 @@ namespace Playroom
             return prismPinboard;
         }
 
+<<<<<<< HEAD
+=======
         private static List<PrismCompound> ReadCompoundsElement(XmlReader reader)
         {
             List<PrismCompound> list = new List<PrismCompound>();
@@ -134,10 +145,15 @@ namespace Playroom
             return prismCompound;
         }
 
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
         private static List<PrismMapping> ReadMappingsElement(XmlReader reader)
         {
             List<PrismMapping> list = new List<PrismMapping>();
 
+<<<<<<< HEAD
+            // Read outer <Platforms>
+=======
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
             reader.ReadStartElement(mappingsAtom);
             reader.MoveToContent();
 
@@ -162,6 +178,14 @@ namespace Playroom
         {
             PrismMapping prismMapping = new PrismMapping();
 
+<<<<<<< HEAD
+            reader.ReadStartElement("Mapping");
+            reader.MoveToContent();
+
+            prismMapping.RectangleName = reader.ReadElementContentAsString("Rectangle", "");
+            reader.MoveToContent();
+            prismMapping.SvgFileName = new ParsedPath(reader.ReadElementContentAsString("SvgFile", ""), PathType.File);
+=======
             prismMapping.LineNumber = ((IXmlLineInfo)reader).LineNumber;
 
             reader.ReadStartElement("Mapping");
@@ -191,6 +215,7 @@ namespace Playroom
                 reader.ReadEndElement();
             }
 
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
             reader.MoveToContent();
             prismMapping.PngFileName = new ParsedPath(reader.ReadElementContentAsString("PngFile", ""), PathType.File);
             reader.MoveToContent();

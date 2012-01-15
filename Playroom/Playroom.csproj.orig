@@ -62,10 +62,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
+    <None Include="Playroom.targets" />
+    <None Include="Playroom.Test.targets" />
+=======
     <None Include="Playroom.targets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
