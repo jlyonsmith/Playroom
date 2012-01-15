@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- 
+    Instructions for use:
+    
+    - Include this file at the end of the .csproj or .contentproj 
+    - Add a <Pinata Include="MyPinataFile.pinata" /> for each .pinata file
+    - Add a <Prism Include="MyPrismFile.prism" /> for each .prism file
+  -->
+  <PropertyGroup>
+    <CoreCompileDependsOn Condition="'$(MSBuildProjectExtension)' == '.contentproj'">GeneratePrismOutput;$(CoreCompileDependsOn)</CoreCompileDependsOn>
+    <CoreCompileDependsOn Condition="'$(MSBuildProjectExtension)' != '.contentproj'">$(CoreCompileDependsOn);GeneratePinataOutput</CoreCompileDependsOn>
+    <CoreCleanDependsOn Condition="'$(MSBuildProjectExtension)' != '.contentproj'">$(CoreCleanDependsOn);CleanPinataOutput</CoreCleanDependsOn>
+    <PlayroomAssemblyFile Condition="'$(PlayroomAssemblyFile)' == ''">$(MSBuildExtensionsPath)\Playroom\Playroom.dll</PlayroomAssemblyFile>
+<<<<<<< HEAD
+  </PropertyGroup>
+=======
+    <PrismExtendImages Condition = "'$(Platform)' == 'Windows Phone' And '$(PrismExtendImages)' == ''">true</PrismExtendImages>
+    <PrismExtendImages Condition = "'$(PrismExtendImages)' == ''">false</PrismExtendImages>
+  
+</PropertyGroup>
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
+
+  <UsingTask AssemblyFile="$(PlayroomAssemblyFile)" TaskName="Pinata" />
+  <UsingTask Condition="'$(MSBuildProjectExtension)' == '.contentproj'" AssemblyFile="$(PlayroomAssemblyFile)" TaskName="Prism" />
+
+  <Target
+    Name="GeneratePrismOutput"
+    Condition="'@(Prism)' != ''">
+
+    <Error Condition="'$(PrismSvgDirectory)' == ''" Text="PrismSvgDirectory property must be set" />
+    <Error Condition="'$(PrismPngDirectory)' == ''" Text="PrismPngDirectory property must be set" />
+<<<<<<< HEAD
+    <Error Condition="'$(PrismConvertExe)' == ''" Text="PrismConvertExe property must be set" />
+
+    <!-- Generate the wrapper class -->
+    <Prism InputFile="%(Prism.Identity)" PngDirectory="$(PrismPngDirectory)" SvgDirectory="$(PrismSvgDirectory)" ConvertExe="$(PrismConvertExe)"/>
+=======
+    <Error Condition="'$(PrismRsvgConvertExe)' == ''" Text="PrismRsvgConvertExe property must be set" />
+
+    <!-- Generate the wrapper class -->
+    <Prism InputFile="%(Prism.Identity)" 
+           PngDirectory="$(PrismPngDirectory)" SvgDirectory="$(PrismSvgDirectory)" RsvgConvertExe="$(PrismRsvgConvertExe)" Extend="$(PrismExtendImages)"/>
+>>>>>>> 776388b7c6e86cdbb1ccb8c8d34ec296ff7bf672
+  </Target>
+
+  <Target
+    Name="CleanPinataOutput"
+    Condition="'@(Pinata)' != '' And '$(MSBuildProjectExtension)' != '.contentproj'"
+    DependsOnTargets = "PreparePinataOutputNames">
+    <Delete
+      Files="@(Pinata->'%(OutputName)')"
+      TreatErrorsAsWarnings="true"/>
+  </Target>
+
+  <Target Name="PreparePinataOutputNames">
+    <ItemGroup>
+      <!-- Add metadata to the pinata file item list for the output file names -->
+      <Pinata>
+        <OutputName Condition="'%(Pinata.OutputName)' == ''">$(IntermediateOutputPath)Rectangles.cs</OutputName>
+      </Pinata>
+      <!-- Add generated file to list of sources to be compiled-->
+      <Compile Include="%(Pinata.OutputName)" />
+    </ItemGroup>
+    <Message Text="@(Pinata)" Importance="normal"/>
+    <Message Text="@(Pinata->'%(OutputName)')" Importance="normal"/>
+  </Target>
+
+  <Target
+    Name="GeneratePinataOutput"
+    Condition="'@(Pinata)' != ''"
+    DependsOnTargets = "PreparePinataOutputNames">
+
+    <!-- Generate the wrapper class -->
+    <Pinata InputFile="%(Pinata.Identity)" OutputFile="%(Pinata.OutputName)" />
+  </Target>
+</Project>
+
