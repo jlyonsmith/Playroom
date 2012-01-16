@@ -120,7 +120,7 @@ namespace ToyBox
 
         private void RaiseMouseButtonReleased(MouseButtons buttons)
         {
-            if (ButtonPressed != null)
+            if (ButtonReleased != null)
             {
                 ButtonReleased(buttons);
             }

@@ -39,23 +39,26 @@ namespace Playroom
         private static List<RectangleInfo> ReadRectanglesXml(XmlReader reader)
         {
             List<RectangleInfo> list = new List<RectangleInfo>();
+            bool empty = reader.IsEmptyElement;
 
-            // Read <Rectangles>
             reader.ReadStartElement(rectanglesAtom);
             reader.MoveToContent();
 
-            while (true)
+            if (!empty)
             {
-                if (String.ReferenceEquals(reader.Name, rectanglesAtom))
+                while (true)
                 {
-                    reader.ReadEndElement();
-                    reader.MoveToContent();
-                    break;
-                }
+                    if (String.ReferenceEquals(reader.Name, rectanglesAtom))
+                    {
+                        reader.ReadEndElement();
+                        reader.MoveToContent();
+                        break;
+                    }
 
-                RectangleInfo rectInfo = ReadRectangleXml(reader);
-                
-                list.Add(rectInfo);
+                    RectangleInfo rectInfo = ReadRectangleXml(reader);
+
+                    list.Add(rectInfo);
+                }
             }
 
             return list;

@@ -4,22 +4,22 @@ using Microsoft.Xna.Framework;
 
 namespace ToyBox
 {
-    public class GameStateManager : DrawableGameComponent, IGameStateService, IDisposable
+    public class GameScreenManager : DrawableGameComponent, IGameScreenService, IDisposable
     {
         private bool disposeDroppedStates;
-        private List<KeyValuePair<IGameState, GameStateModality>> gameStates;
+        private List<KeyValuePair<IGameScreen, GameScreenModality>> gameStates;
         private List<IUpdateable> updateableStates;
         private List<IDrawable> drawableStates;
 
-        public GameStateManager(Game game) :
+        public GameScreenManager(Game game) :
             base(game)
         {
-            this.gameStates = new List<KeyValuePair<IGameState, GameStateModality>>();
+            this.gameStates = new List<KeyValuePair<IGameScreen, GameScreenModality>>();
             this.updateableStates = new List<IUpdateable>();
             this.drawableStates = new List<IDrawable>();
 
             if (game.Services != null)
-                game.Services.AddService(typeof(IGameStateService), this);
+                game.Services.AddService(typeof(IGameScreenService), this);
         }
 
         protected override void Dispose(bool disposing)
@@ -30,7 +30,7 @@ namespace ToyBox
 
                 if (this.Game.Services != null)
                 {
-                    this.Game.Services.RemoveService(typeof(IGameStateService));
+                    this.Game.Services.RemoveService(typeof(IGameScreenService));
                 }
             }
 
@@ -59,35 +59,35 @@ namespace ToyBox
             }
         }
 
-        public void Push(IGameState state)
+        public void Push(IGameScreen screen)
         {
-            Push(state, GameStateModality.Exclusive);
+            Push(screen, GameScreenModality.Exclusive);
         }
 
-        public void Push(IGameState state, GameStateModality modality)
+        public void Push(IGameScreen screen, GameScreenModality modality)
         {
             Pause();
 
-            // If this game state is modal, take all game states that came before it
+            // If this game screen is modal, take all game screens that came before it
             // from the draw and update lists
-            if (modality == GameStateModality.Exclusive)
+            if (modality == GameScreenModality.Exclusive)
             {
                 this.drawableStates.Clear();
                 this.updateableStates.Clear();
             }
 
-            // Add the new state to the update and draw lists if it implements
+            // Add the new screen to the update and draw lists if it implements
             // the required interfaces
-            this.gameStates.Add(new KeyValuePair<IGameState, GameStateModality>(state, modality));
-            AppendToUpdateableAndDrawableList(state);
+            this.gameStates.Add(new KeyValuePair<IGameScreen, GameScreenModality>(screen, modality));
+            AppendToUpdateableAndDrawableList(screen);
 
             // State is set, now try to enter it
 #if DEBUG
-            state.Enter();
+            screen.Enter();
 #else
             try
             {
-                state.Enter();
+                screen.Enter();
             }
             catch (Exception)
             {
@@ -97,26 +97,26 @@ namespace ToyBox
 #endif
         }
 
-        public IGameState Pop()
+        public IGameScreen Pop()
         {
             int lastStateIndex = this.gameStates.Count - 1;
             
             if (lastStateIndex < 0)
             {
-                throw new InvalidOperationException("No game states are on the stack");
+                throw new InvalidOperationException("No game screens are on the stack");
             }
 
-            KeyValuePair<IGameState, GameStateModality> old = this.gameStates[lastStateIndex];
+            KeyValuePair<IGameScreen, GameScreenModality> old = this.gameStates[lastStateIndex];
 
-            // Notify the currently active state that it's being left and take it
-            // from the stack of active states
+            // Notify the currently active screen that it's being left and take it
+            // from the stack of active screens
             old.Key.Leave();
             this.gameStates.RemoveAt(lastStateIndex);
 
-            // Now we need to remove the popped state from our update and draw lists.
-            // If the popped state was exclusive, our lists are empty and we need to
+            // Now we need to remove the popped screen from our update and draw lists.
+            // If the popped screen was exclusive, our lists are empty and we need to
             // rebuild them. Otherwise, we can simply remove the lastmost entry.
-            if (old.Value == GameStateModality.Exclusive)
+            if (old.Value == GameScreenModality.Exclusive)
             {
                 this.updateableStates.Clear();
                 this.drawableStates.Clear();
@@ -127,42 +127,42 @@ namespace ToyBox
                 RemoveFromUpdateableAndDrawableList(old.Key);
             }
 
-            // If the user desires so, dispose the dropped state
+            // If the user desires so, dispose the dropped screen
             DisposeIfSupportedAndDesired(old.Key);
 
-            // Resume the state that has now become the top of the stack
+            // Resume the screen that has now become the top of the stack
             Resume();
 
             return old.Key;
         }
 
-        public IGameState Switch(IGameState state)
+        public IGameScreen Switch(IGameScreen screen)
         {
-            return Switch(state, GameStateModality.Exclusive);
+            return Switch(screen, GameScreenModality.Exclusive);
         }
 
-        public IGameState Switch(IGameState state, GameStateModality modality)
+        public IGameScreen Switch(IGameScreen screen, GameScreenModality modality)
         {
-            int stateCount = this.gameStates.Count;
+            int screenCount = this.gameStates.Count;
             
-            if (stateCount == 0)
+            if (screenCount == 0)
             {
-                Push(state, modality);
+                Push(screen, modality);
                 return null;
             }
 
-            int lastStateIndex = stateCount - 1;
-            KeyValuePair<IGameState, GameStateModality> old = this.gameStates[lastStateIndex];
-            IGameState previousState = old.Key;
+            int lastStateIndex = screenCount - 1;
+            KeyValuePair<IGameScreen, GameScreenModality> old = this.gameStates[lastStateIndex];
+            IGameScreen previousState = old.Key;
 
-            // Notify the previous state that it's being left and kill it if desired
+            // Notify the previous screen that it's being left and kill it if desired
             previousState.Leave();
             DisposeIfSupportedAndDesired(previousState);
 
-            // If the switched-to state is exclusive, we need to clear the update
-            // and draw lists. If not, depending on whether the previous state was
-            // a popup state, we might have to 
-            if (old.Value == GameStateModality.Popup)
+            // If the switched-to screen is exclusive, we need to clear the update
+            // and draw lists. If not, depending on whether the previous screen was
+            // a popup screen, we might have to 
+            if (old.Value == GameScreenModality.Popup)
             {
                 RemoveFromUpdateableAndDrawableList(previousState);
             }
@@ -172,27 +172,27 @@ namespace ToyBox
                 this.drawableStates.Clear();
             }
 
-            // Now swap out the state and put it in the update and draw lists. If we're
-            // switching from an exclusive to a pop-up state, the draw and update lists need
+            // Now swap out the screen and put it in the update and draw lists. If we're
+            // switching from an exclusive to a pop-up screen, the draw and update lists need
             // to be rebuilt.
-            var newState = new KeyValuePair<IGameState, GameStateModality>(state, modality);
+            var newState = new KeyValuePair<IGameScreen, GameScreenModality>(screen, modality);
             this.gameStates[lastStateIndex] = newState;
-            if (old.Value == GameStateModality.Exclusive && modality == GameStateModality.Popup)
+            if (old.Value == GameScreenModality.Exclusive && modality == GameScreenModality.Popup)
             {
                 RebuildUpdateableAndDrawableListRecursively(lastStateIndex);
             }
             else
             {
-                AppendToUpdateableAndDrawableList(state);
+                AppendToUpdateableAndDrawableList(screen);
             }
 
-            // Let the state know that it has been entered
-            state.Enter();
+            // Let the screen know that it has been entered
+            screen.Enter();
 
             return previousState;
         }
 
-        public IGameState ActiveState
+        public IGameScreen ActiveState
         {
             get
             {
@@ -232,11 +232,11 @@ namespace ToyBox
             }
         }
 
-        private void DisposeIfSupportedAndDesired(IGameState state)
+        private void DisposeIfSupportedAndDesired(IGameScreen screen)
         {
             if (this.disposeDroppedStates)
             {
-                var disposable = state as IDisposable;
+                var disposable = screen as IDisposable;
                 if (disposable != null)
                 {
                     disposable.Dispose();
@@ -251,7 +251,7 @@ namespace ToyBox
                 return;
             }
 
-            if (this.gameStates[index].Value != GameStateModality.Exclusive)
+            if (this.gameStates[index].Value != GameScreenModality.Exclusive)
             {
                 RebuildUpdateableAndDrawableListRecursively(index - 1);
             }
@@ -259,13 +259,13 @@ namespace ToyBox
             AppendToUpdateableAndDrawableList(this.gameStates[index].Key);
         }
 
-        private void RemoveFromUpdateableAndDrawableList(IGameState state)
+        private void RemoveFromUpdateableAndDrawableList(IGameScreen screen)
         {
             int lastDrawableIndex = this.drawableStates.Count - 1;
             
             if (lastDrawableIndex > -1)
             {
-                if (ReferenceEquals(this.drawableStates[lastDrawableIndex], state))
+                if (ReferenceEquals(this.drawableStates[lastDrawableIndex], screen))
                 {
                     this.drawableStates.RemoveAt(lastDrawableIndex);
                 }
@@ -274,7 +274,7 @@ namespace ToyBox
             int lastUpdateableIndex = this.updateableStates.Count - 1;
             if (lastUpdateableIndex > -1)
             {
-                if (ReferenceEquals(this.updateableStates[lastUpdateableIndex], state))
+                if (ReferenceEquals(this.updateableStates[lastUpdateableIndex], screen))
                 {
                     this.updateableStates.RemoveAt(lastUpdateableIndex);
                 }
@@ -285,9 +285,9 @@ namespace ToyBox
         {
             for (int index = this.gameStates.Count - 1; index >= 0; --index)
             {
-                IGameState state = this.gameStates[index].Key;
-                state.Leave();
-                DisposeIfSupportedAndDesired(state);
+                IGameScreen screen = this.gameStates[index].Key;
+                screen.Leave();
+                DisposeIfSupportedAndDesired(screen);
                 this.gameStates.RemoveAt(index);
             }
 
@@ -295,15 +295,15 @@ namespace ToyBox
             this.updateableStates.Clear();
         }
 
-        private void AppendToUpdateableAndDrawableList(IGameState state)
+        private void AppendToUpdateableAndDrawableList(IGameScreen screen)
         {
-            IUpdateable updateable = state as IUpdateable;
+            IUpdateable updateable = screen as IUpdateable;
             if (updateable != null)
             {
                 this.updateableStates.Add(updateable);
             }
 
-            IDrawable drawable = state as IDrawable;
+            IDrawable drawable = screen as IDrawable;
             if (drawable != null)
             {
                 this.drawableStates.Add(drawable);

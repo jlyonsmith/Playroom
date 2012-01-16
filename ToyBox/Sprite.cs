@@ -23,7 +23,9 @@ namespace ToyBox
         
         public Point Position { get; set; }
         public float Rotation { get; set; }
-        public abstract Rectangle Box { get; }
+        public Vector2 RotationOrigin { get; set; }
+        public abstract Rectangle Rectangle { get; }
+        public abstract Size Size { get; }
         public bool Visible { get; set; }
         public Color TintColor { get; set; }
         public int Depth 
@@ -64,7 +66,16 @@ namespace ToyBox
         public ReadOnlyCollection<SpriteTexture> SpriteTextures { get; private set; }
         public bool OwnsTextures { get; set; }
         public int ActiveTextureIndex { get; set; }
-        public override Rectangle Box
+        public override Size Size
+        {
+            get
+            {
+                Rectangle textureRect = this.SpriteTextures[this.ActiveTextureIndex].Rectangle;
+
+                return new Size(textureRect.Width, textureRect.Height);
+            }
+        }
+        public override Rectangle Rectangle
         {
             get
             {
@@ -85,16 +96,35 @@ namespace ToyBox
         {
             SpriteTexture texture = this.SpriteTextures[ActiveTextureIndex];
 
-            spriteBatch.Draw(
-                texture.Texture,
-                new Vector2(Position.X, Position.Y),
-                texture.Rectangle,
-                TintColor,
-                this.Rotation,
-                Vector2.Zero,
-                this.Scale,
-                SpriteEffects.None,
-                xnaDepth);
+            if (this.Rotation == 0.0f)
+            {
+                spriteBatch.Draw(
+                    texture.Texture,
+                    new Vector2(Position.X, Position.Y),
+                    texture.Rectangle,
+                    TintColor,
+                    0.0f,
+                    Vector2.Zero,
+                    this.Scale,
+                    SpriteEffects.None,
+                    xnaDepth);
+            }
+            else
+            {
+                Size size = this.Size;
+                Vector2 origin = new Vector2(RotationOrigin.X * size.Width, RotationOrigin.Y * size.Height);
+
+                spriteBatch.Draw(
+                    texture.Texture,
+                    new Vector2(Position.X + origin.X, Position.Y + origin.Y),
+                    texture.Rectangle,
+                    TintColor,
+                    this.Rotation,
+                    origin,
+                    this.Scale,
+                    SpriteEffects.None,
+                    xnaDepth);
+            }
         }
     }
 
@@ -102,7 +132,14 @@ namespace ToyBox
     {
         public SpriteFont Font { get; set; }
         public String Text { get; set; }
-        public override Rectangle Box
+        public override Size Size
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+        public override Rectangle Rectangle
         {
             get
             {

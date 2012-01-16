@@ -189,7 +189,7 @@ namespace ToyBox
 
                 if (sprite.Visible && 
                     sprite.HitTestable &&
-                    sprite.Box.Contains(point) && 
+                    sprite.Rectangle.Contains(point) && 
                     sprite.Depth < minDepthFound)
                 {
                     foundIndex = i;
