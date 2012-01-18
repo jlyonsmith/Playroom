@@ -128,20 +128,34 @@ namespace ToyBox
 
     public class StringSprite : Sprite
     {
-        public SpriteFont Font { get; set; }
-        public String Text { get; set; }
+        private Size size;
+        private string text;
+        
+        public SpriteFont Font { get; private set; }
+        public String Text 
+        {
+            get
+            {
+                return text;
+            }
+            set
+            {
+                text = value;
+                size = new Size(Font.MeasureString(text));
+            }
+        }
         public override Size Size
         {
             get
             {
-                throw new NotImplementedException();
+                return size;
             }
         }
         public override Rectangle Rectangle
         {
             get
             {
-                throw new NotImplementedException();
+                return new Rectangle(Position.X, Position.Y, size.Width, size.Height);
             }
         }
 
@@ -149,7 +163,7 @@ namespace ToyBox
             : base(position, depth, visible, gameObject)
         {
             this.Font = font;
-            this.Text = text;
+            this.Text = text;  // Use the property, not the field for Size to work
         }
 
         public override void Draw(SpriteBatch spriteBatch)

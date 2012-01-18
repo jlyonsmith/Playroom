@@ -5,11 +5,12 @@ using System.Globalization;
 
 namespace Microsoft.Xna.Framework
 {
-    // Summary:
-    //     Defines a size in 2D space.
+    /// <summary>
+    /// Defines a size in 2D space.
+    /// </summary>
 #if WINDOWS
     [Serializable]
-    //[TypeConverter(typeof(SizeConverter))]
+    // TODO: [TypeConverter(typeof(SizeConverter))]
 #endif
     public struct Size : IEquatable<Size>
     {
@@ -20,41 +21,53 @@ namespace Microsoft.Xna.Framework
             zero = new Size();
         }
 
-        // Summary:
-        //     Specifies the x-coordinate of the Size.
+        /// <summary>
+        /// Specifies the x-coordinate of the Size.
+        /// </summary>
         [SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
         public int Width;
-        //
-        // Summary:
-        //     Specifies the y-coordinate of the Size.
+        /// <summary>
+        /// Specifies the y-coordinate of the Size.
+        /// </summary>
         [SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
         public int Height;
 
-        //
-        // Summary:
-        //     Initializes a new instance of Size.
-        //
-        // Parameters:
-        //   x:
-        //     The x-coordinate of the Size.
-        //
-        //   y:
-        //     The y-coordinate of the Size.
+        /// <summary>
+        /// Initializes a new instance of Size.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         public Size(int width, int height)
         {
             this.Width = width;
             this.Height = height;
         }
 
-        // Summary:
-        //     Determines whether two Size instances are not equal.
-        //
-        // Parameters:
-        //   a:
-        //     The Size on the left side of the equal sign.
-        //
-        //   b:
-        //     The Size on the right side of the equal sign.
+        /// <summary>
+        /// Initializes a new instance of Size.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public Size(Vector2 vector)
+        {
+            this.Width = (int)vector.X;
+            this.Height = (int)vector.Y;
+        }
+
+        public Size(Point point1, Point point2)
+        {
+            Point point = point1.Subtract(point2);
+            
+            this.Width = Math.Abs(point.X);
+            this.Height = Math.Abs(point.Y);
+        }
+
+        /// <summary>
+        /// Determines whether two Size instances are not equal.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator !=(Size a, Size b)
         {
             if (a.Width == b.Width)
@@ -65,23 +78,20 @@ namespace Microsoft.Xna.Framework
             return true;
         }
 
-        //
-        // Summary:
-        //     Determines whether two Size instances are equal.
-        //
-        // Parameters:
-        //   a:
-        //     Size on the left side of the equal sign.
-        //
-        //   b:
-        //     Size on the right side of the equal sign.
+        /// <summary>
+        /// Determines whether two Size instances are equal.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator ==(Size a, Size b)
         {
             return Equals(a, b);
         }
 
-        // Summary:
-        //     Returns the point (0,0).
+        /// <summary>
+        /// Returns the size (0, 0)
+        /// </summary>
         public static Size Zero 
         { 
             get 
@@ -90,12 +100,11 @@ namespace Microsoft.Xna.Framework
             }
         }
 
-        // Summary:
-        //     Determines whether two Size instances are equal.
-        //
-        // Parameters:
-        //   obj:
-        //     The object to compare this instance to.
+        /// <summary>
+        /// Determines whether two Size instances are equal.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             bool flag = false;
@@ -108,29 +117,29 @@ namespace Microsoft.Xna.Framework
             return flag;
         }
 
-        //
-        // Summary:
-        //     Determines whether two Size instances are equal.
-        //
-        // Parameters:
-        //   other:
-        //     The Size to compare this instance to.
+        /// <summary>
+        /// Determines whether two Size instances are equal.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(Size other)
         {
             return ((this.Width == other.Width) && (this.Height == other.Height));
         }
 
-        //
-        // Summary:
-        //     Gets the hash code for this object.
+        /// <summary>
+        /// Gets the hash code for this object.
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return (this.Width.GetHashCode() + this.Height.GetHashCode());
         }
 
-        //
-        // Summary:
-        //     Returns a String that represents the current Size.
+        /// <summary>
+        /// Returns a String that represents the current Size.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             CultureInfo currentCulture = CultureInfo.CurrentCulture;

@@ -59,12 +59,14 @@
     <Compile Include="IStorageService.cs" />
     <Compile Include="ISpriteService.cs" />
     <Compile Include="ITouchPanel.cs" />
+    <Compile Include="MathExtensions.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MouseArrowComponent.cs" />
     <Compile Include="MouseButtons.cs" />
     <Compile Include="NoGamePad.cs" />
     <Compile Include="NoKeyboard.cs" />
     <Compile Include="NoTouchPanel.cs" />
+    <Compile Include="PointExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyList.cs" />
     <Compile Include="PropertyListReaderV1.cs" />
