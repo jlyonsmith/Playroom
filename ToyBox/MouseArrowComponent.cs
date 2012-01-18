@@ -49,7 +49,7 @@ namespace ToyBox
         {
             if (disposing)
             {
-                this.spriteService.DeleteSprite(mouseSprite.SpriteIndex);
+                this.spriteService.DeleteSprite(mouseSprite);
             }
 
             base.Dispose(disposing);

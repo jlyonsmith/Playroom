@@ -123,7 +123,15 @@ namespace ToyBox
 
         public void AttachAnimation(Sprite sprite, Animation animation)
         {
+            AttachAnimation(sprite, animation, null);
+        }
+
+        public void AttachAnimation(Sprite sprite, Animation animation, AnimationGroup group)
+        {
             animation.OnInitialize(this, sprite);
+
+            if (group != null)
+                group.AttachAnimation(animation);
 
             Animation activeAnimation = sprite.ActiveAnimation;
 
@@ -146,14 +154,16 @@ namespace ToyBox
             }
         }
 
+        // TODO: Make this private - use a delegate?
         public void ActivateNextAnimation(Sprite sprite, Animation nextAnimation)
         {
             this.activeAnimations.Add(nextAnimation);
         }
 
-        public void DeleteSprite(int index)
+        public void DeleteSprite(Sprite sprite)
         {
             // TODO-john-2011: Remove any animations for this sprite too?
+            int index = this.sprites.FindIndex(s => Object.ReferenceEquals(s, sprite));
 
             TextureSprite textureSprite = this.sprites[index] as TextureSprite;
 

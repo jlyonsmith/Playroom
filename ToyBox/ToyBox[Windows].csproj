@@ -44,6 +44,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Animation.cs" />
+    <Compile Include="AnimationGroup.cs" />
     <Compile Include="CollectionHelper.cs" />
     <Compile Include="GameScreen.cs" />
     <Compile Include="GameScreenManager.cs" />

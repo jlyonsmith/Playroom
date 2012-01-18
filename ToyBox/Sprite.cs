@@ -44,9 +44,8 @@ namespace ToyBox
         public bool HitTestable { get { return this.GameObject != null; } }
         public Vector2 Scale { get; set; }
         public Animation ActiveAnimation { get; set; }
-        public int SpriteIndex { get; private set; }
 
-        public Sprite(Point position, int depth, bool visible, object gameObject, int index)
+        public Sprite(Point position, int depth, bool visible, object gameObject)
         {
             this.Position = position;
             this.Visible = visible;
@@ -54,7 +53,6 @@ namespace ToyBox
             this.Scale = Vector2.One;
             this.ActiveAnimation = null;
             this.GameObject = gameObject;
-            this.SpriteIndex = index;
             this.TintColor = Color.White;
         }
 
@@ -86,7 +84,7 @@ namespace ToyBox
         }
 
         public TextureSprite(SpriteTexture[] spriteTextures, int activeTextureIndex, Point position, int depth, bool visible, object gameObject, int index)
-            : base(position, depth, visible, gameObject, index)
+            : base(position, depth, visible, gameObject)
         {
             this.SpriteTextures = Array.AsReadOnly<SpriteTexture>(spriteTextures);
             this.ActiveTextureIndex = activeTextureIndex;
@@ -148,7 +146,7 @@ namespace ToyBox
         }
 
         public StringSprite(SpriteFont font, string text, Point position, int depth, bool visible, object gameObject, int index)
-            : base(position, depth, visible, gameObject, index)
+            : base(position, depth, visible, gameObject)
         {
             this.Font = font;
             this.Text = text;

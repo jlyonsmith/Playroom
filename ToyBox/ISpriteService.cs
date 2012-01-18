@@ -14,9 +14,10 @@ namespace ToyBox
         TextureSprite AddSprite(SpriteTexture spriteTexture, Point position, int depth, bool visible, object gameObject);
         TextureSprite AddSprite(SpriteTexture[] spriteTextures, int activeTextureIndex, Point position, int depth, bool visible, object gameObject);
         StringSprite AddSprite(SpriteFont font, string text, Point position, int depth, bool visible, object gameObject);
-        void DeleteSprite(int index);
+        void DeleteSprite(Sprite sprite);
         bool AnimationsActive { get; }
         void AttachAnimation(Sprite sprite, Animation animation);
+        void AttachAnimation(Sprite sprite, Animation animation, AnimationGroup group);
         void DrawSprites();
         int HitTest(Point point);
         RenderTarget2D CreateTexture(int width, int height, IList<TextureAndPosition> textureAndPositions);
