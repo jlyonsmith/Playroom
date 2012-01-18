@@ -58,7 +58,6 @@
     <Compile Include="IStorageService.cs" />
     <Compile Include="ISpriteService.cs" />
     <Compile Include="ITouchPanel.cs" />
-    <Compile Include="Memo.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MouseArrowComponent.cs" />
     <Compile Include="MouseButtons.cs" />

@@ -137,6 +137,9 @@ namespace ToyBox
                 while (activeAnimation.NextAnimation != null)
                 {
                     activeAnimation = activeAnimation.NextAnimation;
+
+                    if (activeAnimation == animation)
+                        throw new ArgumentException("Same animation attached more than once");
                 }
 
                 activeAnimation.NextAnimation = animation;
