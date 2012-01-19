@@ -7,11 +7,11 @@ namespace ToyBox
 {
     public class AnimationGroup
     {
-        private HashSet<Animation> animations;
+        private List<Animation> animations;
 
         public AnimationGroup()
         {
-            animations = new HashSet<Animation>();
+            animations = new List<Animation>();
         }
 
         public void AttachAnimation(Animation animation)

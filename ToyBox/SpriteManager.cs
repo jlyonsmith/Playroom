@@ -129,9 +129,9 @@ namespace ToyBox
 
         public void DeleteSprite(Sprite sprite)
         {
-            int index = this.sprites.FindIndex(s => Object.ReferenceEquals(s, sprite));
+            int index = this.sprites.IndexOf(sprite);
 
-            TextureSprite textureSprite = this.sprites[index] as TextureSprite;
+            TextureSprite textureSprite = sprite as TextureSprite;
 
             if (textureSprite != null && textureSprite.OwnsTextures)
             {
