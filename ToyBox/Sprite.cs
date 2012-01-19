@@ -20,7 +20,8 @@ namespace ToyBox
 
         protected float xnaDepth;
         protected int depth;
-        
+
+        public int Tags { get; set; }
         public Point Position { get; set; }
         public float Rotation { get; set; }
         public Vector2 RotationOrigin { get; set; }
@@ -83,7 +84,23 @@ namespace ToyBox
             }
         }
 
-        public TextureSprite(SpriteTexture[] spriteTextures, int activeTextureIndex, Point position, int depth, bool visible, object gameObject, int index)
+        public TextureSprite(
+            SpriteTexture spriteTexture,
+            Point position,
+            int depth,
+            bool visible,
+            object gameObject)
+            : this(new SpriteTexture[1] { spriteTexture }, 0, position, depth, visible, gameObject)
+        {
+        }
+
+        public TextureSprite(
+            SpriteTexture[] spriteTextures, 
+            int activeTextureIndex, 
+            Point position, 
+            int depth, 
+            bool visible, 
+            object gameObject)
             : base(position, depth, visible, gameObject)
         {
             this.SpriteTextures = Array.AsReadOnly<SpriteTexture>(spriteTextures);
@@ -159,7 +176,7 @@ namespace ToyBox
             }
         }
 
-        public StringSprite(SpriteFont font, string text, Point position, int depth, bool visible, object gameObject, int index)
+        public StringSprite(SpriteFont font, string text, Point position, int depth, bool visible, object gameObject)
             : base(position, depth, visible, gameObject)
         {
             this.Font = font;

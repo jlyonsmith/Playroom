@@ -29,11 +29,12 @@ namespace ToyBox
             spriteService = (ISpriteService)this.Game.Services.GetService(typeof(ISpriteService));
 
             this.mousePointerTexture = this.Game.Content.Load<Texture2D>("Textures/Arrow");
-
-            this.mouseSprite = spriteService.AddSprite(
-                new SpriteTexture(this.mousePointerTexture, null),
-                new Point(-this.mousePointerTexture.Width, -this.mousePointerTexture.Height),
-                0, true, null);
+            this.mouseSprite = new TextureSprite(
+                    new SpriteTexture(this.mousePointerTexture, null),
+                    new Point(-this.mousePointerTexture.Width, -this.mousePointerTexture.Height),
+                    0, true, null);
+            
+            spriteService.AddSprite(this.mouseSprite);
 
             IMouse mouse = this.inputService.GetMouse();
 

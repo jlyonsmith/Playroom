@@ -14,11 +14,13 @@ using System.Collections.ObjectModel;
 
 namespace ToyBox
 {
+    public delegate void ActivateNextAnimationDelegate(Animation animation, Animation nextAnimation);
+
     public abstract class Animation
     {
         private TimeSpan time = TimeSpan.Zero;
 
-        protected SpriteManager SpriteManager { get; set; }
+        protected ActivateNextAnimationDelegate activateNextAnimation;
 
         public bool HasStarted { get; private set; }
         public bool HasFinished { get; private set; }
@@ -36,9 +38,9 @@ namespace ToyBox
             this.Duration = duration;
         }
 
-        public virtual void OnInitialize(SpriteManager spriteManager, Sprite sprite)
+        public virtual void Initialize(ActivateNextAnimationDelegate activateNextAnimation, Sprite sprite)
         {
-            this.SpriteManager = spriteManager;
+            this.activateNextAnimation = activateNextAnimation;
             this.Sprite = sprite;
             this.HasStarted = false;
             this.HasFinished = false;
@@ -66,7 +68,7 @@ namespace ToyBox
 
                 if (this.NextAnimation != null)
                 {
-                    this.SpriteManager.ActivateNextAnimation(this.Sprite, this.NextAnimation);
+                    this.activateNextAnimation(this, this.NextAnimation);
                 }
             }
             else

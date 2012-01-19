@@ -5,19 +5,17 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.ObjectModel;
+using System.Collections;
 
 namespace ToyBox
 {
     public interface ISpriteService
     {
         ReadOnlyCollection<Sprite> Sprites { get; }
-        TextureSprite AddSprite(SpriteTexture spriteTexture, Point position, int depth, bool visible, object gameObject);
-        TextureSprite AddSprite(SpriteTexture[] spriteTextures, int activeTextureIndex, Point position, int depth, bool visible, object gameObject);
-        StringSprite AddSprite(SpriteFont font, string text, Point position, int depth, bool visible, object gameObject);
+        ReadOnlyCollection<Animation> Animations { get; }
+        void AddSprite(Sprite sprite, params SpriteGroup[] groups);
         void DeleteSprite(Sprite sprite);
-        bool AnimationsActive { get; }
-        void AttachAnimation(Sprite sprite, Animation animation);
-        void AttachAnimation(Sprite sprite, Animation animation, AnimationGroup group);
+        void AttachAnimation(Sprite sprite, Animation animation, params AnimationGroup[] groups);
         void DrawSprites();
         int HitTest(Point point);
         RenderTarget2D CreateTexture(int width, int height, IList<TextureAndPosition> textureAndPositions);

@@ -73,6 +73,7 @@
     <Compile Include="PropertyListWriter.cs" />
     <Compile Include="RectangleExtensions.cs" />
     <Compile Include="Size.cs" />
+    <Compile Include="SpriteGroup.cs" />
     <Compile Include="StorageManager.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="SpriteManager.cs" />

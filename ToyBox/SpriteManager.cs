@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections;
 
 namespace ToyBox
 {
@@ -24,12 +25,15 @@ namespace ToyBox
 
     public class SpriteManager : GameComponent, ISpriteService
     {
-        private List<Animation> activeAnimations;
-        private List<Sprite> sprites;
         private SpriteBatch spriteBatch;
+        private List<Animation> animations;
+        private ReadOnlyCollection<Animation> readOnlyAnimations;
+        private List<Sprite> sprites;
         private ReadOnlyCollection<Sprite> readOnlySprites;
         
         public ReadOnlyCollection<Sprite> Sprites { get { return readOnlySprites; } }
+        public ReadOnlyCollection<Animation> Animations { get { return readOnlyAnimations; } }
+
         public GraphicsDevice GraphicsDevice { get { return this.Game.GraphicsDevice; } }
 
         public SpriteManager(Game game)
@@ -37,7 +41,8 @@ namespace ToyBox
         {
             sprites = new List<Sprite>();
             readOnlySprites = sprites.AsReadOnly();
-            activeAnimations = new List<Animation>();
+            animations = new List<Animation>();
+            readOnlyAnimations = animations.AsReadOnly();
 
             if (this.Game.Services != null)
             {
@@ -67,14 +72,14 @@ namespace ToyBox
 
         public override void Update(GameTime gameTime)
         {
-            for (int i = 0; i < activeAnimations.Count; )
+            for (int i = 0; i < animations.Count; )
             {
-                Animation animation = this.activeAnimations[i];
+                Animation animation = this.animations[i];
 
                 animation.Update(gameTime);
 
                 if (animation.HasFinished)
-                    activeAnimations.RemoveAt(i);
+                    animations.RemoveAt(i);
                 else
                     i++;
             }
@@ -82,63 +87,31 @@ namespace ToyBox
             base.Update(gameTime);
         }
 
-        public bool AnimationsActive
+        public void AddSprite(Sprite sprite, params SpriteGroup[] groups)
         {
-            get
+            this.sprites.Add(sprite);
+
+            foreach (var group in groups)
             {
-                return activeAnimations.Count > 0;
+                group.AttachSprite(sprite);
             }
         }
 
-        public TextureSprite AddSprite(SpriteTexture spriteTexture, Point position, int depth, bool visible, object gameObject)
+        public void AttachAnimation(Sprite sprite, Animation animation, params AnimationGroup[] groups)
         {
-            SpriteTexture[] spriteTextures = new SpriteTexture[1];
+            animation.Initialize(new ActivateNextAnimationDelegate(Animation_ActivateNextAnimation), sprite);
 
-            spriteTextures[0] = spriteTexture;
-            
-            TextureSprite sprite = new TextureSprite(spriteTextures, 0, position, depth, visible, gameObject, sprites.Count);
-
-            this.sprites.Add(sprite);
-
-            return sprite;
-        }
-
-        public TextureSprite AddSprite(SpriteTexture[] spriteTextures, int activeTextureIndex, Point position, int depth, bool visible, object gameObject)
-        {
-            TextureSprite sprite = new TextureSprite(spriteTextures, activeTextureIndex, position, depth, visible, gameObject, sprites.Count);
-
-            this.sprites.Add(sprite);
-
-            return sprite;
-        }
-
-        public StringSprite AddSprite(SpriteFont font, string text, Point position, int depth, bool visible, object gameObject)
-        {
-            StringSprite sprite = new StringSprite(font, text, position, depth, visible, gameObject, sprites.Count);
-
-            this.sprites.Add(sprite);
-
-            return sprite;
-        }
-
-        public void AttachAnimation(Sprite sprite, Animation animation)
-        {
-            AttachAnimation(sprite, animation, null);
-        }
-
-        public void AttachAnimation(Sprite sprite, Animation animation, AnimationGroup group)
-        {
-            animation.OnInitialize(this, sprite);
-
-            if (group != null)
+            foreach (var group in groups)
+            {
                 group.AttachAnimation(animation);
+            }
 
             Animation activeAnimation = sprite.ActiveAnimation;
 
             if (activeAnimation == null)
             {
                 sprite.ActiveAnimation = animation;
-                this.activeAnimations.Add(animation);
+                this.animations.Add(animation);
             }
             else
             {
@@ -154,15 +127,8 @@ namespace ToyBox
             }
         }
 
-        // TODO: Make this private - use a delegate?
-        public void ActivateNextAnimation(Sprite sprite, Animation nextAnimation)
-        {
-            this.activeAnimations.Add(nextAnimation);
-        }
-
         public void DeleteSprite(Sprite sprite)
         {
-            // TODO-john-2011: Remove any animations for this sprite too?
             int index = this.sprites.FindIndex(s => Object.ReferenceEquals(s, sprite));
 
             TextureSprite textureSprite = this.sprites[index] as TextureSprite;
@@ -234,6 +200,11 @@ namespace ToyBox
             this.Game.GraphicsDevice.SetRenderTarget(null);
 
             return target;
+        }
+
+        private void Animation_ActivateNextAnimation(Animation animation, Animation nextAnimation)
+        {
+            this.animations.Add(nextAnimation);
         }
     }
 }
