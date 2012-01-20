@@ -34,7 +34,7 @@ namespace ToyBox
                     new Point(-this.mousePointerTexture.Width, -this.mousePointerTexture.Height),
                     0, true, null);
             
-            spriteService.AddSprite(this.mouseSprite);
+            spriteService.AttachSprite(this.mouseSprite);
 
             IMouse mouse = this.inputService.GetMouse();
 
@@ -50,7 +50,7 @@ namespace ToyBox
         {
             if (disposing)
             {
-                this.spriteService.DeleteSprite(mouseSprite);
+                this.spriteService.DetachSprite(mouseSprite);
             }
 
             base.Dispose(disposing);

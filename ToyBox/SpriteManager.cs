@@ -23,6 +23,16 @@ namespace ToyBox
         public Vector2 Position { get; private set; } 
     }
 
+    public class SpriteEventArgs : EventArgs
+    {
+        public SpriteEventArgs(Sprite sprite)
+        {
+            this.Sprite = sprite;
+        }
+
+        public Sprite Sprite { get; private set; }
+    }
+
     public class SpriteManager : GameComponent, ISpriteService
     {
         private SpriteBatch spriteBatch;
@@ -87,24 +97,14 @@ namespace ToyBox
             base.Update(gameTime);
         }
 
-        public void AddSprite(Sprite sprite, params SpriteGroup[] groups)
+        public void AttachSprite(Sprite sprite)
         {
             this.sprites.Add(sprite);
-
-            foreach (var group in groups)
-            {
-                group.AttachSprite(sprite);
-            }
         }
 
-        public void AttachAnimation(Sprite sprite, Animation animation, params AnimationGroup[] groups)
+        public void AttachAnimation(Sprite sprite, Animation animation)
         {
             animation.Initialize(new ActivateNextAnimationDelegate(Animation_ActivateNextAnimation), sprite);
-
-            foreach (var group in groups)
-            {
-                group.AttachAnimation(animation);
-            }
 
             Animation activeAnimation = sprite.ActiveAnimation;
 
@@ -127,7 +127,7 @@ namespace ToyBox
             }
         }
 
-        public void DeleteSprite(Sprite sprite)
+        public void DetachSprite(Sprite sprite)
         {
             int index = this.sprites.IndexOf(sprite);
 
@@ -144,7 +144,7 @@ namespace ToyBox
             this.sprites.RemoveAt(index);
         }
 
-        public void DrawSprites()
+        public void Draw()
         {
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
 

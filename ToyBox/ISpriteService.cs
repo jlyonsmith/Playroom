@@ -13,10 +13,10 @@ namespace ToyBox
     {
         ReadOnlyCollection<Sprite> Sprites { get; }
         ReadOnlyCollection<Animation> Animations { get; }
-        void AddSprite(Sprite sprite, params SpriteGroup[] groups);
-        void DeleteSprite(Sprite sprite);
-        void AttachAnimation(Sprite sprite, Animation animation, params AnimationGroup[] groups);
-        void DrawSprites();
+        void AttachSprite(Sprite sprite);
+        void DetachSprite(Sprite sprite);
+        void AttachAnimation(Sprite sprite, Animation animation);
+        void Draw();
         int HitTest(Point point);
         RenderTarget2D CreateTexture(int width, int height, IList<TextureAndPosition> textureAndPositions);
     }

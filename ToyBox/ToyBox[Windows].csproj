@@ -44,7 +44,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Animation.cs" />
-    <Compile Include="AnimationGroup.cs" />
+    <Compile Include="ActiveAnimationSet.cs" />
     <Compile Include="CollectionHelper.cs" />
     <Compile Include="GameScreen.cs" />
     <Compile Include="GameScreenManager.cs" />
@@ -72,8 +72,8 @@
     <Compile Include="PropertyListReaderV1.cs" />
     <Compile Include="PropertyListWriter.cs" />
     <Compile Include="RectangleExtensions.cs" />
+    <Compile Include="Set.cs" />
     <Compile Include="Size.cs" />
-    <Compile Include="SpriteGroup.cs" />
     <Compile Include="StorageManager.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="SpriteManager.cs" />
