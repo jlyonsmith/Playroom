@@ -63,7 +63,6 @@ namespace ToyBox
     public class TextureSprite : Sprite
     {
         public ReadOnlyCollection<SpriteTexture> SpriteTextures { get; private set; }
-        public bool OwnsTextures { get; set; }
         public int ActiveTextureIndex { get; set; }
         public override Size Size
         {

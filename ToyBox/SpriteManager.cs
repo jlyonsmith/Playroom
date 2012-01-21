@@ -97,9 +97,14 @@ namespace ToyBox
             base.Update(gameTime);
         }
 
-        public void AttachSprite(Sprite sprite)
+        public void AttachSprite(Sprite sprite, params Set<Sprite>[] spriteSets)
         {
             this.sprites.Add(sprite);
+
+            foreach (var spriteSet in spriteSets)
+            {
+                spriteSet.Add(sprite);
+            }
         }
 
         public void AttachAnimation(Sprite sprite, Animation animation)
@@ -129,19 +134,7 @@ namespace ToyBox
 
         public void DetachSprite(Sprite sprite)
         {
-            int index = this.sprites.IndexOf(sprite);
-
-            TextureSprite textureSprite = sprite as TextureSprite;
-
-            if (textureSprite != null && textureSprite.OwnsTextures)
-            {
-                foreach (var spriteTexture in textureSprite.SpriteTextures)
-                {
-                    spriteTexture.Texture.Dispose();
-                }
-            }
-
-            this.sprites.RemoveAt(index);
+            this.sprites.Remove(sprite);
         }
 
         public void Draw()
@@ -179,13 +172,20 @@ namespace ToyBox
             return foundIndex;
         }
 
-        public RenderTarget2D CreateTexture(int width, int height, IList<TextureAndPosition> textureAndPositions)
+        public RenderTarget2D CreateRenderTarget(int width, int height, IList<TextureAndPosition> textureAndPositions)
         {
-            RenderTarget2D target = new RenderTarget2D(
+            RenderTarget2D renderTarget = new RenderTarget2D(
                 this.Game.GraphicsDevice, width, height,
                 false, SurfaceFormat.Color, DepthFormat.None);
 
-            this.Game.GraphicsDevice.SetRenderTarget(target);
+            DrawRenderTarget(renderTarget, textureAndPositions);
+
+            return renderTarget;
+        }
+
+        public void DrawRenderTarget(RenderTarget2D renderTarget, IList<TextureAndPosition> textureAndPositions)
+        {
+            this.Game.GraphicsDevice.SetRenderTarget(renderTarget);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
 
@@ -198,8 +198,6 @@ namespace ToyBox
             spriteBatch.End();
 
             this.Game.GraphicsDevice.SetRenderTarget(null);
-
-            return target;
         }
 
         private void Animation_ActivateNextAnimation(Animation animation, Animation nextAnimation)

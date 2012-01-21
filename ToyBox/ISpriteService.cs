@@ -13,11 +13,12 @@ namespace ToyBox
     {
         ReadOnlyCollection<Sprite> Sprites { get; }
         ReadOnlyCollection<Animation> Animations { get; }
-        void AttachSprite(Sprite sprite);
+        void AttachSprite(Sprite sprite, params Set<Sprite>[] spriteSets);
         void DetachSprite(Sprite sprite);
         void AttachAnimation(Sprite sprite, Animation animation);
         void Draw();
         int HitTest(Point point);
-        RenderTarget2D CreateTexture(int width, int height, IList<TextureAndPosition> textureAndPositions);
+        RenderTarget2D CreateRenderTarget(int width, int height, IList<TextureAndPosition> textureAndPositions);
+        void DrawRenderTarget(RenderTarget2D renderTarget, IList<TextureAndPosition> textureAndPositions);
     }
 }
