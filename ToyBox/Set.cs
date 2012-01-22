@@ -10,31 +10,43 @@ namespace ToyBox
     {
         private List<T> list = new List<T>();
 
+        public virtual T LastAdded { get; protected set; }
+
         public Set()
         {
         }
    
-        public virtual void Add(T t)
+        public void Add(T t)
         {
             if (!list.Contains(t))
                 list.Add(t);
+
+            LastAdded = t;
         }
 
-        public virtual void Remove(T t)
+        public void Remove(T t)
         {
             list.Remove(t);
         }
 
-        public virtual void Clear()
+        public void Clear()
         {
             list.Clear();
         }
 
-        public virtual int Count 
+        public int Count 
         {
             get
             {
                 return list.Count;
+            }
+        }
+
+        public void Union(Set<T> other)
+        {
+            foreach (var t in other)
+            {
+                this.Add(t);
             }
         }
 

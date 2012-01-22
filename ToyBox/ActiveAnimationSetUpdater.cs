@@ -5,13 +5,16 @@ using System.Text;
 
 namespace ToyBox
 {
-    public class ActiveAnimationSet : Set<Animation>
+    public class ActiveAnimationSetUpdater
     {
-        public ActiveAnimationSet()
+        private Set<Animation> animations;
+
+        public ActiveAnimationSetUpdater(Set<Animation> animations)
         {
+            this.animations = animations;
         }
 
-        public override void Add(Animation animation)
+        public void Add(Animation animation)
         {
             animation.Started += new EventHandler<EventArgs>(Animation_Started);
             animation.Finished += new EventHandler<EventArgs>(Animation_Finished);
@@ -19,12 +22,12 @@ namespace ToyBox
 
         private void Animation_Started(object sender, EventArgs args)
         {
-            base.Add((Animation)sender);
+            animations.Add((Animation)sender);
         }
 
         private void Animation_Finished(object sender, EventArgs args)
         {
-            base.Remove((Animation)sender);
+            animations.Remove((Animation)sender);
         }
     }
 }
