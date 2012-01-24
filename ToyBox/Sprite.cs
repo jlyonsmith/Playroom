@@ -182,6 +182,13 @@ namespace ToyBox
             this.Text = text;  // Use the property, not the field for Size to work
         }
 
+        public StringSprite(SpriteFont font, string text, Rectangle rect, int depth, bool visible, object gameObject)
+            : base(new Rectangle().Resize(font.MeasureString(text)).CenteredOn(rect).Location, depth, visible, gameObject)
+        {
+            this.Font = font;
+            this.Text = text;  // Use the property, not the field for Size to work
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.DrawString(
