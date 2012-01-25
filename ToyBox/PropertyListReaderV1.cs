@@ -34,6 +34,7 @@ namespace ToyBox
             reader.MoveToContent();
             dict = ReadPropertyList(reader);
 
+            // TODO-john-2012: Use reflection to change field value?
             return new PropertyList(dict);
         }
 

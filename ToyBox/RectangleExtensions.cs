@@ -44,9 +44,16 @@ namespace Microsoft.Xna.Framework
             return rect;
         }
 
-        public static Rectangle Clone(this Rectangle rect)
+        /// <summary>
+        /// Offset the rectangle by a multiple of its Width and Height
+        /// </summary>
+        /// <param name="rect"></param>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <returns></returns>
+        public static Rectangle UnitOffset(this Rectangle rect, float X, float Y)
         {
-            return new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
+            return new Rectangle((int)(rect.X + X * rect.Width), (int)(rect.Y + Y * rect.Height), rect.Width, rect.Height);
         }
     }
 }

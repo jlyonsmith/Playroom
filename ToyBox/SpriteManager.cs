@@ -200,6 +200,7 @@ namespace ToyBox
             this.Game.GraphicsDevice.SetRenderTarget(null);
         }
 
+        // TODO-john-2012: Make private and just use reflection?
         private void Animation_ActivateNextAnimation(Animation animation, Animation nextAnimation)
         {
             this.animations.Add(nextAnimation);
