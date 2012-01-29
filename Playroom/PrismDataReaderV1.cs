@@ -10,19 +10,20 @@ namespace Playroom
     public class PrismDataReaderV1
     {
         public static string prismAtom;
-        public static string mappingsAtom;
-        public static string pinboardsAtom;
-        public static string compoundsAtom;
+        public static string svgDirectoryAtom;
+        public static string rowsAtom;
+        public static string rowAtom;
+        public static string svgFileAtom;
 
         public static PrismData ReadXml(XmlReader reader)
         {
             prismAtom = reader.NameTable.Add("Prism");
-            mappingsAtom = reader.NameTable.Add("Mappings");
-            compoundsAtom = reader.NameTable.Add("Compounds");
-            pinboardsAtom = reader.NameTable.Add("Pinboards");
-
-            reader.MoveToContent();
+            svgDirectoryAtom = reader.NameTable.Add("SvgDirectory");
+            svgFileAtom = reader.NameTable.Add("SvgFile");
+            rowsAtom = reader.NameTable.Add("Rows");
+            rowAtom = reader.NameTable.Add("Row");
             
+            reader.MoveToContent();
             return ReadPrismElement(reader);
         }
 
@@ -33,172 +34,77 @@ namespace Playroom
             reader.ReadStartElement("Prism");
             reader.MoveToContent();
 
-            prismData.Pinboards = ReadPinboardsElement(reader);
+            prismData.PinboardFile = new ParsedPath(reader.ReadElementContentAsString("PinboardFile", ""), PathType.File);
+            reader.MoveToContent();
+            prismData.RectangleName = reader.ReadElementContentAsString("Rectangle", "");
+            reader.MoveToContent();
+
+            if (reader.NodeType == XmlNodeType.Element && String.ReferenceEquals(svgDirectoryAtom, reader.Name))
+            {
+                prismData.SvgDirectory = new ParsedPath(reader.ReadElementContentAsString("SvgDirectory", ""), PathType.Directory);
+                reader.MoveToContent();
+            }
+
+            if (reader.NodeType == XmlNodeType.Element && String.ReferenceEquals(reader.Name, svgFileAtom))
+            {
+                prismData.SvgFiles = new List<List<ParsedPath>>();
+                prismData.SvgFiles.Add(new List<ParsedPath>());
+                prismData.SvgFiles[0].Add(new ParsedPath(reader.ReadElementContentAsString(svgFileAtom, ""), PathType.File));
+                reader.MoveToContent();
+            }
+            else
+            {
+                prismData.SvgFiles = ReadRowsElement(reader);
+            }
 
             reader.ReadEndElement();
 
             return prismData;
         }
 
-        private static List<PrismPinboard> ReadPinboardsElement(XmlReader reader)
+        private static List<List<ParsedPath>> ReadRowsElement(XmlReader reader)
         {
-            List<PrismPinboard> list = new List<PrismPinboard>();
+            List<List<ParsedPath>> rows = new List<List<ParsedPath>>();
 
-            // Read outer collection element
-            reader.ReadStartElement(pinboardsAtom);
+            reader.ReadStartElement(rowsAtom);
             reader.MoveToContent();
 
             while (true)
             {
-                if (String.ReferenceEquals(reader.Name, pinboardsAtom))
+                if (String.ReferenceEquals(reader.Name, rowsAtom))
                 {
                     reader.ReadEndElement();
                     reader.MoveToContent();
                     break;
                 }
 
-                PrismPinboard prismPinboard = ReadPinboardElement(reader);
-
-                list.Add(prismPinboard);
+                rows.Add(ReadRowElement(reader));
             }
 
-            return list;
+            return rows;
         }
 
-        private static PrismPinboard ReadPinboardElement(XmlReader reader)
+        private static List<ParsedPath> ReadRowElement(XmlReader reader)
         {
-            PrismPinboard prismPinboard = new PrismPinboard();
+            List<ParsedPath> row = new List<ParsedPath>();
 
-            reader.ReadStartElement("Pinboard");
-            reader.MoveToContent();
-
-            prismPinboard.FileName = new ParsedPath(reader.ReadElementContentAsString("File", ""), PathType.File);
-            reader.MoveToContent();
-
-            prismPinboard.Compounds = ReadCompoundsElement(reader);
-            prismPinboard.Mappings = ReadMappingsElement(reader);
-
-            reader.ReadEndElement();
-            reader.MoveToContent();
-
-            return prismPinboard;
-        }
-
-        private static List<PrismCompound> ReadCompoundsElement(XmlReader reader)
-        {
-            List<PrismCompound> list = new List<PrismCompound>();
-            bool empty = reader.IsEmptyElement;
-
-            reader.ReadStartElement(compoundsAtom);
-            reader.MoveToContent();
-
-            if (!empty)
-            {
-                while (true)
-                {
-                    if (String.ReferenceEquals(reader.Name, compoundsAtom))
-                    {
-                        reader.ReadEndElement();
-                        reader.MoveToContent();
-                        break;
-                    }
-
-                    list.Add(ReadCompoundElement(reader));
-                }
-            }
-
-            return list;
-        }
-
-        private static PrismCompound ReadCompoundElement(XmlReader reader)
-        {
-            PrismCompound prismCompound = new PrismCompound();
-
-            prismCompound.LineNumber = ((IXmlLineInfo)reader).LineNumber;
-
-            reader.ReadStartElement("Compound");
-            reader.MoveToContent();
-
-            prismCompound.RectangleName = reader.ReadElementContentAsString("Rectangle", "");
-            reader.MoveToContent();
-            prismCompound.RowCount = reader.ReadElementContentAsInt("Rows", "");
-            reader.MoveToContent();
-            prismCompound.ColumnCount = reader.ReadElementContentAsInt("Columns", "");
-            reader.MoveToContent();
-            prismCompound.OutputFileName = new ParsedPath(reader.ReadElementContentAsString("OutputFile", ""), PathType.File);
-            reader.MoveToContent();
-
-            reader.ReadEndElement();
-            reader.MoveToContent();
-
-            return prismCompound;
-        }
-
-        private static List<PrismMapping> ReadMappingsElement(XmlReader reader)
-        {
-            List<PrismMapping> list = new List<PrismMapping>();
-
-            reader.ReadStartElement(mappingsAtom);
+            reader.ReadStartElement(rowAtom);
             reader.MoveToContent();
 
             while (true)
             {
-                if (String.ReferenceEquals(reader.Name, mappingsAtom))
+                if (String.ReferenceEquals(reader.Name, rowAtom))
                 {
                     reader.ReadEndElement();
                     reader.MoveToContent();
                     break;
                 }
 
-                PrismMapping prismMapping = ReadMappingElement(reader);
-
-                list.Add(prismMapping);
+                row.Add(new ParsedPath(reader.ReadElementContentAsString(svgFileAtom, ""), PathType.File));
+                reader.MoveToContent();
             }
 
-            return list;
-        }
-
-        private static PrismMapping ReadMappingElement(XmlReader reader)
-        {
-            PrismMapping prismMapping = new PrismMapping();
-
-            prismMapping.LineNumber = ((IXmlLineInfo)reader).LineNumber;
-
-            reader.ReadStartElement("Mapping");
-            reader.MoveToContent();
-
-            bool empty = reader.IsEmptyElement;
-
-            reader.ReadStartElement("Rectangle");
-
-            if (empty)
-                prismMapping.RectangleName = null;
-            else
-            {
-                prismMapping.RectangleName = reader.ReadContentAsString();
-                reader.ReadEndElement();
-            }
-
-            reader.MoveToContent();
-            empty = reader.IsEmptyElement;
-            reader.ReadStartElement("InputFile", "");
-
-            if (empty)
-                prismMapping.InputFileName = null;
-            else
-            {
-                prismMapping.InputFileName = new ParsedPath(reader.ReadContentAsString(), PathType.File);
-                reader.ReadEndElement();
-            }
-
-            reader.MoveToContent();
-            prismMapping.OutputFileName = new ParsedPath(reader.ReadElementContentAsString("OutputFile", ""), PathType.File);
-            reader.MoveToContent();
-
-            reader.ReadEndElement();
-            reader.MoveToContent();
-
-            return prismMapping;
+            return row;
         }
     }
 }

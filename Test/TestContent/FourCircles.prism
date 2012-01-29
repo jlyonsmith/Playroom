@@ -1,0 +1,14 @@
+﻿<Prism>
+  <Pinboard>Test.pinboard</Pinboard>
+  <Rectangle>Circle</Rectangle>
+  <Rows>
+    <Row>
+      <SvgFile>Circle.svg</SvgFile>
+      <SvgFile>Circle.svg</SvgFile>
+    </Row>
+    <Row>
+      <SvgFile>Circle.svg</SvgFile>
+      <SvgFile>Circle.svg</SvgFile>
+    </Row>
+  </Rows>
+</Prism>

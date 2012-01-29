@@ -178,9 +178,9 @@
             // pinboardControl
             // 
             this.pinboardControl.BackColor = System.Drawing.Color.White;
-            this.pinboardControl.DisplayDirty = false;
             this.pinboardControl.Data = null;
             this.pinboardControl.DataDirty = false;
+            this.pinboardControl.DisplayDirty = false;
             this.pinboardControl.Location = new System.Drawing.Point(0, 27);
             this.pinboardControl.Name = "pinboardControl";
             this.pinboardControl.PropertiesForm = null;

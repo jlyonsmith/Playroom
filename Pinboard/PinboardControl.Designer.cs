@@ -49,10 +49,13 @@
             // 
             // PinboardControl
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Name = "PinboardControl";
             this.Size = new System.Drawing.Size(311, 265);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.PinboardControl_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.PinboardControl_DragEnter);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PinboardControl_KeyDown);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PinboardControl_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PinboardControl_MouseMove);

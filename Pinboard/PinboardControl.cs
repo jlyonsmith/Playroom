@@ -650,6 +650,23 @@ namespace Jamoki.Tools.Pinboard
             if (handler != null)
                 handler(this, new EventArgs());
         }
+
+        private void PinboardControl_DragDrop(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void PinboardControl_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
     }
 
     public enum DragOperation

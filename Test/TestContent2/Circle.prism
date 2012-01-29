@@ -1,0 +1,5 @@
+﻿<Prism>
+  <Pinboard>TestPinboard.pinboard</Pinboard>
+  <Rectangle>Circle</Rectangle>
+  <SvgFile>..\TestContent1\Circle.svg</SvgFile>
+</Prism>

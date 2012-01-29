@@ -32,25 +32,28 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.VisualBasic.PowerPacks.Vs, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.TextureImporter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Pinata.cs" />
+    <Compile Include="PrismDataImporter.cs" />
+    <Compile Include="PrismDataProcessor.cs" />
     <Compile Include="PinataTool.cs" />
-    <Compile Include="Prism.cs" />
     <Compile Include="PrismDataReaderV1.cs" />
     <Compile Include="PrismData.cs" />
     <Compile Include="PinboardData.cs" />
     <Compile Include="PinboardDataReaderV1.cs" />
     <Compile Include="PinboardDataWriter.cs" />
-    <Compile Include="PrismTool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PinataData.cs" />
     <Compile Include="PinataDataReaderV1.cs" />
