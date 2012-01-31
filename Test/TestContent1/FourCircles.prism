@@ -1,6 +1,6 @@
 ﻿<Prism>
-  <Pinboard>Test.pinboard</Pinboard>
-  <Rectangle>Circle</Rectangle>
+  <PinboardFile>TestPinboard.pinboard</PinboardFile>
+  <Rectangle>Circle2</Rectangle>
   <Rows>
     <Row>
       <SvgFile>Circle.svg</SvgFile>

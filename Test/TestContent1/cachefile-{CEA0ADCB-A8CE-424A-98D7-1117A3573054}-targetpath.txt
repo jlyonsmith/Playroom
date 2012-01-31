@@ -1,0 +1,3 @@
+TestContent1\TestFont.xnb
+TestContent1\Circle.xnb
+TestContent1\FourCircles.xnb

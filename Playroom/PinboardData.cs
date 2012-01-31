@@ -28,6 +28,14 @@ namespace Playroom
                 return data;
             }
         }
+
+        public RectangleInfo GetRectangleInfoByName(string name)
+        {
+            if (name == "Screen")
+                return this.ScreenRectInfo;
+            else
+                return this.RectInfos.Find(r => r.Name == name);
+        }
     }
 
     public class RectangleInfo

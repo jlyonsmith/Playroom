@@ -9,6 +9,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
+    <XnaPlatform>Windows</XnaPlatform>
+    <XnaProfile>HiDef</XnaProfile>
     <OutputPath>bin\$(Platform)\$(Configuration)</OutputPath>
   </PropertyGroup>
   <PropertyGroup>
@@ -23,18 +25,19 @@
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.VideoImporters, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Circle.prism">
+    <None Include="Circle.prism">
       <Name>Circle</Name>
-    </Compile>
+      <Importer>PrismImporter</Importer>
+    </None>
     <Compile Include="FourCircles.prism">
       <Name>FourCircles</Name>
       <SubType>Designer</SubType>
     </Compile>
-    <None Include="TestFont.spritefont.link">
-      <Name>TestFont.spritefont</Name>
-      <Importer>XmlImporter</Importer>
-      <Processor>PassThroughProcessor</Processor>
-    </None>
+    <Compile Include="TestFont.spritefontlink">
+      <Name>TestFont</Name>
+      <Importer>SpriteFontLinkImporter</Importer>
+      <Processor>SpriteFontLinkProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="TestPinboard.pinboard">
@@ -42,6 +45,12 @@
       <Importer>XmlImporter</Importer>
       <Processor>PassThroughProcessor</Processor>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Playroom\Playroom.csproj">
+      <Project>{D9A6DF85-1760-45A1-A26F-598989F58A0B}</Project>
+      <Name>Playroom</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

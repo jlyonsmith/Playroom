@@ -9,6 +9,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
+    <XnaPlatform>Windows</XnaPlatform>
+    <XnaProfile>HiDef</XnaProfile>
     <OutputPath>bin\$(Platform)\$(Configuration)</OutputPath>
   </PropertyGroup>
   <PropertyGroup>
@@ -23,14 +25,6 @@
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.VideoImporters, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestPinboard.pinboard">
-      <Name>TestPinboard</Name>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Circle.svg">
-      <Name>Circle</Name>
-    </None>
     <Compile Include="TestFont.spritefont">
       <Name>TestFont</Name>
       <Importer>FontDescriptionImporter</Importer>
@@ -38,19 +32,36 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Circle.prism">
+    <Compile Include="Circle.prism">
       <Name>Circle</Name>
-      <Importer>XmlImporter</Importer>
-      <Processor>PassThroughProcessor</Processor>
-    </None>
+      <Importer>PrismImporter</Importer>
+      <Processor>PrismProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="FourCircles.prism">
+    <Compile Include="FourCircles.prism">
       <Name>FourCircles</Name>
-      <Importer>XmlImporter</Importer>
-      <Processor>PassThroughProcessor</Processor>
+      <Importer>PrismImporter</Importer>
+      <Processor>PrismProcessor</Processor>
       <SubType>Designer</SubType>
-    </None>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Circle.svg" />
+    <None Include="TestPinboard.pinboard" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Playroom\Playroom.csproj">
+      <Project>{D9A6DF85-1760-45A1-A26F-598989F58A0B}</Project>
+      <Name>Playroom</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Rectangle.png">
+      <Name>Rectangle</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
 </Project>

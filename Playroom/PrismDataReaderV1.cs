@@ -58,6 +58,7 @@ namespace Playroom
             }
 
             reader.ReadEndElement();
+            reader.MoveToContent();
 
             return prismData;
         }
