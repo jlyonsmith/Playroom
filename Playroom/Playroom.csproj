@@ -81,8 +81,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LinkData.cs" />
-    <Compile Include="SpriteFontLinkProcessor.cs" />
     <Compile Include="ParsedPathWriter.cs" />
     <Compile Include="Pinata.cs" />
     <Compile Include="PrismImporter.cs" />
@@ -96,8 +94,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PinataData.cs" />
     <Compile Include="PinataDataReaderV1.cs" />
-    <Compile Include="LinkDataReaderV1.cs" />
-    <Compile Include="SpriteFontLinkImporter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Toaster\1.5\ToolBelt\ToolBelt.csproj">

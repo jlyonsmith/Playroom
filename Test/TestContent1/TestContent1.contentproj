@@ -46,6 +46,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Circle.svg" />
+    <None Include="Folder\Circle2.svg">
+      <Name>Circle2</Name>
+    </None>
+    <Compile Include="Circle2.prism">
+      <Name>Circle2</Name>
+      <Importer>PrismImporter</Importer>
+      <Processor>PrismProcessor</Processor>
+    </Compile>
     <None Include="TestPinboard.pinboard" />
   </ItemGroup>
   <ItemGroup>

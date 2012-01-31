@@ -36,11 +36,11 @@ namespace Playroom
             }
             catch (Exception e)
             {
-                throw new InvalidContentException("Unable to read prism data", new ContentIdentity(fileName), e);
+                throw new InvalidContentException(String.Format("Unable to read prism data. {0}", e.Message), new ContentIdentity(fileName), e);
             }
 
             prismData.PrismFile = prismFile;
-            prismData.PngFile = new ParsedPath(context.IntermediateDirectory, PathType.Directory).Append(prismFile.File).SetExtension(".png");
+            prismData.PngFile = new ParsedPath(context.IntermediateDirectory, PathType.Directory).SetFileAndExtension(prismFile.File + ".png");
             prismData.PinboardFile = prismData.PinboardFile.MakeFullPath(prismFile);
 
             if (prismData.SvgDirectory != null)

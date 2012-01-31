@@ -59,22 +59,25 @@ namespace Playroom
                 return inkscapeCom;
             }
         }
+
         private ContentProcessorContext Context { get; set; }
+        private ParsedPath PrismFile { get; set; }
 
         public override TextureContent Process(PrismData prismData, ContentProcessorContext context)
         {
             ParsedPath intermediateDir = new ParsedPath(context.IntermediateDirectory, PathType.Directory);
 
             this.Context = context;
+            this.PrismFile = prismData.PrismFile;
 
-            // Make all .SVG paths absolute relative to the .prism file and add dependencies on them
+            // Make all .svg paths absolute and add dependencies on them
             for (int i = 0; i < prismData.SvgFiles.Count; i++)
             {
                 List<ParsedPath> list = prismData.SvgFiles[i];
 
                 for (int j = 0; j < list.Count; j++)
                 {
-                    list[j] = list[j].MakeFullPath(prismData.PrismFile);
+                    list[j] = list[j].MakeFullPath(prismData.SvgDirectory == null ? prismData.PrismFile : prismData.SvgDirectory);
 
                     context.AddDependency(list[j]);
                 }
@@ -96,43 +99,24 @@ namespace Playroom
 
                     for (int col = 0; col < pathList.Count; col++)
                     {
-                        ParsedPath svgFile;
-
-                        svgFile = pathList[col].MakeFullPath(prismData.SvgDirectory == null ? prismData.SvgDirectory : prismData.PrismFile);
-
                         RectangleInfo rectInfo = prismData.Pinboard.GetRectangleInfoByName(prismData.RectangleName);
 
                         if (rectInfo == null)
                             throw new InvalidContentException(
                                 String.Format("Rectangle '{0}' not found in pinboard '{1}'", prismData.RectangleName, prismData.PinboardFile),
-                                new ContentIdentity(prismData.PinboardFile));
+                                new ContentIdentity(prismData.PrismFile));
 
                         ParsedPath tmpPngFile = tmpPath.SetFileAndExtension(String.Format("{0}_{1}_{2}.png", prismData.PngFile.File, row, col));
 
                         placements.Add(new ImagePlacement(tmpPngFile, 
                             new Rectangle(col * rectInfo.Width, row * rectInfo.Height, rectInfo.Width, rectInfo.Height)));
 
-                        ConvertSvgToPng(svgFile, tmpPngFile, rectInfo.Width, rectInfo.Height);
+                        ConvertSvgToPng(pathList[col], tmpPngFile, rectInfo.Width, rectInfo.Height);
                     }
                 }
 
-                if (placements.Count == 1)
-                {
-                    // If there is just one PNG file, rename it the final PNG.
-                    ParsedPath tmpPngFile = tmpPath.SetFileAndExtension(prismData.PngFile.File + "_0_0.png");
-
-                    if (File.Exists(prismData.PngFile))
-                        File.Delete(prismData.PngFile);
-
-                    File.Move(tmpPngFile, prismData.PngFile);
-                }
-                else
-                {
-                    // If there are multiple, combine all the PNG files into the final PNG 
-                    // using the ImagePlacements and delete the temp files.
-                    Context.Logger.LogMessage("Combining images for {0}", prismData.PngFile);
-                    CombineImages(placements, prismData.PngFile);
-                }
+                // Combine all the PNG files into the final PNG using the ImagePlacements and delete the temp files.
+                CombineImages(placements, prismData.PngFile);
             }
             finally
             {
@@ -164,7 +148,7 @@ namespace Playroom
             catch (Exception e)
             {
                 throw new InvalidContentException(String.Format("Unable to read pinboard file '{0}'", pinboardFile),
-                    new ContentIdentity(pinboardFile), e);
+                    new ContentIdentity(this.PrismFile), e);
             }
 
             return data;
@@ -172,6 +156,8 @@ namespace Playroom
 
         private bool CombineImages(List<ImagePlacement> placements, ParsedPath imageFileName)
         {
+            Context.Logger.LogMessage("Combining images for {0}", imageFileName);
+
             try
             {
                 int width = 0;
@@ -194,7 +180,7 @@ namespace Playroom
                         {
                             using (Bitmap image = new Bitmap(placement.ImageFile))
                             {
-                                g.DrawImage(image, placement.TargetRectangle);
+                                g.DrawImageUnscaled(image, placement.TargetRectangle);
                             }
                         }
                     }
@@ -204,7 +190,7 @@ namespace Playroom
             }
             catch (Exception e)
             {
-                throw new InvalidContentException(String.Format("Unable to combine images for image file '{0}'", imageFileName), 
+                throw new InvalidContentException(String.Format("Unable to combine images for image file '{0}'. {1}", imageFileName, e.Message), 
                     new ContentIdentity(imageFileName), e);
             }
 
@@ -226,8 +212,10 @@ namespace Playroom
 
         private bool ConvertSvgToPng(string svgFile, string pngFile, int width, int height)
         {
+            Context.Logger.LogMessage("Converting {0} to {1}", svgFile, pngFile);
+
             string output;
-            string command = string.Format("\"{0}\" \"{1}\" -w {2} -h {3} -e \"{4}\"",
+            string command = string.Format("\"{0}\" \"{1}\" -y 0 -w {2} -h {3} -e \"{4}\"",
                 InkscapeCom, // 0
                 svgFile, // 1
                 width.ToString(), // 2
@@ -237,11 +225,8 @@ namespace Playroom
 
             int ret = Command.Run(command, out output);
 
-            if (ret != 0)
-            {
-                // TODO-john-2012: Error message
-                return false;
-            }
+            if (ret != 0 || output.IndexOf("CRITICAL **") != -1)
+                throw new PipelineException("Error running Inkscape on '{0}'", svgFile);
 
             return true;
         }

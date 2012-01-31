@@ -1,2 +1,0 @@
-TestContent2\FourCircles.xnb
-TestContent2\TestFont.xnb
