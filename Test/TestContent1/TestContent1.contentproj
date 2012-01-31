@@ -25,6 +25,12 @@
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.VideoImporters, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FourCircles.prism">
+      <SubType>Designer</SubType>
+      <Name>FourCircles</Name>
+      <Importer>PrismImporter</Importer>
+      <Processor>PrismProcessor</Processor>
+    </Compile>
     <Compile Include="TestFont.spritefont">
       <Name>TestFont</Name>
       <Importer>FontDescriptionImporter</Importer>
@@ -36,14 +42,6 @@
       <Name>Circle</Name>
       <Importer>PrismImporter</Importer>
       <Processor>PrismProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="FourCircles.prism">
-      <Name>FourCircles</Name>
-      <Importer>PrismImporter</Importer>
-      <Processor>PrismProcessor</Processor>
-      <SubType>Designer</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>

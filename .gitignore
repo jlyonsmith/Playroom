@@ -15,3 +15,4 @@ Release/
 bin/
 obj/
 _UpgradeReport_Files/
+ItemTemplates/*.zip

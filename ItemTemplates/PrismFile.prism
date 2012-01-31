@@ -1,0 +1,18 @@
+﻿<Prism>
+  <PinboardFile>PinboardFile.pinboard</PinboardFile>
+  <Rectangle>Rectangle</Rectangle>
+  <SvgDirectory>.</SvgDirectory>
+  <!--
+    <SvgFile>File1.svg</SvgFile>
+  --> 
+  <Rows>
+    <Row>
+      <SvgFile>File1.svg</SvgFile>
+      <SvgFile>File2.svg</SvgFile>
+    </Row>
+    <Row>
+      <SvgFile>File3.svg</SvgFile>
+      <SvgFile>File4.svg</SvgFile>
+    </Row>
+  </Rows>
+</Prism>
