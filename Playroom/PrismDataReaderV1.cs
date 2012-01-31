@@ -11,6 +11,7 @@ namespace Playroom
     {
         public static string prismAtom;
         public static string svgDirectoryAtom;
+        public static string converterAtom;
         public static string rowsAtom;
         public static string rowAtom;
         public static string svgFileAtom;
@@ -19,6 +20,7 @@ namespace Playroom
         {
             prismAtom = reader.NameTable.Add("Prism");
             svgDirectoryAtom = reader.NameTable.Add("SvgDirectory");
+            converterAtom = reader.NameTable.Add("Converter");
             svgFileAtom = reader.NameTable.Add("SvgFile");
             rowsAtom = reader.NameTable.Add("Rows");
             rowAtom = reader.NameTable.Add("Row");
@@ -39,9 +41,16 @@ namespace Playroom
             prismData.RectangleName = reader.ReadElementContentAsString("Rectangle", "");
             reader.MoveToContent();
 
+            if (reader.NodeType == XmlNodeType.Element && String.ReferenceEquals(converterAtom, reader.Name))
+            {
+                prismData.Converter = (SvgToPngConverter)Enum.Parse(
+                    typeof(SvgToPngConverter), reader.ReadElementContentAsString(converterAtom, ""));
+                reader.MoveToContent();
+            }
+
             if (reader.NodeType == XmlNodeType.Element && String.ReferenceEquals(svgDirectoryAtom, reader.Name))
             {
-                prismData.SvgDirectory = new ParsedPath(reader.ReadElementContentAsString("SvgDirectory", ""), PathType.Directory);
+                prismData.SvgDirectory = new ParsedPath(reader.ReadElementContentAsString(svgDirectoryAtom, ""), PathType.Directory);
                 reader.MoveToContent();
             }
 

@@ -17,8 +17,6 @@ namespace Playroom
     [ContentProcessor(DisplayName = "Prism Processor")]
     public class PrismProcessor : ContentProcessor<PrismData, TextureContent>
     {
-        private static ParsedPath inkscapeCom;
-        
         private class ImagePlacement
         {
             public ImagePlacement(ParsedPath pngFile, System.Drawing.Rectangle targetRectangle)
@@ -31,37 +29,56 @@ namespace Playroom
             public System.Drawing.Rectangle TargetRectangle { get; set; }
         }
 
-        private static ParsedPath InkscapeCom 
-        {
-            get
-            {
-                if (inkscapeCom == null)
-                {
-                    RegistryKey inkscapeKey = Registry.ClassesRoot.OpenSubKey(@"svgfile\shell\Inkscape\command", false);
-
-                    if (inkscapeKey == null)
-                        throw new PipelineException(PlayroomResources.InkscapeNotInstalled);
-
-                    string s = (string)inkscapeKey.GetValue("");
-
-                    if (s == null || s.Length < 1)
-                        throw new PipelineException(PlayroomResources.InkscapeNotInstalled);
-
-                    if (s[0] == '"')
-                        s = s.Substring(1, s.IndexOf('"', 1) - 1);
-
-                    inkscapeCom = new ParsedPath(s, PathType.File).SetExtension(".com");
-
-                    if (!File.Exists(inkscapeCom))
-                        throw new PipelineException(PlayroomResources.InkscapeNotInstalled);
-                }
-
-                return inkscapeCom;
-            }
-        }
+        private static ParsedPath InkscapeCom { get; set; }
+        private static ParsedPath RSvgConvertExe { get; set; }
 
         private ContentProcessorContext Context { get; set; }
         private ParsedPath PrismFile { get; set; }
+
+        static PrismProcessor()
+        {
+            try
+            {
+                RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"svgfile\shell\Inkscape\command", false);
+
+                if (key != null)
+                {
+                    string s = (string)key.GetValue("");
+
+                    if (s != null && s.Length > 0)
+                    {
+                        if (s[0] == '"')
+                            s = s.Substring(1, s.IndexOf('"', 1) - 1);
+
+                        ParsedPath path  = new ParsedPath(s, PathType.File).SetExtension(".com");
+
+                        if (File.Exists(path))
+                            PrismProcessor.InkscapeCom = path;
+                    }
+                }
+
+                key = Registry.ClassesRoot.OpenSubKey(@"svgfile\shell\Edit with GIMP\command", false);
+
+                if (key != null)
+                {
+                    string s = (string)key.GetValue("");
+
+                    if (s != null && s.Length > 0)
+                    {
+                        if (s[0] == '"')
+                            s = s.Substring(1, s.IndexOf('"', 1) - 1);
+
+                        ParsedPath path = new ParsedPath(s, PathType.File).SetFileAndExtension("rsvg-convert.exe");
+
+                        if (File.Exists(path))
+                            PrismProcessor.RSvgConvertExe = path;
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
 
         public override TextureContent Process(PrismData prismData, ContentProcessorContext context)
         {
@@ -83,8 +100,9 @@ namespace Playroom
                 }
             }
 
-            // Grab the pinboard data
+            // Grab the pinboard data and add a dependency
             prismData.Pinboard = ReadPinboardFile(prismData.PinboardFile);
+            context.AddDependency(prismData.PinboardFile);
 
             ParsedPath tmpPath = new ParsedPath(context.IntermediateDirectory, PathType.Directory);
 
@@ -111,7 +129,17 @@ namespace Playroom
                         placements.Add(new ImagePlacement(tmpPngFile, 
                             new Rectangle(col * rectInfo.Width, row * rectInfo.Height, rectInfo.Width, rectInfo.Height)));
 
-                        ConvertSvgToPng(pathList[col], tmpPngFile, rectInfo.Width, rectInfo.Height);
+                        switch (prismData.Converter)
+                        {
+                            default:
+                            case SvgToPngConverter.RSvg:
+                                ConvertSvgToPngWithRSvg(pathList[col], tmpPngFile, rectInfo.Width, rectInfo.Height);
+                                break;
+
+                            case SvgToPngConverter.Inkscape:
+                                ConvertSvgToPngWithInkscape(pathList[col], tmpPngFile, rectInfo.Width, rectInfo.Height);
+                                break;
+                        }
                     }
                 }
 
@@ -156,7 +184,7 @@ namespace Playroom
 
         private bool CombineImages(List<ImagePlacement> placements, ParsedPath imageFileName)
         {
-            Context.Logger.LogMessage("Combining images for {0}", imageFileName);
+            Context.Logger.LogMessage("Combining images into {0}", imageFileName);
 
             try
             {
@@ -210,9 +238,9 @@ namespace Playroom
             }
         }
 
-        private bool ConvertSvgToPng(string svgFile, string pngFile, int width, int height)
+        private bool ConvertSvgToPngWithInkscape(string svgFile, string pngFile, int width, int height)
         {
-            Context.Logger.LogMessage("Converting {0} to {1}", svgFile, pngFile);
+            Context.Logger.LogMessage("Inkscape is converting {0} to {1}", svgFile, pngFile);
 
             string output;
             string command = string.Format("\"{0}\" \"{1}\" -y 0 -w {2} -h {3} -e \"{4}\"",
@@ -227,6 +255,27 @@ namespace Playroom
 
             if (ret != 0 || output.IndexOf("CRITICAL **") != -1)
                 throw new PipelineException("Error running Inkscape on '{0}'", svgFile);
+
+            return true;
+        }
+
+        private bool ConvertSvgToPngWithRSvg(string svgFile, string pngFile, int width, int height)
+        {
+            Context.Logger.LogMessage("RSvg-Convert is converting {0} to {1}", svgFile, pngFile);
+
+            string output;
+            string command = string.Format("\"{0}\" \"{1}\" -w {2} -h {3} -o \"{4}\"",
+                PrismProcessor.RSvgConvertExe, // 0
+                svgFile, // 1
+                width.ToString(), // 2
+                height.ToString(), // 3
+                pngFile // 4
+                );
+
+            int ret = Command.Run(command, out output);
+
+            if (ret != 0)
+                throw new PipelineException("Error running RSVG-Convert on '{0}'", svgFile);
 
             return true;
         }

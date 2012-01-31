@@ -1,3 +1,4 @@
+@echo off
 setlocal
 call SetSlnRoot.bat
 set Config=%1
