@@ -21,7 +21,6 @@ namespace ToyBox
         protected float xnaDepth;
         protected int depth;
 
-        public int Tags { get; set; }
         public Point Position { get; set; }
         public float Rotation { get; set; }
         public Vector2 RotationOrigin { get; set; }

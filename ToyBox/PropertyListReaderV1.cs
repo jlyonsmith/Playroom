@@ -14,6 +14,7 @@ namespace ToyBox
         private static string keyAtom;
         private static string integerAtom;
         private static string dateAtom;
+        private static string booleanAtom;
         private static string plistAtom;
 
         public static PropertyList ReadXml(XmlReader reader)
@@ -29,6 +30,7 @@ namespace ToyBox
             keyAtom = reader.NameTable.Add("Key");
             integerAtom = reader.NameTable.Add("Integer");
             dateAtom = reader.NameTable.Add("Date");
+            booleanAtom = reader.NameTable.Add("Boolean");
             plistAtom = reader.NameTable.Add("PropertyList");
 
             reader.MoveToContent();
@@ -126,6 +128,10 @@ namespace ToyBox
             {
                 t = typeof(DateTime);
             }
+            else if (String.ReferenceEquals(reader.Name, booleanAtom))
+            {
+                t = typeof(Boolean);
+            }
             else
             {
                 t = typeof(string);
@@ -139,6 +145,12 @@ namespace ToyBox
                 int result;
 
                 value = (object)(Int32.TryParse(s, out result) ? result : 0);
+            }
+            else if (t == typeof(Boolean))
+            {
+                bool result;
+
+                value = (object)(Boolean.TryParse(s, out result) ? result : false);
             }
             else if (t == typeof(DateTime))
             {

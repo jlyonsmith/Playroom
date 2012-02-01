@@ -97,7 +97,7 @@ namespace ToyBox
 
             using (XmlWriter xw = XmlWriter.Create(sb))
             {
-                PropertyListWriter.WriteXml(xw, dict);
+                PropertyListWriter.WriteXml(xw, this);
             }
 
             return sb.ToString();
