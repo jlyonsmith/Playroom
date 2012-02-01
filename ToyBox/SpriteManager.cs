@@ -99,6 +99,11 @@ namespace ToyBox
 
         public void AttachSprite(Sprite sprite, params Set<Sprite>[] spriteSets)
         {
+#if DEBUG
+            if (sprites.Contains(sprite))
+                throw new ArgumentException("Sprite attached multiple times");
+#endif
+
             this.sprites.Add(sprite);
 
             foreach (var spriteSet in spriteSets)

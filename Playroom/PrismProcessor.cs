@@ -29,6 +29,7 @@ namespace Playroom
             public System.Drawing.Rectangle TargetRectangle { get; set; }
         }
 
+        private static Dictionary<ParsedPath, PinboardData> pinboardDataCache;
         private static ParsedPath InkscapeCom { get; set; }
         private static ParsedPath RSvgConvertExe { get; set; }
 
@@ -37,6 +38,8 @@ namespace Playroom
 
         static PrismProcessor()
         {
+            pinboardDataCache = new Dictionary<ParsedPath, PinboardData>();
+
             try
             {
                 RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"svgfile\shell\Inkscape\command", false);
@@ -129,6 +132,9 @@ namespace Playroom
                         placements.Add(new ImagePlacement(tmpPngFile, 
                             new Rectangle(col * rectInfo.Width, row * rectInfo.Height, rectInfo.Width, rectInfo.Height)));
 
+                        if (!File.Exists(pathList[col]))
+                            throw new FileNotFoundException(PlayroomResources.FileNotFound(pathList[col]));
+
                         switch (prismData.Converter)
                         {
                             default:
@@ -166,6 +172,11 @@ namespace Playroom
         {
             PinboardData data = null;
 
+            if (pinboardDataCache.TryGetValue(pinboardFile, out data))
+            {
+                return data;
+            }
+
             try
             {
                 using (XmlReader reader = XmlReader.Create(pinboardFile))
@@ -178,6 +189,8 @@ namespace Playroom
                 throw new InvalidContentException(String.Format("Unable to read pinboard file '{0}'", pinboardFile),
                     new ContentIdentity(this.PrismFile), e);
             }
+
+            pinboardDataCache.Add(pinboardFile, data);
 
             return data;
         }

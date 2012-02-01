@@ -1,5 +1,4 @@
 ﻿<Prism>
-  <PinboardFile>TestPinboard.pinboard</PinboardFile>
   <Rectangle>Circle2</Rectangle>
   <Rows>
     <Row>
@@ -11,4 +10,5 @@
       <SvgFile>Circle.svg</SvgFile>
     </Row>
   </Rows>
+  <PinboardFile>TestPinboard.pinboard</PinboardFile>
 </Prism>

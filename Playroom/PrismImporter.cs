@@ -22,7 +22,7 @@ namespace Playroom
 
             if (!File.Exists(prismFile))
             {
-                throw new FileNotFoundException("Cannot read prism data '{0}'.  The file could not be found", prismFile); 
+                throw new FileNotFoundException(PlayroomResources.FileNotFound(prismFile)); 
             }
 
             PrismData prismData = null;

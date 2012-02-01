@@ -15,6 +15,8 @@ namespace Playroom
         public static string rowsAtom;
         public static string rowAtom;
         public static string svgFileAtom;
+        public static string rectangleAtom;
+        public static string pinboardFileAtom;
 
         public static PrismData ReadXml(XmlReader reader)
         {
@@ -24,6 +26,8 @@ namespace Playroom
             svgFileAtom = reader.NameTable.Add("SvgFile");
             rowsAtom = reader.NameTable.Add("Rows");
             rowAtom = reader.NameTable.Add("Row");
+            rectangleAtom = reader.NameTable.Add("Rectangle");
+            pinboardFileAtom = reader.NameTable.Add("PinboardFile");
             
             reader.MoveToContent();
             return ReadPrismElement(reader);
@@ -36,38 +40,72 @@ namespace Playroom
             reader.ReadStartElement("Prism");
             reader.MoveToContent();
 
-            prismData.PinboardFile = new ParsedPath(reader.ReadElementContentAsString("PinboardFile", ""), PathType.File);
-            reader.MoveToContent();
-            prismData.RectangleName = reader.ReadElementContentAsString("Rectangle", "");
-            reader.MoveToContent();
+            bool readConverter = false;
 
-            if (reader.NodeType == XmlNodeType.Element && String.ReferenceEquals(converterAtom, reader.Name))
+            while (true)
             {
-                prismData.Converter = (SvgToPngConverter)Enum.Parse(
-                    typeof(SvgToPngConverter), reader.ReadElementContentAsString(converterAtom, ""));
-                reader.MoveToContent();
-            }
+                if (reader.NodeType == XmlNodeType.EndElement && String.ReferenceEquals(prismAtom, reader.Name))
+                {
+                    reader.ReadEndElement();
+                    reader.MoveToContent();
+                    break;
+                }
 
-            if (reader.NodeType == XmlNodeType.Element && String.ReferenceEquals(svgDirectoryAtom, reader.Name))
-            {
-                prismData.SvgDirectory = new ParsedPath(reader.ReadElementContentAsString(svgDirectoryAtom, ""), PathType.Directory);
-                reader.MoveToContent();
-            }
+                if (reader.NodeType != XmlNodeType.Element)
+                    throw new XmlException(PlayroomResources.ElementNodeExpected);
 
-            if (reader.NodeType == XmlNodeType.Element && String.ReferenceEquals(reader.Name, svgFileAtom))
-            {
-                prismData.SvgFiles = new List<List<ParsedPath>>();
-                prismData.SvgFiles.Add(new List<ParsedPath>());
-                prismData.SvgFiles[0].Add(new ParsedPath(reader.ReadElementContentAsString(svgFileAtom, ""), PathType.File));
-                reader.MoveToContent();
-            }
-            else
-            {
-                prismData.SvgFiles = ReadRowsElement(reader);
-            }
+                if (String.ReferenceEquals(pinboardFileAtom, reader.Name))
+                {
+                    if (prismData.PinboardFile != null)
+                        throw new XmlException(PlayroomResources.DuplicateElement(pinboardFileAtom));
 
-            reader.ReadEndElement();
-            reader.MoveToContent();
+                    prismData.PinboardFile = new ParsedPath(reader.ReadElementContentAsString(pinboardFileAtom, ""), PathType.File);
+                    reader.MoveToContent();
+                }
+                else if (String.ReferenceEquals(rectangleAtom, reader.Name))
+                {
+                    if (prismData.RectangleName != null)
+                        throw new XmlException(PlayroomResources.DuplicateElement(rectangleAtom));
+
+                    prismData.RectangleName = reader.ReadElementContentAsString(rectangleAtom, "");
+                    reader.MoveToContent();
+                }
+                else if (String.ReferenceEquals(converterAtom, reader.Name))
+                {
+                    if (readConverter)
+                        throw new XmlException(PlayroomResources.DuplicateElement(converterAtom));
+
+                    prismData.Converter = (SvgToPngConverter)Enum.Parse(
+                        typeof(SvgToPngConverter), reader.ReadElementContentAsString(converterAtom, ""));
+                    readConverter = true;
+                    reader.MoveToContent();
+                }
+                else if (String.ReferenceEquals(svgDirectoryAtom, reader.Name))
+                {
+                    if (prismData.SvgDirectory != null)
+                        throw new XmlException(PlayroomResources.DuplicateElement(svgDirectoryAtom));
+
+                    prismData.SvgDirectory = new ParsedPath(reader.ReadElementContentAsString(svgDirectoryAtom, ""), PathType.Directory);
+                    reader.MoveToContent();
+                }
+                else if (String.ReferenceEquals(reader.Name, svgFileAtom))
+                {
+                    if (prismData.SvgFiles != null)
+                        throw new XmlException(PlayroomResources.DuplicateElement(svgFileAtom));
+
+                    prismData.SvgFiles = new List<List<ParsedPath>>();
+                    prismData.SvgFiles.Add(new List<ParsedPath>());
+                    prismData.SvgFiles[0].Add(new ParsedPath(reader.ReadElementContentAsString(svgFileAtom, ""), PathType.File));
+                    reader.MoveToContent();
+                }
+                else
+                {
+                    if (prismData.SvgFiles != null)
+                        throw new XmlException(PlayroomResources.DuplicateElement(rowsAtom));
+
+                    prismData.SvgFiles = ReadRowsElement(reader);
+                }
+            }
 
             return prismData;
         }

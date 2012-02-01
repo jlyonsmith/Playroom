@@ -9,7 +9,6 @@ namespace Playroom
     public class PinataData
     {
         public string Namespace { get; set; }
-        public String Symbol { get; set; }
         public List<PinataClassData> Classes { get; set; }
     }
 

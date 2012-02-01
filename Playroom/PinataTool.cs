@@ -26,8 +26,8 @@ namespace Playroom
         [CommandLineArgument("nologo", Description = "Suppress logo banner")]
         public bool NoLogo { get; set; }
 
-        [CommandLineArgument("force", Description = "Force a full compile even if all files are up-to-date")]
-        public bool Force { get; set; }
+        [CommandLineArgument("rebuild", Description = "Force a rebuild even if all files are up-to-date")]
+        public bool Rebuild { get; set; }
 
         public OutputHelper Output { get; set; }
 
@@ -89,7 +89,7 @@ namespace Playroom
             }
 
             // Check dates to see if a rebuild is required
-            bool doCompile = Force;
+            bool doCompile = Rebuild;
 
             if (!doCompile)
             {
@@ -200,7 +200,6 @@ namespace Playroom
             writer.WriteLine("");
             writer.WriteLine("namespace {0}", pinataData.Namespace);
             writer.WriteLine("{");
-            writer.WriteLine("#if {0}", pinataData.Symbol);
 
             for (int i = 0; i < pinataData.Classes.Count; i++)
             {
@@ -222,7 +221,6 @@ namespace Playroom
                 writer.WriteLine();
             }
 
-            writer.WriteLine("#endif");
             writer.WriteLine("}");
         }
 

@@ -27,16 +27,15 @@ namespace Playroom
             PinataData data = new PinataData();
 
             reader.ReadStartElement(pinataAtom);
-
             reader.MoveToContent();
+
             data.Namespace = reader.ReadElementContentAsString("Namespace", "");
-
             reader.MoveToContent();
-            data.Symbol = reader.ReadElementContentAsString("Symbol", "");
 
             data.Classes = ReadClassesElement(reader);
 
             reader.ReadEndElement();
+            reader.MoveToContent();
 
             return data;
         }

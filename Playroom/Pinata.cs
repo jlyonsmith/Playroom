@@ -28,7 +28,7 @@ namespace Playroom
             PinataTool tool = new PinataTool(new MSBuildOutputter(buildEngine, taskName));
 
             tool.Parser.CommandName = taskName;
-            tool.Force = this.Force;
+            tool.Rebuild = this.Force;
             tool.PinataFile = new ParsedPath(this.PinataFile, PathType.File);
             tool.CsFile = new ParsedPath(this.CsFile, PathType.File);
             tool.NoLogo = true;
