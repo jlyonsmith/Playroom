@@ -10,10 +10,15 @@ namespace ToyBox
 {
     public class TextureAndPosition
     {
+        public TextureAndPosition(Texture2D texture, Point point, Rectangle? sourceRectangle)
+            : this(texture, point.X, point.Y, sourceRectangle)
+        {
+        }
+
         public TextureAndPosition(Texture2D texture, int x, int y, Rectangle? sourceRectangle)
         {
             this.Texture = texture;
-            this.SourceRectangle = sourceRectangle.HasValue ? 
+            this.SourceRectangle = sourceRectangle.HasValue ?
                 sourceRectangle.Value : new Rectangle(0, 0, texture.Width, texture.Height);
             this.Position = new Vector2((float)x, (float)y);
         }

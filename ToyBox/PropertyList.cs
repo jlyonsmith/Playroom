@@ -22,26 +22,26 @@ namespace ToyBox
 
     public class PropertyList
     {
-        private Dictionary<string, object> dict;
+        public Dictionary<string, object> Dictionary { get; set; }
         
         public event EventHandler<SupplyDefaultValueEventArgs> SupplyDefaultValue;
 
         public PropertyList()
         {
-            this.dict = new Dictionary<string, object>();
+            this.Dictionary = new Dictionary<string, object>();
         }
 
         public PropertyList(Dictionary<string, object> dict)
         {
             // TODO-john-2012: This should do a deep copy of the passed in dictionary
-            this.dict = dict;
+            this.Dictionary = dict;
         }
 
         public PropertyList DeepClone()
         {
             PropertyList propList = new PropertyList();
 
-            propList.dict = CloneDictionary(this.dict);
+            propList.Dictionary = CloneDictionary(this.Dictionary);
             propList.SupplyDefaultValue = this.SupplyDefaultValue;
 
             return propList;
@@ -77,16 +77,16 @@ namespace ToyBox
             {
                 object obj;
 
-                if (dict.TryGetValue(name, out obj))
+                if (Dictionary.TryGetValue(name, out obj))
                     return obj;
 
                 obj = RaiseSupplyDefaultValueEvent(name);
-                dict[name] = obj;
+                Dictionary[name] = obj;
                 return obj;
             }
             set
             {
-                dict[name] = value;
+                Dictionary[name] = value;
             }
         }
 

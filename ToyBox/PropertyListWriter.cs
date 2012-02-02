@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Reflection;
+using System.Security;
 
 namespace ToyBox
 {
@@ -27,10 +28,7 @@ namespace ToyBox
             writer.WriteStartElement("PropertyList");
             writer.WriteAttributeString("Version", "1");
 
-            FieldInfo dictField = propList.GetType().GetField("dict", 
-                System.Reflection.BindingFlags.NonPublic | BindingFlags.Instance);
-
-            WriteDict(writer, null, (Dictionary<string, object>)dictField.GetValue(propList));
+            WriteDict(writer, null, propList.Dictionary);
             writer.WriteEndElement();
         }
 
