@@ -20,12 +20,29 @@ namespace ToyBox
 
         protected float xnaDepth;
         protected int depth;
+        protected Point position;
 
-        public Point Position { get; set; }
+        public Point Position 
+        { 
+            get { return position; }
+            set { this.position = value; }
+        }
+        public int X 
+        {
+            get { return this.Position.X; }
+            set { this.position.X = value; }
+        }
+        public int Y 
+        { 
+            get { return this.Position.Y; } 
+            set { this.position.Y = value; }
+        }
         public float Rotation { get; set; }
         public Vector2 RotationOrigin { get; set; }
         public abstract Rectangle Rectangle { get; }
         public abstract Size Size { get; }
+        public abstract int Width { get; }
+        public abstract int Height { get; }
         public bool Visible { get; set; }
         public Color TintColor { get; set; }
         public int Depth 
@@ -61,16 +78,36 @@ namespace ToyBox
 
     public class TextureSprite : Sprite
     {
+        private int activeTextureIndex;
+        private Rectangle rect;
+
         public ReadOnlyCollection<SpriteTexture> SpriteTextures { get; private set; }
-        public int ActiveTextureIndex { get; set; }
+        public int ActiveTextureIndex 
+        {
+            get
+            {
+                return activeTextureIndex;
+            }
+            set
+            {
+                activeTextureIndex = value;
+                rect = this.SpriteTextures[this.ActiveTextureIndex].Rectangle;
+            }
+        }
         public override Size Size
         {
             get
             {
-                Rectangle textureRect = this.SpriteTextures[this.ActiveTextureIndex].Rectangle;
-
-                return new Size(textureRect.Width, textureRect.Height);
+                return new Size(rect.Width, rect.Height);
             }
+        }
+        public override int Width
+        {
+            get { return rect.Width; }
+        }
+        public override int Height
+        {
+            get { return rect.Height; }
         }
         public override Rectangle Rectangle
         {
@@ -166,11 +203,19 @@ namespace ToyBox
                 return size;
             }
         }
+        public override int Width
+        {
+            get { return size.Width; }
+        }
+        public override int Height
+        {
+            get { return size.Height; }
+        }
         public override Rectangle Rectangle
         {
             get
             {
-                return new Rectangle(Position.X, Position.Y, size.Width, size.Height);
+                return new Rectangle(X, Y, size.Width, size.Height);
             }
         }
 
@@ -193,7 +238,7 @@ namespace ToyBox
             spriteBatch.DrawString(
                 this.Font, 
                 this.Text,
-                new Vector2(Position.X, Position.Y),
+                new Vector2(position.X, position.Y),
                 this.TintColor,
                 this.Rotation,
                 Vector2.Zero,

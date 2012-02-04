@@ -54,10 +54,16 @@ namespace Microsoft.Xna.Framework
             this.Height = (int)vector.Y;
         }
 
+        /// <summary>
+        /// Initializes a new size based on two points.
+        /// </summary>
+        /// <param name="point1"></param>
+        /// <param name="point2"></param>
         public Size(Point point1, Point point2)
         {
             Point point = point1.Subtract(point2);
-            
+        
+            // TODO-john-2012: Converting to absolute values should be done as a secondary step
             this.Width = Math.Abs(point.X);
             this.Height = Math.Abs(point.Y);
         }
@@ -145,6 +151,16 @@ namespace Microsoft.Xna.Framework
             CultureInfo currentCulture = CultureInfo.CurrentCulture;
             return String.Format(currentCulture, "{{Width:{0} Height:{1}}}", 
                 new object[] { this.Width.ToString(currentCulture), this.Height.ToString(currentCulture) });
+        }
+
+        public Size Scale(float x, float y)
+        {
+            return new Size((int)(this.Width * x), (int)(this.Height * y));
+        }
+
+        public Size Scale(Vector2 scale)
+        {
+            return Scale(scale.X, scale.Y);
         }
     }
 }

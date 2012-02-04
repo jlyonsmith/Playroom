@@ -8,6 +8,11 @@ namespace Microsoft.Xna.Framework
 {
     public static class PointExtensions
     {
+        public static Point Translate(this Point point, Point other)
+        {
+            return new Point(point.X + other.X, point.Y + other.Y);
+        }
+
         public static Point Translate(this Point point, int x, int y)
         {
             return new Point(point.X + x, point.Y + y);

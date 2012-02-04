@@ -10,8 +10,6 @@ namespace ToyBox
     {
         private List<T> list = new List<T>();
 
-        public virtual T LastAdded { get; protected set; }
-
         public Set()
         {
         }
@@ -20,8 +18,6 @@ namespace ToyBox
         {
             if (!list.Contains(t))
                 list.Add(t);
-
-            LastAdded = t;
         }
 
         public void Remove(T t)
