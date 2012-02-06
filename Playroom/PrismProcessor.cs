@@ -133,7 +133,8 @@ namespace Playroom
                             new Rectangle(col * rectInfo.Width, row * rectInfo.Height, rectInfo.Width, rectInfo.Height)));
 
                         if (!File.Exists(pathList[col]))
-                            throw new FileNotFoundException(PlayroomResources.FileNotFound(pathList[col]));
+                            throw new InvalidContentException(
+                                PlayroomResources.FileNotFound(pathList[col]), new ContentIdentity(prismData.PrismFile));
 
                         switch (prismData.Converter)
                         {
