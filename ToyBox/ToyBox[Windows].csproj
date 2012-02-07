@@ -55,13 +55,14 @@
     <Compile Include="IInputService.cs" />
     <Compile Include="IKeyboard.cs" />
     <Compile Include="IMouse.cs" />
+    <Compile Include="IMouseArrowService.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="IStorageService.cs" />
     <Compile Include="ISpriteService.cs" />
     <Compile Include="ITouchPanel.cs" />
     <Compile Include="MathExtensions.cs" />
     <Compile Include="Message.cs" />
-    <Compile Include="MouseArrowComponent.cs" />
+    <Compile Include="MousePointerManager.cs" />
     <Compile Include="MouseButtons.cs" />
     <Compile Include="NoGamePad.cs" />
     <Compile Include="NoKeyboard.cs" />
