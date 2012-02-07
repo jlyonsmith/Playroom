@@ -8,14 +8,14 @@ using Microsoft.Xna.Framework.Input;
 
 namespace ToyBox
 {
-#if WINDOWS
-
     public class MousePointerManager : GameComponent, IMousePointerService
     {
         private ISpriteService spriteService;
         private IInputService inputService;
+#if WINDOWS
         private Texture2D mousePointerTexture;
         private TextureSprite mouseSprite;
+#endif
         private Point mousePosition;
 
         public MousePointerManager(Game game)
@@ -72,7 +72,9 @@ namespace ToyBox
         private void Mouse_Moved(Point point)
         {
             mousePosition = point;
+#if WINDOWS
             this.mouseSprite.Position = mousePosition;
+#endif
         }
 
         #region IMouseArrowService Members
@@ -84,6 +86,4 @@ namespace ToyBox
 
         #endregion
     }
-
-#endif
 }
