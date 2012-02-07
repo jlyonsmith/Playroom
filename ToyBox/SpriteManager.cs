@@ -142,6 +142,11 @@ namespace ToyBox
             }
         }
 
+        private void Animation_ActivateNextAnimation(Animation animation, Animation nextAnimation)
+        {
+            this.animations.Add(nextAnimation);
+        }
+
         public void DetachSprite(Sprite sprite)
         {
             this.sprites.Remove(sprite);
@@ -188,7 +193,8 @@ namespace ToyBox
                 this.Game.GraphicsDevice, width, height,
                 false, SurfaceFormat.Color, DepthFormat.None);
 
-            DrawRenderTarget(renderTarget, textureAndPositions);
+            if (textureAndPositions != null)
+                DrawRenderTarget(renderTarget, textureAndPositions);
 
             return renderTarget;
         }
@@ -210,10 +216,43 @@ namespace ToyBox
             this.Game.GraphicsDevice.SetRenderTarget(null);
         }
 
-        // TODO-john-2012: Make private and just use reflection?
-        private void Animation_ActivateNextAnimation(Animation animation, Animation nextAnimation)
+        private string InsertNewLines(string text, SpriteFont font, int width, ref int height)
         {
-            this.animations.Add(nextAnimation);
+            String line = String.Empty;
+            String newText = String.Empty;
+            String[] wordArray = text.Split(' ');
+            int i = 0;
+
+            height = 0;
+
+            while (i < wordArray.Length)
+            {
+                // Start of the line; add the first word
+                line += wordArray[i++];
+
+                while (i < wordArray.Length)
+                {
+                    // More words to add
+                    Vector2 lineSize = font.MeasureString(line + ' ' + wordArray[i]);
+
+                    if (lineSize.X > width)
+                    {
+                        // This word pushes us to the next line
+                        newText += line + '\n';
+                        line = String.Empty;
+                        height += font.LineSpacing;
+                        break;
+                    }
+                    else
+                    {
+                        line += ' ' + wordArray[i++];
+                    }
+                }
+            }
+
+            newText += line;
+
+            return newText;
         }
     }
 }

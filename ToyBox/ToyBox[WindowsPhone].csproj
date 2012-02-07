@@ -61,7 +61,7 @@
     <Compile Include="IInputService.cs" />
     <Compile Include="IKeyboard.cs" />
     <Compile Include="IMouse.cs" />
-    <Compile Include="IMouseArrowService.cs" />
+    <Compile Include="IMousePointerService.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="IStorageService.cs" />
     <Compile Include="ISpriteService.cs" />
@@ -86,6 +86,7 @@
     <Compile Include="SpriteManager.cs" />
     <Compile Include="SpriteTexture.cs" />
     <Compile Include="StandardMouse.cs" />
+    <Compile Include="HorizontalAlignment.cs" />
     <Compile Include="TouchState.cs" />
     <Compile Include="StandardKeyboard.cs" />
     <Compile Include="GamePadKeyboard.cs" />

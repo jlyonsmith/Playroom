@@ -226,25 +226,49 @@ namespace ToyBox
             this.Text = text;  // Use the property, not the field for Size to work
         }
 
-        public StringSprite(SpriteFont font, string text, Rectangle rect, int depth, bool visible, object gameObject)
-            : base(new Rectangle().Resize(font.MeasureString(text)).CenteredOn(rect).Location, depth, visible, gameObject)
+        public StringSprite(SpriteFont font, string text, Rectangle rect, HorizontalAlignment alignment, int depth, bool visible, object gameObject)
+            : base(Point.Zero, depth, visible, gameObject)
         {
             this.Font = font;
             this.Text = text;  // Use the property, not the field for Size to work
+
+            Align(rect, alignment);
+        }
+
+        public void Align(Rectangle rect, HorizontalAlignment alignment)
+        {
+            switch (alignment)
+            {
+                default:
+                case HorizontalAlignment.Left:
+                    this.Position = rect.Location;
+                    break;
+
+                case HorizontalAlignment.Center:
+                    this.Position = new Rectangle().Resize(this.Font.MeasureString(text)).CenteredOn(rect).Location;
+                    break;
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawString(
-                this.Font, 
-                this.Text,
-                new Vector2(position.X, position.Y),
-                this.TintColor,
-                this.Rotation,
-                Vector2.Zero,
-                this.Scale,
-                SpriteEffects.None,
-                xnaDepth);
+            if (this.Rotation == 0.0f)
+            {
+                spriteBatch.DrawString(
+                    this.Font,
+                    this.Text,
+                    new Vector2(position.X, position.Y),
+                    this.TintColor,
+                    this.Rotation,
+                    Vector2.Zero,
+                    this.Scale,
+                    SpriteEffects.None,
+                    xnaDepth);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }
