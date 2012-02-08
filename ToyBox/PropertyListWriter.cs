@@ -52,15 +52,23 @@ namespace ToyBox
             }
             else if (value.GetType() == typeof(DateTime))
             {
-                writer.WriteStartElement("Date");
+                writer.WriteStartElement("DateTime");
                 if (key != null)
                     writer.WriteAttributeString("Key", key);
                 writer.WriteString(((DateTime)value).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ssK"));
                 writer.WriteEndElement();
             }
+            else if (value.GetType() == typeof(TimeSpan))
+            {
+                writer.WriteStartElement("TimeSpan");
+                if (key != null)
+                    writer.WriteAttributeString("Key", key);
+                writer.WriteString(((TimeSpan)value).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss"));
+                writer.WriteEndElement();
+            }
             else if (value.GetType() == typeof(int))
             {
-                writer.WriteStartElement("Integer");
+                writer.WriteStartElement("Int32");
                 if (key != null)
                     writer.WriteAttributeString("Key", key);
                 writer.WriteString(((int)value).ToString());

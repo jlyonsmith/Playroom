@@ -11,6 +11,7 @@ namespace ToyBox
     public class SupplyDefaultValueEventArgs : EventArgs
     {
         public string Key { get; private set; }
+        // TODO-john-2012: Create multiple properties/methods with the allowed types
         public object Value { get; set; }
 
         public SupplyDefaultValueEventArgs(string key)
@@ -47,6 +48,8 @@ namespace ToyBox
             return propList;
         }
 
+        public bool Modified { get; set; }
+
         private Dictionary<string, object> CloneDictionary(Dictionary<string, object> fromDict)
         {
             Dictionary<string, object> newDict = new Dictionary<string,object>();
@@ -70,28 +73,93 @@ namespace ToyBox
             return newDict;
         }
 
-        // TODO-john-2012: Replace with Get/Set methods for the valid list of data types
-        public object this[string name]
+        private object GetValue(string name)
         {
-            get
-            {
-                object obj;
+            object obj;
 
-                if (Dictionary.TryGetValue(name, out obj))
-                    return obj;
-
-                obj = RaiseSupplyDefaultValueEvent(name);
-                Dictionary[name] = obj;
+            if (Dictionary.TryGetValue(name, out obj))
                 return obj;
-            }
-            set
+
+            obj = RaiseSupplyDefaultValueEvent(name);
+            Dictionary[name] = obj;
+            return obj;
+        }
+
+        private void SetValue(string name, object value)
+        {
+            Dictionary[name] = value;
+            Modified = true;
+        }
+
+        public bool GetBoolean(string name)
+        {
+            try
             {
-                Dictionary[name] = value;
+                return (bool)GetValue(name);
+            }
+            catch (InvalidCastException)
+            {
+                return (bool)RaiseSupplyDefaultValueEvent(name);
             }
         }
 
-        // TODO-john-2012: Override ToString with a parameter instead
-        public string ToXml()
+        public void Set(string name, bool b)
+        {
+            SetValue(name, (object)b);
+        }
+
+        public int GetInt32(string name)
+        {
+            try
+            {
+                return (int)GetValue(name);
+            }
+            catch (InvalidCastException)
+            {
+                return (int)RaiseSupplyDefaultValueEvent(name);
+            }
+        }
+
+        public void Set(string name, int i)
+        {
+            SetValue(name, (object)i);
+        }
+
+        public DateTime GetDateTime(string name)
+        {
+            try
+            {
+                return (DateTime)GetValue(name);
+            }
+            catch (InvalidCastException)
+            {
+                return (DateTime)RaiseSupplyDefaultValueEvent(name);
+            }
+        }
+
+        public void Set(string name, DateTime d)
+        {
+            SetValue(name, (object)d);
+        }
+
+        public TimeSpan GetTimeSpan(string name)
+        {
+            try
+            {
+                return (TimeSpan)GetValue(name);
+            }
+            catch (InvalidCastException)
+            {
+                return (TimeSpan)RaiseSupplyDefaultValueEvent(name);
+            }
+        }
+
+        public void Set(string name, TimeSpan t)
+        {
+            SetValue(name, (object)t);
+        }
+
+        public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 

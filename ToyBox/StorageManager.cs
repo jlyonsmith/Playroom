@@ -32,7 +32,7 @@ namespace ToyBox
 
         #region IStorageService Members
 
-        public string Load(string contentName)
+        public string LoadString(string contentName)
         {
             IsolatedStorageFile storageFile;
             string content = null;
@@ -70,7 +70,7 @@ namespace ToyBox
             return content;
         }
 
-        public void Save(string contentName, string content)
+        public void SaveString(string contentName, string content)
         {
             IsolatedStorageFile storageFile;
 
@@ -95,6 +95,32 @@ namespace ToyBox
             {
                 storageFile.Dispose();
             }
+        }
+
+        public PropertyList LoadOrCreatePropertyList(string propertyListName, EventHandler<SupplyDefaultValueEventArgs> handler)
+        {
+            string xml = (string)this.LoadString("Settings");
+            PropertyList propList = null;
+
+            if (xml != null)
+            {
+                propList = PropertyList.FromXml(xml);
+            }
+
+            if (propList == null)
+            {
+                propList = new PropertyList();
+                this.SaveString("Settings", propList.ToString());
+            }
+
+            propList.SupplyDefaultValue += new EventHandler<SupplyDefaultValueEventArgs>(handler);
+            
+            return propList;
+        }
+
+        public void SavePropertyList(string propListName, PropertyList propList)
+        {
+            this.SaveString(propListName, propList.ToString());
         }
 
         #endregion

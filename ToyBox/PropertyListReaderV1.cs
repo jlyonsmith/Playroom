@@ -12,8 +12,9 @@ namespace ToyBox
         private static string dictAtom;
         private static string arrayAtom;
         private static string keyAtom;
-        private static string integerAtom;
-        private static string dateAtom;
+        private static string int32Atom;
+        private static string dateTimeAtom;
+        private static string timeSpanAtom;
         private static string booleanAtom;
         private static string plistAtom;
 
@@ -28,8 +29,9 @@ namespace ToyBox
             dictAtom = reader.NameTable.Add("Dictionary");
             arrayAtom = reader.NameTable.Add("Array");
             keyAtom = reader.NameTable.Add("Key");
-            integerAtom = reader.NameTable.Add("Integer");
-            dateAtom = reader.NameTable.Add("Date");
+            int32Atom = reader.NameTable.Add("Int32");
+            dateTimeAtom = reader.NameTable.Add("DateTime");
+            timeSpanAtom = reader.NameTable.Add("TimeSpan");
             booleanAtom = reader.NameTable.Add("Boolean");
             plistAtom = reader.NameTable.Add("PropertyList");
 
@@ -120,13 +122,17 @@ namespace ToyBox
                 value = ReadArray(reader);
                 return;
             }
-            else if (String.ReferenceEquals(reader.Name, integerAtom))
+            else if (String.ReferenceEquals(reader.Name, int32Atom))
             {
                 t = typeof(int);
             }
-            else if (String.ReferenceEquals(reader.Name, dateAtom))
+            else if (String.ReferenceEquals(reader.Name, dateTimeAtom))
             {
                 t = typeof(DateTime);
+            }
+            else if (String.ReferenceEquals(reader.Name, timeSpanAtom))
+            {
+                t = typeof(TimeSpan);
             }
             else if (String.ReferenceEquals(reader.Name, booleanAtom))
             {
@@ -140,7 +146,7 @@ namespace ToyBox
             string s = reader.ReadElementContentAsString();
             reader.MoveToContent();
 
-            if (t == typeof(int))
+            if (t == typeof(Int32))
             {
                 int result;
 
@@ -154,7 +160,15 @@ namespace ToyBox
             }
             else if (t == typeof(DateTime))
             {
-                value = (object)(DateTime.Parse(s, null, DateTimeStyles.RoundtripKind));
+                DateTime result;
+
+                value = (object)(DateTime.TryParse(s, null, DateTimeStyles.RoundtripKind, out result) ? result : DateTime.MinValue);
+            }
+            else if (t == typeof(TimeSpan))
+            {
+                TimeSpan result;
+
+                value = (object)(TimeSpan.TryParse(s, null, out result) ? result : TimeSpan.MinValue);
             }
             else
             {
