@@ -222,6 +222,8 @@ namespace Playroom
                         {
                             using (Bitmap image = new Bitmap(placement.ImageFile))
                             {
+                                image.SetResolution(96, 96);
+
                                 g.DrawImageUnscaled(image, placement.TargetRectangle);
                             }
                         }
@@ -257,7 +259,7 @@ namespace Playroom
             Context.Logger.LogMessage("Inkscape is converting {0} to {1}", svgFile, pngFile);
 
             string output;
-            string command = string.Format("\"{0}\" \"{1}\" -y 0 -w {2} -h {3} -e \"{4}\"",
+            string command = string.Format("\"{0}\" --export-png=\"{4}\" --export-height={2} --export-height={3} --export-dpi=96 --file=\"{1}\"",
                 InkscapeCom, // 0
                 svgFile, // 1
                 width.ToString(), // 2
@@ -278,7 +280,7 @@ namespace Playroom
             Context.Logger.LogMessage("RSvg-Convert is converting {0} to {1}", svgFile, pngFile);
 
             string output;
-            string command = string.Format("\"{0}\" \"{1}\" -w {2} -h {3} -o \"{4}\"",
+            string command = string.Format("\"{0}\" \"{1}\" --format=png --dpi-x=96 --dpi-y=96 --width={2} --height={3} --output \"{4}\"",
                 PrismProcessor.RSvgConvertExe, // 0
                 svgFile, // 1
                 width.ToString(), // 2

@@ -42,6 +42,7 @@
       <Name>Circle</Name>
       <Importer>PrismImporter</Importer>
       <Processor>PrismProcessor</Processor>
+      <SubType>Designer</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>

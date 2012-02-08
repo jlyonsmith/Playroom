@@ -1,10 +1,14 @@
 ﻿<Prism>
   <PinboardFile>PinboardFile.pinboard</PinboardFile>
   <Rectangle>Rectangle</Rectangle>
-  <SvgDirectory>.</SvgDirectory>
+  <SvgFile>File1.svg</SvgFile>
   <!--
-    <SvgFile>File1.svg</SvgFile>
-  --> 
+  <Converter>Default</Converter>
+  <Converter>RSvg</Converter>
+  <Converter>Inkscape</Converter>
+  -->
+  <!--
+  <SvgDirectory>.</SvgDirectory>
   <Rows>
     <Row>
       <SvgFile>File1.svg</SvgFile>
@@ -15,4 +19,5 @@
       <SvgFile>File4.svg</SvgFile>
     </Row>
   </Rows>
+  -->
 </Prism>

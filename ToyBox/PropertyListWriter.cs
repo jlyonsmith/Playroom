@@ -55,7 +55,7 @@ namespace ToyBox
                 writer.WriteStartElement("DateTime");
                 if (key != null)
                     writer.WriteAttributeString("Key", key);
-                writer.WriteString(((DateTime)value).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ssK"));
+                writer.WriteString(((DateTime)value).ToString("G"));
                 writer.WriteEndElement();
             }
             else if (value.GetType() == typeof(TimeSpan))
@@ -63,7 +63,7 @@ namespace ToyBox
                 writer.WriteStartElement("TimeSpan");
                 if (key != null)
                     writer.WriteAttributeString("Key", key);
-                writer.WriteString(((TimeSpan)value).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss"));
+                writer.WriteString(((TimeSpan)value).ToString("G"));
                 writer.WriteEndElement();
             }
             else if (value.GetType() == typeof(int))
