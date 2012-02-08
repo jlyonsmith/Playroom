@@ -163,8 +163,14 @@ namespace Playroom
             }
 
             OpaqueDataDictionary processorParams = new OpaqueDataDictionary();
+
+            processorParams["ColorKeyEnabled"] = false;
+            processorParams["PremultiplyAlpha"] = true;
+            processorParams["GenerateMipmaps"] = false;
+            processorParams["TextureFormat"] = TextureProcessorOutputFormat.Color;
+
             ExternalReference<TextureContent> exRef = new ExternalReference<TextureContent>(prismData.PngFile);
-            TextureContent textureContent = context.BuildAndLoadAsset<TextureContent, TextureContent>(exRef, null, processorParams, null);
+            TextureContent textureContent = context.BuildAndLoadAsset<TextureContent, TextureContent>(exRef, "TextureProcessor", processorParams, "TextureImporter");
 
             return textureContent;
         }
