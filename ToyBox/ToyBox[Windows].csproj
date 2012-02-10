@@ -76,6 +76,7 @@
     <Compile Include="RectangleExtensions.cs" />
     <Compile Include="Set.cs" />
     <Compile Include="Size.cs" />
+    <Compile Include="SpriteProperties.cs" />
     <Compile Include="StorageManager.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="SpriteManager.cs" />
