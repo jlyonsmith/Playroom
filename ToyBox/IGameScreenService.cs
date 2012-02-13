@@ -7,7 +7,7 @@ namespace ToyBox
     public interface IGameScreenService
     {
         /// <summary>The currently active game screen. Can be null.</summary>
-        IGameScreen ActiveState { get; }
+        IGameScreen ActiveScreen { get; }
 
         /// <summary>Pauses the currently active screen</summary>
         void Pause();

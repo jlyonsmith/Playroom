@@ -123,6 +123,28 @@ namespace ToyBox
             this.SaveString(propListName, propList.ToString());
         }
 
+        public void Delete(string contentName)
+        {
+            IsolatedStorageFile storageFile;
+
+#if WINDOWS_PHONE
+            storageFile = IsolatedStorageFile.GetUserStoreForApplication();
+#else
+            storageFile = IsolatedStorageFile.GetUserStoreForDomain();
+#endif
+            try
+            {
+                if (!storageFile.FileExists(contentName))
+                    return;
+
+                storageFile.DeleteFile(contentName);
+            }
+            finally
+            {
+                storageFile.Dispose();
+            }
+        }
+
         #endregion
     }
 }

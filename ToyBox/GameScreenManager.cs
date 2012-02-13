@@ -192,7 +192,7 @@ namespace ToyBox
             return previousState;
         }
 
-        public IGameScreen ActiveState
+        public IGameScreen ActiveScreen
         {
             get
             {
