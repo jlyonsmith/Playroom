@@ -50,6 +50,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ActiveAnimationSetUpdater.cs" />
+    <Compile Include="Alignment.cs" />
     <Compile Include="Animation.cs" />
     <Compile Include="CollectionHelper.cs" />
     <Compile Include="GameScreen.cs" />
@@ -87,7 +88,6 @@
     <Compile Include="SpriteManager.cs" />
     <Compile Include="SpriteTexture.cs" />
     <Compile Include="StandardMouse.cs" />
-    <Compile Include="HorizontalAlignment.cs" />
     <Compile Include="TouchState.cs" />
     <Compile Include="StandardKeyboard.cs" />
     <Compile Include="GamePadKeyboard.cs" />

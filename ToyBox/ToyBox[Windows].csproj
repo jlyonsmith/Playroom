@@ -48,7 +48,7 @@
     <Compile Include="CollectionHelper.cs" />
     <Compile Include="GameScreen.cs" />
     <Compile Include="GameScreenManager.cs" />
-    <Compile Include="HorizontalAlignment.cs" />
+    <Compile Include="Alignment.cs" />
     <Compile Include="IGamePad.cs" />
     <Compile Include="IGameScreenService.cs" />
     <Compile Include="IGameScreen.cs" />

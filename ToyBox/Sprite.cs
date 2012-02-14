@@ -226,7 +226,7 @@ namespace ToyBox
             this.Text = text;  // Use the property, not the field for Size to work
         }
 
-        public StringSprite(SpriteFont font, string text, Rectangle rect, HorizontalAlignment alignment, int depth, bool visible, object gameObject)
+        public StringSprite(SpriteFont font, string text, Rectangle rect, HorizontalAlign alignment, int depth, bool visible, object gameObject)
             : base(Point.Zero, depth, visible, gameObject)
         {
             this.Font = font;
@@ -235,16 +235,16 @@ namespace ToyBox
             Align(rect, alignment);
         }
 
-        public void Align(Rectangle rect, HorizontalAlignment alignment)
+        public void Align(Rectangle rect, HorizontalAlign alignment)
         {
             switch (alignment)
             {
                 default:
-                case HorizontalAlignment.Left:
+                case HorizontalAlign.Left:
                     this.Position = rect.Location;
                     break;
 
-                case HorizontalAlignment.Center:
+                case HorizontalAlign.Center:
                     this.Position = new Rectangle().Resize(this.Font.MeasureString(text)).CenteredOn(rect).Location;
                     break;
             }
