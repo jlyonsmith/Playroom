@@ -63,9 +63,13 @@ namespace Microsoft.Xna.Framework
         {
             Point point = point1.Subtract(point2);
         
-            // TODO-john-2012: Converting to absolute values should be done as a secondary step
-            this.Width = Math.Abs(point.X);
-            this.Height = Math.Abs(point.Y);
+            this.Width = point.X;
+            this.Height = point.Y;
+        }
+
+        public Size Abs()
+        {
+            return new Size(Math.Abs(this.Width), Math.Abs(this.Height));
         }
 
         /// <summary>
