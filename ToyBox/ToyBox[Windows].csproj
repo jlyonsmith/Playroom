@@ -58,6 +58,7 @@
     <Compile Include="IMouse.cs" />
     <Compile Include="IMousePointerService.cs" />
     <Compile Include="InputManager.cs" />
+    <Compile Include="IPropertyListService.cs" />
     <Compile Include="IStorageService.cs" />
     <Compile Include="ISpriteService.cs" />
     <Compile Include="ITouchPanel.cs" />
@@ -71,12 +72,12 @@
     <Compile Include="PointExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyList.cs" />
+    <Compile Include="PropertyListManager.cs" />
     <Compile Include="PropertyListReaderV1.cs" />
     <Compile Include="PropertyListWriter.cs" />
     <Compile Include="RectangleExtensions.cs" />
     <Compile Include="Set.cs" />
     <Compile Include="Size.cs" />
-    <Compile Include="SpriteStates.cs" />
     <Compile Include="StorageManager.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="SpriteManager.cs" />

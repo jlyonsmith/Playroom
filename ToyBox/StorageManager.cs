@@ -11,7 +11,9 @@ namespace ToyBox
 {
     public class StorageManager : GameComponent, IStorageService
     {
-        public StorageManager(Game game) : base(game)
+        #region Construction
+        public StorageManager(Game game)
+            : base(game)
         {
             if (game.Services != null)
                 game.Services.AddService(typeof(IStorageService), this);
@@ -30,8 +32,9 @@ namespace ToyBox
             base.Dispose(disposing);
         }
 
+        #endregion
+        
         #region IStorageService Members
-
         public string LoadString(string contentName)
         {
             IsolatedStorageFile storageFile;
@@ -95,32 +98,6 @@ namespace ToyBox
             {
                 storageFile.Dispose();
             }
-        }
-
-        public PropertyList LoadOrCreatePropertyList(string propertyListName, EventHandler<SupplyDefaultValueEventArgs> handler)
-        {
-            string xml = (string)this.LoadString("Settings");
-            PropertyList propList = null;
-
-            if (xml != null)
-            {
-                propList = PropertyList.FromXml(xml);
-            }
-
-            if (propList == null)
-            {
-                propList = new PropertyList();
-                this.SaveString("Settings", propList.ToString());
-            }
-
-            propList.SupplyDefaultValue += new EventHandler<SupplyDefaultValueEventArgs>(handler);
-            
-            return propList;
-        }
-
-        public void SavePropertyList(string propListName, PropertyList propList)
-        {
-            this.SaveString(propListName, propList.ToString());
         }
 
         public void Delete(string contentName)

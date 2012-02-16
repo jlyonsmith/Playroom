@@ -24,8 +24,9 @@ namespace ToyBox
     public class PropertyList
     {
         public Dictionary<string, object> Dictionary { get; set; }
-        
+
         public event EventHandler<SupplyDefaultValueEventArgs> SupplyDefaultValue;
+        public event EventHandler<EventArgs> Saved;
 
         public PropertyList()
         {
@@ -47,8 +48,6 @@ namespace ToyBox
 
             return propList;
         }
-
-        public bool Modified { get; set; }
 
         private Dictionary<string, object> CloneDictionary(Dictionary<string, object> fromDict)
         {
@@ -88,7 +87,6 @@ namespace ToyBox
         private void SetValue(string name, object value)
         {
             Dictionary[name] = value;
-            Modified = true;
         }
 
         public bool GetBoolean(string name)
@@ -208,6 +206,14 @@ namespace ToyBox
             }
 
             return args.Value;
+        }
+
+        private void RaiseSavedEvent()
+        {
+            if (this.Saved != null)
+            {
+                Saved(this, new EventArgs());
+            }
         }
     }
 }

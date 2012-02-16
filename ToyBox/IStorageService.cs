@@ -9,9 +9,7 @@ namespace ToyBox
     public interface IStorageService
     {
         string LoadString(string contentName);
-        PropertyList LoadOrCreatePropertyList(string propertyListName, EventHandler<SupplyDefaultValueEventArgs> handler);
         void SaveString(string contentName, string content);
-        void SavePropertyList(string propertyListName, PropertyList propertyList);
         void Delete(string contentName);
     }
 }
