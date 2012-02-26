@@ -87,17 +87,20 @@ namespace ToyBox
 
         public override void Update(GameTime gameTime)
         {
-            for (int i = 0; i < animations.Count; )
+            for (int i = 0; i < animations.Count; i++)
             {
                 Animation animation = this.animations[i];
 
-                animation.Update(gameTime);
+                if (animation != null)
+                {
+                    animation.Update(gameTime);
 
-                if (animation.HasFinished)
-                    animations.RemoveAt(i);
-                else
-                    i++;
+                    if (animation.HasFinished)
+                        animations[i] = null;
+                }
             }
+
+            animations.RemoveAll(a => a == null);
 
             base.Update(gameTime);
         }
@@ -119,7 +122,7 @@ namespace ToyBox
 
         public void AttachAnimation(Sprite sprite, Animation animation)
         {
-            animation.Initialize(new ActivateNextAnimationDelegate(Animation_ActivateNextAnimation), sprite);
+            animation.Initialize(this, sprite);
 
             Animation activeAnimation = sprite.ActiveAnimation;
 
@@ -142,9 +145,36 @@ namespace ToyBox
             }
         }
 
-        private void Animation_ActivateNextAnimation(Animation animation, Animation nextAnimation)
+        internal void ActivateNextAnimation(Animation animation, Animation nextAnimation)
         {
             this.animations.Add(nextAnimation);
+        }
+
+        public void FastForwardAnimations()
+        {
+            while (animations.Count(a => a != null) > 0)
+            {
+                for (int i = 0; i < animations.Count; i++)
+                {
+                    Animation animation = this.animations[i];
+
+                    if (animation != null)
+                    {
+                        if (!animation.HasStarted)
+                        {
+                            animation.DoStartActions();
+                        }
+                        else if (!animation.HasFinished)
+                        {
+                            animation.DoFinishActions();
+                        }
+                        else
+                        {
+                            animations[i] = null;
+                        }
+                    }
+                }
+            }
         }
 
         public void DetachSprite(Sprite sprite)

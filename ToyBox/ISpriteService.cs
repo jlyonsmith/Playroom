@@ -20,5 +20,6 @@ namespace ToyBox
         int HitTest(Point point);
         RenderTarget2D CreateRenderTarget(int width, int height, IList<TextureAndPosition> textureAndPositions);
         void DrawRenderTarget(RenderTarget2D renderTarget, IList<TextureAndPosition> textureAndPositions);
+        void FastForwardAnimations();
     }
 }

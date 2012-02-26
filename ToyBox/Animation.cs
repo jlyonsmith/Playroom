@@ -14,13 +14,10 @@ using System.Collections.ObjectModel;
 
 namespace ToyBox
 {
-    public delegate void ActivateNextAnimationDelegate(Animation animation, Animation nextAnimation);
-
     public abstract class Animation
     {
         private TimeSpan time = TimeSpan.Zero;
-
-        protected ActivateNextAnimationDelegate activateNextAnimation;
+        private SpriteManager spriteManager;
 
         public bool HasStarted { get; private set; }
         public bool HasFinished { get; private set; }
@@ -38,9 +35,9 @@ namespace ToyBox
             this.Duration = duration;
         }
 
-        public virtual void Initialize(ActivateNextAnimationDelegate activateNextAnimation, Sprite sprite)
+        public virtual void Initialize(SpriteManager spriteManager, Sprite sprite)
         {
-            this.activateNextAnimation = activateNextAnimation;
+            this.spriteManager = spriteManager;
             this.Sprite = sprite;
             this.HasStarted = false;
             this.HasFinished = false;
@@ -56,40 +53,48 @@ namespace ToyBox
             }
             else if (time >= StartDelay + Duration)
             {
-                OnFinish();
-
-                this.Sprite.ActiveAnimation = null;
-                this.HasFinished = true;
-
-                EventHandler<EventArgs> handler = this.Finished;
-
-                if (handler != null)
-                    handler(this, new EventArgs());
-
-                if (this.NextAnimation != null)
-                {
-                    this.activateNextAnimation(this, this.NextAnimation);
-                }
+                DoFinishActions();
             }
-            else
+            else 
             {
                 if (!HasStarted)
-                {
-                    OnStart();
-                    this.HasStarted = true;
-
-                    EventHandler<EventArgs> handler = this.Started;
-
-                    if (handler != null)
-                        handler(this, new EventArgs());
-                }
+                    DoStartActions();
 
                 OnAnimate((float)(time.Ticks - StartDelay.Ticks) / (float)Duration.Ticks);
             }
         }
 
-        public abstract void OnStart();
-        public abstract void OnAnimate(float t);
-        public abstract void OnFinish();
+        internal void DoStartActions()
+        {
+            OnStart();
+            this.HasStarted = true;
+
+            EventHandler<EventArgs> handler = this.Started;
+
+            if (handler != null)
+                handler(this, new EventArgs());
+        }
+
+        internal void DoFinishActions()
+        {
+            OnFinish();
+
+            this.Sprite.ActiveAnimation = null;
+            this.HasFinished = true;
+
+            EventHandler<EventArgs> handler = this.Finished;
+
+            if (handler != null)
+                handler(this, new EventArgs());
+
+            if (this.NextAnimation != null)
+            {
+                this.spriteManager.ActivateNextAnimation(this, this.NextAnimation);
+            }
+        }
+
+        protected abstract void OnStart();
+        protected abstract void OnAnimate(float t);
+        protected abstract void OnFinish();
     }
 }
