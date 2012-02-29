@@ -26,7 +26,7 @@ namespace ToyBox
         private static void WritePropertyList(XmlWriter writer, PropertyList propList)
         {
             writer.WriteStartElement("PropertyList");
-            writer.WriteAttributeString("Version", "1");
+            writer.WriteAttributeString("Format", "1");
 
             WriteDict(writer, null, propList.Dictionary);
             writer.WriteEndElement();

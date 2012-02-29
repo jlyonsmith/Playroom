@@ -100,7 +100,16 @@ namespace ToyBox
                 }
             }
 
-            animations.RemoveAll(a => a == null);
+            // ONLY delete entries from the animations array in 
+            // one place because the Started/Finished callbacks
+            // might cause animations to finish
+            for (int i = 0; i < animations.Count; )
+            {
+                if (animations[i] == null)
+                    animations.RemoveAt(i);
+                else
+                    i++;
+            }
 
             base.Update(gameTime);
         }

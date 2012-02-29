@@ -11,8 +11,37 @@ namespace ToyBox
     public class SupplyDefaultValueEventArgs : EventArgs
     {
         public string Key { get; private set; }
-        // TODO-john-2012: Create multiple properties/methods with the allowed types
-        public object Value { get; set; }
+        public object Value { get; private set; }
+
+        public void Set(int i)
+        {
+            this.Value = (object)i;
+        }
+
+        public void Set(bool f)
+        {
+            this.Value = (object)f;
+        }
+
+        public void Set(DateTime d)
+        {
+            this.Value = (object)d;
+        }
+
+        public void Set(TimeSpan t)
+        {
+            this.Value = (object)t;
+        }
+
+        public void Set(Dictionary<string, object> dict)
+        {
+            this.Value = (object)dict;
+        }
+
+        public void Set(List<object> list)
+        {
+            this.Value = (object)list;
+        }
 
         public SupplyDefaultValueEventArgs(string key)
         {
@@ -155,6 +184,11 @@ namespace ToyBox
         public void Set(string name, TimeSpan t)
         {
             SetValue(name, (object)t);
+        }
+
+        public void SetDefault(string name)
+        {
+            this.SetValue(name, RaiseSupplyDefaultValueEvent(name));
         }
 
         public override string ToString()

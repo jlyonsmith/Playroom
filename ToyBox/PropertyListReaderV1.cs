@@ -38,12 +38,16 @@ namespace ToyBox
             reader.MoveToContent();
             dict = ReadPropertyList(reader);
 
-            // TODO-john-2012: Use reflection to change field value?
             return new PropertyList(dict);
         }
 
         private static Dictionary<string, object> ReadPropertyList(XmlReader reader)
         {
+            int format = int.Parse(reader.GetAttribute("Format"));
+
+            if (format != 1)
+                throw new XmlException("Invalid format version");
+
             reader.ReadStartElement(plistAtom);
             reader.MoveToContent();
             Dictionary<string, object> dict = ReadDict(reader);

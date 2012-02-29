@@ -28,6 +28,7 @@ public class Program
     // NOTE: Update this list of files as necessary, e.g. new projects are added to the solution
     private static string[] fileList = 
     {
+        @"ToyBox\Properties\AssemblyInfo.cs", 
         @"Playroom\Properties\AssemblyInfo.cs", 
         @"Pinboard\Properties\AssemblyInfo.cs", 
         @"Pinata\Properties\AssemblyInfo.cs", 
