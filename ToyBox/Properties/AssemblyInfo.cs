@@ -11,6 +11,7 @@ using System.Resources;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("1.0.20226.0")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.20302.0")]
 [assembly: GuidAttribute("a73f19ae-ffc2-47e4-90de-6f0631640c56")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]

@@ -41,7 +41,7 @@ public class Program
 		{
             Console.WriteLine(@"Usage: {0} [stepping]
 
-Name of solution parent directory must be the major minor version number. 
+Name of solution parent directory must be the major.minor version number. 
 The stepping value can be used to generate inter-day builds.", 
 				ScriptEnvironment.ScriptPath.FileAndExtension);
 			return 0;
@@ -101,7 +101,7 @@ Please correct the solution files parent folder name.");
 			switch (Path.GetExtension(file))
 			{
 				case ".cs":
-                UpdateCSVersion(path, version, version);
+                UpdateCSVersion(path, versionMajorMinor, version);
 					break;
 					
 				case ".rc":
@@ -124,7 +124,16 @@ Please correct the solution files parent folder name.");
                 case ".config":
                     UpdateConfigVersion(path, versionMajorMinor);
                     break;
-			}
+
+                case ".svg":
+                    UpdateSvgContentVersion(path, versionMajorMinorBuild);
+                    break;
+
+                case ".xml":
+                    if (Path.GetFileNameWithoutExtension(file) == "WMAppManifest")
+                        UpdateWMAppManifestContentVersion(path, versionMajorMinor);
+                    break;
+            }
 
 			Console.WriteLine("  {0}{1}", projectRoot, file);
 		}
@@ -132,7 +141,31 @@ Please correct the solution files parent folder name.");
 		return 0;
 	}
 
-    static void UpdateCSVersion(string file, string version, string versionMajorMinorFull)
+    static void UpdateSvgContentVersion(string file, string versionMajorMinorBuild)
+    {
+        string contents = File.ReadAllText(file);
+
+        contents = Regex.Replace(
+            contents,
+            @"(?'before'VERSION )([0-9]+\.[0-9]+\.[0-9]+)",
+            "${before}" + versionMajorMinorBuild);
+
+        File.WriteAllText(file, contents);
+    }
+
+    static void UpdateWMAppManifestContentVersion(string file, string versionMajorMinor)
+    {
+        string contents = File.ReadAllText(file);
+
+        contents = Regex.Replace(
+            contents,
+            @"(?'before'Version="")([0-9]+\.[0-9]+)(?'after'\.[0-9]+\.[0-9]+"")",
+            "${before}" + versionMajorMinor + "${after}");
+
+        File.WriteAllText(file, contents);
+    }
+
+    static void UpdateCSVersion(string file, string versionMajorMinor, string version)
 	{
 		string contents = File.ReadAllText(file);
 
@@ -140,8 +173,8 @@ Please correct the solution files parent folder name.");
 		
 		contents = Regex.Replace(
 			contents,
-			@"(?'before'AssemblyVersion\("")([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?'after'""\))",
-            "${before}" + versionMajorMinorFull + "${after}");
+            @"(?'before'AssemblyVersion\("")([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?'after'""\))",
+            "${before}" + versionMajorMinor + ".0.0${after}");
 
 		contents = Regex.Replace(
 			contents,
