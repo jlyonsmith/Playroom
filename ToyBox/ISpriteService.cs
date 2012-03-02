@@ -15,7 +15,8 @@ namespace ToyBox
         ReadOnlyCollection<Animation> Animations { get; }
         void AttachSprite(Sprite sprite, params Set<Sprite>[] spriteSets);
         void DetachSprite(Sprite sprite);
-        void AttachAnimation(Sprite sprite, Animation animation);
+        void DetachAllSprites();
+        void AttachAnimation(Sprite sprite, Animation animation, params ActiveAnimationSetUpdater[] animationUpdaters);
         void Draw();
         int HitTest(Point point);
         RenderTarget2D CreateRenderTarget(int width, int height, IList<TextureAndPosition> textureAndPositions);

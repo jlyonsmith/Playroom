@@ -33,6 +33,11 @@ namespace ToyBox
             this.Value = (object)t;
         }
 
+        public void Set(string s)
+        {
+            this.Value = (object)s;
+        }
+
         public void Set(Dictionary<string, object> dict)
         {
             this.Value = (object)dict;
@@ -184,6 +189,23 @@ namespace ToyBox
         public void Set(string name, TimeSpan t)
         {
             SetValue(name, (object)t);
+        }
+
+        public String GetString(string name)
+        {
+            try
+            {
+                return (String)GetValue(name);
+            }
+            catch (InvalidCastException)
+            {
+                return (String)RaiseSupplyDefaultValueEvent(name);
+            }
+        }
+
+        public void Set(string name, string s)
+        {
+            SetValue(name, (object)s);
         }
 
         public void SetDefault(string name)

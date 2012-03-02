@@ -9,7 +9,6 @@ namespace ToyBox
     {
         private bool disposeDroppedScreens;
         private List<KeyValuePair<IGameScreen, GameScreenModality>> gameScreens;
-        private ReadOnlyCollection<KeyValuePair<IGameScreen, GameScreenModality>> readOnlyGameScreens;
         private List<IUpdateable> updateableScreens;
         private List<IDrawable> drawableScreens;
 
@@ -17,7 +16,6 @@ namespace ToyBox
             base(game)
         {
             this.gameScreens = new List<KeyValuePair<IGameScreen, GameScreenModality>>();
-            this.readOnlyGameScreens = gameScreens.AsReadOnly();
             this.updateableScreens = new List<IUpdateable>();
             this.drawableScreens = new List<IDrawable>();
 
@@ -211,12 +209,15 @@ namespace ToyBox
             }
         }
 
-        public ReadOnlyCollection<KeyValuePair<IGameScreen, GameScreenModality>> GameScreens
+        public IGameScreen First(Type type)
         {
-            get
+            foreach (var gameScreen in gameScreens)
             {
-                return readOnlyGameScreens;
+                if (gameScreen.Key.GetType() == type)
+                    return gameScreen.Key;
             }
+
+            return null;
         }
 
         public override void Update(GameTime gameTime)

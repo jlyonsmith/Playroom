@@ -129,9 +129,14 @@ namespace ToyBox
             }
         }
 
-        public void AttachAnimation(Sprite sprite, Animation animation)
+        public void AttachAnimation(Sprite sprite, Animation animation, params ActiveAnimationSetUpdater[] animationUpdaters)
         {
             animation.Initialize(this, sprite);
+
+            foreach (var animationUpdater in animationUpdaters)
+            {
+                animationUpdater.Add(animation);
+            }
 
             Animation activeAnimation = sprite.ActiveAnimation;
 
@@ -189,6 +194,11 @@ namespace ToyBox
         public void DetachSprite(Sprite sprite)
         {
             this.sprites.Remove(sprite);
+        }
+
+        public void DetachAllSprites()
+        {
+            this.sprites.Clear();
         }
 
         public void Draw()

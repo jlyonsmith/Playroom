@@ -36,29 +36,34 @@ namespace ToyBox
 
         public void Load(string propertyListName, EventHandler<SupplyDefaultValueEventArgs> handler)
         {
+            PropertyList loadedPropList = null;
             string xml = storageService.LoadString(propertyListName);
+
+            if (xml != null)
+            {
+                loadedPropList = PropertyList.FromXml(xml);
+            }
+
+            // Does not exist or problem loading; create an empty one
+            if (loadedPropList == null)
+            {
+                loadedPropList = new PropertyList();
+                storageService.SaveString(propertyListName, loadedPropList.ToString());
+            }
+
             PropertyList propList;
 
             if (!this.lists.TryGetValue(propertyListName, out propList))
             {
-                propList = new PropertyList();
-                storageService.SaveString(propertyListName, propList.ToString());
+                lists.Add(propertyListName, loadedPropList);
+                propList = loadedPropList;
             }
-
-            if (xml != null)
+            else
             {
-                propList = PropertyList.FromXml(xml);
-            }
-
-            if (propList == null)
-            {
-                propList = new PropertyList();
-                storageService.SaveString(propertyListName, propList.ToString());
+                lists[propertyListName].Dictionary = loadedPropList.Dictionary;
             }
 
             propList.SupplyDefaultValue += new EventHandler<SupplyDefaultValueEventArgs>(handler);
-            
-            lists.Add(propertyListName, propList);
         }
 
         public PropertyList Get(string propertyListName)
