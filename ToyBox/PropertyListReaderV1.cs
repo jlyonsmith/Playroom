@@ -22,8 +22,6 @@ namespace ToyBox
         {
             XmlReaderSettings settings = new XmlReaderSettings();
 
-            settings.DtdProcessing = DtdProcessing.Parse;
-
             Dictionary<string, object> dict;
 
             dictAtom = reader.NameTable.Add("Dictionary");

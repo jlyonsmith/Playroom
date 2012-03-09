@@ -19,8 +19,10 @@ namespace ToyBox
         void AttachAnimation(Sprite sprite, Animation animation, params ActiveAnimationSetUpdater[] animationUpdaters);
         void Draw();
         int HitTest(Point point);
+        void FastForwardAnimations();
+#if !MONOTOUCH
         RenderTarget2D CreateRenderTarget(int width, int height, IList<TextureAndPosition> textureAndPositions);
         void DrawRenderTarget(RenderTarget2D renderTarget, IList<TextureAndPosition> textureAndPositions);
-        void FastForwardAnimations();
+#endif
     }
 }

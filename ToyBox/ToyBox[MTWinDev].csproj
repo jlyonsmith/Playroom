@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Playroom</RootNamespace>
+    <AssemblyName>ToyBox.dll</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <ProjectGuid>{37929A42-3D93-4EFB-9715-00982EEEEC05}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\MTWinDev\Debug\</OutputPath>
+    <BaseIntermediateOutputPath>obj\MTWinDev\</BaseIntermediateOutputPath>
+    <DefineConstants>TRACE;DEBUG;MONOTOUCH</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\MTWinDev\Release\</OutputPath>
+    <BaseIntermediateOutputPath>obj\MTWinDev\</BaseIntermediateOutputPath>
+    <DefineConstants>TRACE;MONOTOUCH</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="monotouch, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ExEn\MTWinDevReferences\monotouch.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ExEn\MTWinDevReferences\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ExEn\MTWinDevReferences\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ExEn\MTWinDevReferences\System.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ExEn\MTWinDevReferences\System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ExEn\MTWinDevReferences\System.Xml.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ActiveAnimationSetUpdater.cs" />
+    <Compile Include="Animation.cs" />
+    <Compile Include="CollectionHelper.cs" />
+    <Compile Include="GamePadKeyboard.cs" />
+    <Compile Include="GameScreen.cs" />
+    <Compile Include="GameScreenManager.cs" />
+    <Compile Include="IGamePad.cs" />
+    <Compile Include="IGameScreen.cs" />
+    <Compile Include="IGameScreenService.cs" />
+    <Compile Include="IInputDevice.cs" />
+    <Compile Include="IInputService.cs" />
+    <Compile Include="IKeyboard.cs" />
+    <Compile Include="IMouse.cs" />
+    <Compile Include="IMousePointerService.cs" />
+    <Compile Include="InputManager.cs" />
+    <Compile Include="IPropertyListService.cs" />
+    <Compile Include="ISpriteService.cs" />
+    <Compile Include="IStorageService.cs" />
+    <Compile Include="ITouchPanel.cs" />
+    <Compile Include="MathExtensions.cs" />
+    <Compile Include="Message.cs" />
+    <Compile Include="MouseButtons.cs" />
+    <Compile Include="MousePointerManager.cs" />
+    <Compile Include="NoGamePad.cs" />
+    <Compile Include="NoKeyboard.cs" />
+    <Compile Include="NoTouchPanel.cs" />
+    <Compile Include="PointExtensions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyList.cs" />
+    <Compile Include="PropertyListManager.cs" />
+    <Compile Include="PropertyListReaderV1.cs" />
+    <Compile Include="PropertyListWriter.cs" />
+    <Compile Include="RectangleExtensions.cs" />
+    <Compile Include="Set.cs" />
+    <Compile Include="Size.cs" />
+    <Compile Include="Sprite.cs" />
+    <Compile Include="SpriteManager.cs" />
+    <Compile Include="SpriteTexture.cs" />
+    <Compile Include="StandardKeyboard.cs" />
+    <Compile Include="StandardMouse.cs" />
+    <Compile Include="StorageManager.cs" />
+    <Compile Include="TextAlignment.cs" />
+    <Compile Include="TouchState.cs" />
+    <Compile Include="XBoxGamePad.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\ExEn\ExEnCore\ExEnCore[MTWinDev].csproj">
+      <Project>{EBF8E4F8-A628-484A-8AE1-B69577DE5CC1}</Project>
+      <Name>ExEnCore[MTWinDev]</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ExEn\ExEnEmTouch\ExEnEmTouch[MTWinDev].csproj">
+      <Project>{1C7408DF-F179-4540-B3D0-CE068C27CE1E}</Project>
+      <Name>ExEnEmTouch[MTWinDev]</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
