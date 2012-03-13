@@ -33,10 +33,6 @@ namespace ToyBox
         /// <summary>Initializes a new game pad dummy</summary>
         public NoGamePad()
         {
-            this.axes = new float[24];
-            this.sliders = new float[8];
-            this.buttons = new bool[128];
-            this.povs = new int[4] { -1, -1, -1, -1 };
         }
 
         public GamePadState GetState()
@@ -55,10 +51,5 @@ namespace ToyBox
         }
 
         public void Update() { }
-
-        private float[/*24*/] axes;
-        private float[/*8*/] sliders;
-        private bool[/*128*/] buttons;
-        private int[/*4*/] povs;
     }
 }

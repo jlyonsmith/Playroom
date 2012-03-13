@@ -234,7 +234,6 @@ namespace ToyBox
             return foundIndex;
         }
 
-#if !MONOTOUCH
         public RenderTarget2D CreateRenderTarget(int width, int height, IList<TextureAndPosition> textureAndPositions)
         {
             RenderTarget2D renderTarget = new RenderTarget2D(
@@ -263,7 +262,6 @@ namespace ToyBox
 
             this.Game.GraphicsDevice.SetRenderTarget(null);
         }
-#endif
 
         private string InsertNewLines(string text, SpriteFont font, int width, ref int height)
         {

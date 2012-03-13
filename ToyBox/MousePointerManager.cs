@@ -10,9 +10,9 @@ namespace ToyBox
 {
     public class MousePointerManager : GameComponent, IMousePointerService
     {
-        private ISpriteService spriteService;
         private IInputService inputService;
 #if WINDOWS
+        private ISpriteService spriteService;
         private Texture2D mousePointerTexture;
         private TextureSprite mouseSprite;
 #endif
@@ -49,9 +49,10 @@ namespace ToyBox
             base.Initialize();
 
             inputService = (IInputService)this.Game.Services.GetService(typeof(IInputService));
-            spriteService = (ISpriteService)this.Game.Services.GetService(typeof(ISpriteService));
 
 #if WINDOWS
+            spriteService = (ISpriteService)this.Game.Services.GetService(typeof(ISpriteService));
+
             this.mousePointerTexture = this.Game.Content.Load<Texture2D>("Textures/Arrow");
             this.mouseSprite = new TextureSprite(
                     new SpriteTexture(this.mousePointerTexture, null),
