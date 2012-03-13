@@ -11,8 +11,7 @@ namespace ToyBox
     {
         private static string dictAtom;
         private static string arrayAtom;
-        private static string keyAtom;
-        private static string int32Atom;
+		private static string int32Atom;
         private static string dateTimeAtom;
         private static string timeSpanAtom;
         private static string booleanAtom;
@@ -20,15 +19,10 @@ namespace ToyBox
 
         public static PropertyList ReadXml(XmlReader reader)
         {
-            XmlReaderSettings settings = new XmlReaderSettings();
-
-            settings.DtdProcessing = DtdProcessing.Parse;
-
             Dictionary<string, object> dict;
 
             dictAtom = reader.NameTable.Add("Dictionary");
             arrayAtom = reader.NameTable.Add("Array");
-            keyAtom = reader.NameTable.Add("Key");
             int32Atom = reader.NameTable.Add("Int32");
             dateTimeAtom = reader.NameTable.Add("DateTime");
             timeSpanAtom = reader.NameTable.Add("TimeSpan");
@@ -177,7 +171,7 @@ namespace ToyBox
             else
             {
                 value = s;
-            }
+			}
         }
     }
 }

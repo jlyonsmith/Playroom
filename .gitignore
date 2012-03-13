@@ -7,6 +7,7 @@
 *.sdf
 *.cachefile
 *.orig
+*.pidb
 thumbs.db
 UpgradeLog.xml
 cachefile-*
