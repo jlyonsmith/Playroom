@@ -49,8 +49,6 @@ namespace ToyBox
         public ReadOnlyCollection<Sprite> Sprites { get { return readOnlySprites; } }
         public ReadOnlyCollection<Animation> Animations { get { return readOnlyAnimations; } }
 
-        public GraphicsDevice GraphicsDevice { get { return this.Game.GraphicsDevice; } }
-
         public SpriteManager(Game game)
             : base(game)
         {
