@@ -40,7 +40,7 @@ namespace ToyBox
 
         public abstract void Update(GameTime gameTime);
 
-        protected virtual void OnEntered() { }
+		protected virtual void OnEntered() { }
         protected virtual void OnLeaving() { }
         protected virtual void OnPause() { }
         protected virtual void OnResume() { }
