@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBox[WindowsPhone]", "ToyBox\ToyBox[WindowsPhone].csproj", "{D5E5AEA5-963C-4093-A6AE-6ED843B70255}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyBox.WinPhone", "ToyBox\ToyBox.WinPhone.csproj", "{D5E5AEA5-963C-4093-A6AE-6ED843B70255}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
