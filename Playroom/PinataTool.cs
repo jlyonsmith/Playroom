@@ -73,6 +73,7 @@ namespace Playroom
             }
 
             this.PinataFile = this.PinataFile.MakeFullPath();
+            this.CsFile = this.CsFile.MakeFullPath();
 
             Output.Message(MessageImportance.Low, "Reading Pinata file '{0}'", this.PinataFile);
 

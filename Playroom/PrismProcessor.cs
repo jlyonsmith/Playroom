@@ -265,7 +265,7 @@ namespace Playroom
             Context.Logger.LogMessage("Inkscape is converting {0} to {1}", svgFile, pngFile);
 
             string output;
-            string command = string.Format("\"{0}\" --export-png=\"{4}\" --export-height={2} --export-height={3} --export-dpi=96 --file=\"{1}\"",
+            string command = string.Format("\"{0}\" --export-png=\"{4}\" --export-width={2} --export-height={3} --export-dpi=96 --file=\"{1}\"",
                 InkscapeCom, // 0
                 svgFile, // 1
                 width.ToString(), // 2
