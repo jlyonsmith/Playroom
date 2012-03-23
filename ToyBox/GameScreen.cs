@@ -13,14 +13,10 @@ namespace ToyBox
             this.Game = game;
         }
 
-#if WINDOWS || WINDOWS_PHONE
         public event EventHandler<EventArgs> EnabledChanged { add { } remove { } }
         public event EventHandler<EventArgs> UpdateOrderChanged { add { } remove { } }
-#else
-        public event EventHandler EnabledChanged { add { } remove { } }
-        public event EventHandler UpdateOrderChanged { add { } remove { } }
-#endif
-        public void Pause()
+
+		public void Pause()
         {
             if (!this.paused)
             {
