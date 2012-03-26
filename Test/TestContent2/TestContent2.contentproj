@@ -43,8 +43,8 @@
   <ItemGroup>
     <None Include="TestPinboard.pinboard">
       <Name>TestPinboard</Name>
-      <Importer>XmlImporter</Importer>
-      <Processor>PassThroughProcessor</Processor>
+      <Importer>PinboardImporter</Importer>
+      <Processor>PinboardProcessor</Processor>
     </None>
   </ItemGroup>
   <ItemGroup>

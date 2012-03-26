@@ -55,7 +55,14 @@
       <Importer>PrismImporter</Importer>
       <Processor>PrismProcessor</Processor>
     </Compile>
-    <None Include="TestPinboard.pinboard" />
+    <None Include="TestContent.pinata">
+      <Name>TestContent</Name>
+    </None>
+    <Compile Include="TestPinboard.pinboard">
+      <Importer>PinboardImporter</Importer>
+      <Processor>PinboardProcessor</Processor>
+      <Name>TestPinboard</Name>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Playroom\Playroom.csproj">

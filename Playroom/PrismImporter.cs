@@ -25,13 +25,13 @@ namespace Playroom
                 throw new FileNotFoundException(PlayroomResources.FileNotFound(prismFile)); 
             }
 
-            PrismData prismData = null;
+            PrismData pinataData = null;
 
             try
             {
                 using (XmlReader reader = XmlReader.Create(prismFile))
                 {
-                    prismData = PrismDataReaderV1.ReadXml(reader);
+                    pinataData = PrismDataReaderV1.ReadXml(reader);
                 }
             }
             catch (Exception e)
@@ -39,14 +39,14 @@ namespace Playroom
                 throw new InvalidContentException(String.Format("Unable to read prism data. {0}", e.Message), new ContentIdentity(fileName), e);
             }
 
-            prismData.PrismFile = prismFile;
-            prismData.PngFile = new ParsedPath(context.IntermediateDirectory, PathType.Directory).SetFileAndExtension(prismFile.File + ".png");
-            prismData.PinboardFile = prismData.PinboardFile.MakeFullPath(prismFile);
+            pinataData.PrismFile = prismFile;
+            pinataData.PngFile = new ParsedPath(context.IntermediateDirectory, PathType.Directory).SetFileAndExtension(prismFile.File + ".png");
+            pinataData.PinboardFile = pinataData.PinboardFile.MakeFullPath(prismFile);
 
-            if (prismData.SvgDirectory != null)
-                prismData.SvgDirectory = prismData.SvgDirectory.MakeFullPath(prismFile);
+            if (pinataData.SvgDirectory != null)
+                pinataData.SvgDirectory = pinataData.SvgDirectory.MakeFullPath(prismFile);
 
-            return prismData;
+            return pinataData;
         }
     }
 }

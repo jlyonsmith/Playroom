@@ -83,29 +83,29 @@ namespace Playroom
             }
         }
 
-        public override TextureContent Process(PrismData prismData, ContentProcessorContext context)
+        public override TextureContent Process(PrismData pinataData, ContentProcessorContext context)
         {
             ParsedPath intermediateDir = new ParsedPath(context.IntermediateDirectory, PathType.Directory);
 
             this.Context = context;
-            this.PrismFile = prismData.PrismFile;
+            this.PrismFile = pinataData.PrismFile;
 
             // Make all .svg paths absolute and add dependencies on them
-            for (int i = 0; i < prismData.SvgFiles.Count; i++)
+            for (int i = 0; i < pinataData.SvgFiles.Count; i++)
             {
-                List<ParsedPath> list = prismData.SvgFiles[i];
+                List<ParsedPath> list = pinataData.SvgFiles[i];
 
                 for (int j = 0; j < list.Count; j++)
                 {
-                    list[j] = list[j].MakeFullPath(prismData.SvgDirectory == null ? prismData.PrismFile : prismData.SvgDirectory);
+                    list[j] = list[j].MakeFullPath(pinataData.SvgDirectory == null ? pinataData.PrismFile : pinataData.SvgDirectory);
 
                     context.AddDependency(list[j]);
                 }
             }
 
             // Grab the pinboard data and add a dependency
-            prismData.Pinboard = ReadPinboardFile(prismData.PinboardFile);
-            context.AddDependency(prismData.PinboardFile);
+            pinataData.Pinboard = ReadPinboardFile(pinataData.PinboardFile);
+            context.AddDependency(pinataData.PinboardFile);
 
             ParsedPath tmpPath = new ParsedPath(context.IntermediateDirectory, PathType.Directory);
 
@@ -114,29 +114,29 @@ namespace Playroom
             try
             {
                 // Go through each SVG and output a temporary PNG file.  Create an ImagePlacement for each SVG/PNG processed
-                for (int row = 0; row < prismData.SvgFiles.Count; row++)
+                for (int row = 0; row < pinataData.SvgFiles.Count; row++)
                 {
-                    List<ParsedPath> pathList = prismData.SvgFiles[row];
+                    List<ParsedPath> pathList = pinataData.SvgFiles[row];
 
                     for (int col = 0; col < pathList.Count; col++)
                     {
-                        RectangleInfo rectInfo = prismData.Pinboard.GetRectangleInfoByName(prismData.RectangleName);
+                        RectangleInfo rectInfo = pinataData.Pinboard.GetRectangleInfoByName(pinataData.RectangleName);
 
                         if (rectInfo == null)
                             throw new InvalidContentException(
-                                String.Format("Rectangle '{0}' not found in pinboard '{1}'", prismData.RectangleName, prismData.PinboardFile),
-                                new ContentIdentity(prismData.PrismFile));
+                                String.Format("Rectangle '{0}' not found in pinboard '{1}'", pinataData.RectangleName, pinataData.PinboardFile),
+                                new ContentIdentity(pinataData.PrismFile));
 
-                        ParsedPath tmpPngFile = tmpPath.SetFileAndExtension(String.Format("{0}_{1}_{2}.png", prismData.PngFile.File, row, col));
+                        ParsedPath tmpPngFile = tmpPath.SetFileAndExtension(String.Format("{0}_{1}_{2}.png", pinataData.PngFile.File, row, col));
 
                         placements.Add(new ImagePlacement(tmpPngFile, 
                             new Rectangle(col * rectInfo.Width, row * rectInfo.Height, rectInfo.Width, rectInfo.Height)));
 
                         if (!File.Exists(pathList[col]))
                             throw new InvalidContentException(
-                                PlayroomResources.FileNotFound(pathList[col]), new ContentIdentity(prismData.PrismFile));
+                                PlayroomResources.FileNotFound(pathList[col]), new ContentIdentity(pinataData.PrismFile));
 
-                        switch (prismData.Converter)
+                        switch (pinataData.Converter)
                         {
                             default:
                             case SvgToPngConverter.RSvg:
@@ -151,7 +151,7 @@ namespace Playroom
                 }
 
                 // Combine all the PNG files into the final PNG using the ImagePlacements and delete the temp files.
-                CombineImages(placements, prismData.PngFile);
+                CombineImages(placements, pinataData.PngFile);
             }
             finally
             {
@@ -169,7 +169,7 @@ namespace Playroom
             processorParams["GenerateMipmaps"] = false;
             processorParams["TextureFormat"] = TextureProcessorOutputFormat.Color;
 
-            ExternalReference<TextureContent> exRef = new ExternalReference<TextureContent>(prismData.PngFile);
+            ExternalReference<TextureContent> exRef = new ExternalReference<TextureContent>(pinataData.PngFile);
             TextureContent textureContent = context.BuildAndLoadAsset<TextureContent, TextureContent>(exRef, "TextureProcessor", processorParams, "TextureImporter");
 
             return textureContent;

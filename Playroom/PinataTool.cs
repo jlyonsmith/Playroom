@@ -73,6 +73,13 @@ namespace Playroom
             }
 
             this.PinataFile = this.PinataFile.MakeFullPath();
+
+            if (String.IsNullOrEmpty(CsFile))
+            {
+                Output.Error("A .cs file must be specified");
+                return;
+            }
+
             this.CsFile = this.CsFile.MakeFullPath();
 
             Output.Message(MessageImportance.Low, "Reading Pinata file '{0}'", this.PinataFile);
@@ -95,6 +102,7 @@ namespace Playroom
             if (!doCompile)
             {
                 DateTime outputFileWriteTime = File.GetLastWriteTime(CsFile);
+                
                 doCompile = (File.GetLastWriteTime(this.PinataFile) > outputFileWriteTime);
 
                 if (!doCompile)
@@ -206,16 +214,29 @@ namespace Playroom
             {
                 PinataClassData classData = pinataData.Classes[i];
 
-                writer.WriteLine("\tpublic static class {0}Rectangles", classData.Prefix);
+                writer.WriteLine("\tpublic class {0}Rectangles", classData.Prefix);
                 writer.WriteLine("\t{");
+    
+                writer.WriteLine("\t\tprivate Rectangle[] rectangles;"); 
+                writer.WriteLine();
+                writer.WriteLine("\t\tpublic {0}Rectangles(Rectangle[] rectangles)", classData.Prefix);
+                writer.WriteLine("\t\t{");
+                writer.WriteLine("\t\t\tthis.rectangles = rectangles;");
+                writer.WriteLine("\t\t}");
+                writer.WriteLine();
 
-                PinboardData pinboardData = classData.Pinboard;
-
-                WriteRectInfo(writer, pinboardData.ScreenRectInfo);
-
-                foreach (var rectInfo in pinboardData.RectInfos)
+                for (int j = 0; j < classData.Pinboard.RectInfos.Count + 1; j++)
                 {
-                    WriteRectInfo(writer, rectInfo);
+                    RectangleInfo rectInfo;
+                    
+                    if (j == 0)
+                        rectInfo = classData.Pinboard.ScreenRectInfo;
+                    else
+                        rectInfo = classData.Pinboard.RectInfos[j - 1];
+
+                    writer.WriteLine("\t\tpublic Rectangle {0} {{ get {{ return rectangles[{1}]; }} }}",
+                        rectInfo.Name, 
+                        j);
                 }
 
                 writer.WriteLine("\t}");
@@ -223,16 +244,6 @@ namespace Playroom
             }
 
             writer.WriteLine("}");
-        }
-
-        private void WriteRectInfo(TextWriter writer, RectangleInfo rectInfo)
-        {
-            writer.WriteLine("\t\tpublic static Rectangle {0} = new Rectangle({1}, {2}, {3}, {4});",
-                rectInfo.Name,
-                rectInfo.X,
-                rectInfo.Y,
-                rectInfo.Width,
-                rectInfo.Height);
         }
 
         #region IProcessCommandLine Members
