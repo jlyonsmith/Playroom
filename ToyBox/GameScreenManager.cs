@@ -27,7 +27,7 @@ namespace ToyBox
         {
             if (disposing)
             {
-                LeaveAllActiveStates();
+                LeaveAllActiveScreens();
 
                 if (this.Game.Services != null)
                 {
@@ -38,7 +38,7 @@ namespace ToyBox
             base.Dispose(disposing);
         }
 
-        public bool DisposeDroppedStates
+        public bool DisposeDroppedScreens
         {
             get { return this.disposeDroppedScreens; }
             set { this.disposeDroppedScreens = value; }
@@ -82,7 +82,7 @@ namespace ToyBox
             this.gameScreens.Add(new KeyValuePair<IGameScreen, GameScreenModality>(screen, modality));
             AppendToUpdateableAndDrawableList(screen);
 
-            // State is set, now try to enter it
+            // Screen is set, now try to enter it
 #if DEBUG
             screen.Enter();
 #else
@@ -100,19 +100,19 @@ namespace ToyBox
 
         public IGameScreen Pop()
         {
-            int lastStateIndex = this.gameScreens.Count - 1;
+            int lastScreenIndex = this.gameScreens.Count - 1;
             
-            if (lastStateIndex < 0)
+            if (lastScreenIndex < 0)
             {
                 throw new InvalidOperationException("No game screens are on the stack");
             }
 
-            KeyValuePair<IGameScreen, GameScreenModality> old = this.gameScreens[lastStateIndex];
+            KeyValuePair<IGameScreen, GameScreenModality> old = this.gameScreens[lastScreenIndex];
 
             // Notify the currently active screen that it's being left and take it
             // from the stack of active screens
             old.Key.Leave();
-            this.gameScreens.RemoveAt(lastStateIndex);
+            this.gameScreens.RemoveAt(lastScreenIndex);
 
             // Now we need to remove the popped screen from our update and draw lists.
             // If the popped screen was exclusive, our lists are empty and we need to
@@ -121,7 +121,7 @@ namespace ToyBox
             {
                 this.updateableScreens.Clear();
                 this.drawableScreens.Clear();
-                RebuildUpdateableAndDrawableListRecursively(lastStateIndex - 1);
+                RebuildUpdateableAndDrawableListRecursively(lastScreenIndex - 1);
             }
             else
             {
@@ -152,20 +152,20 @@ namespace ToyBox
                 return null;
             }
 
-            int lastStateIndex = screenCount - 1;
-            KeyValuePair<IGameScreen, GameScreenModality> old = this.gameScreens[lastStateIndex];
-            IGameScreen previousState = old.Key;
+            int lastScreenIndex = screenCount - 1;
+            KeyValuePair<IGameScreen, GameScreenModality> old = this.gameScreens[lastScreenIndex];
+            IGameScreen previousScreen = old.Key;
 
             // Notify the previous screen that it's being left and kill it if desired
-            previousState.Leave();
-            DisposeIfSupportedAndDesired(previousState);
+            previousScreen.Leave();
+            DisposeIfSupportedAndDesired(previousScreen);
 
             // If the switched-to screen is exclusive, we need to clear the update
             // and draw lists. If not, depending on whether the previous screen was
             // a popup screen, we might have to 
             if (old.Value == GameScreenModality.Popup)
             {
-                RemoveFromUpdateableAndDrawableList(previousState);
+                RemoveFromUpdateableAndDrawableList(previousScreen);
             }
             else
             {
@@ -176,11 +176,11 @@ namespace ToyBox
             // Now swap out the screen and put it in the update and draw lists. If we're
             // switching from an exclusive to a pop-up screen, the draw and update lists need
             // to be rebuilt.
-            var newState = new KeyValuePair<IGameScreen, GameScreenModality>(screen, modality);
-            this.gameScreens[lastStateIndex] = newState;
+            var newScreen = new KeyValuePair<IGameScreen, GameScreenModality>(screen, modality);
+            this.gameScreens[lastScreenIndex] = newScreen;
             if (old.Value == GameScreenModality.Exclusive && modality == GameScreenModality.Popup)
             {
-                RebuildUpdateableAndDrawableListRecursively(lastStateIndex);
+                RebuildUpdateableAndDrawableListRecursively(lastScreenIndex);
             }
             else
             {
@@ -190,7 +190,7 @@ namespace ToyBox
             // Let the screen know that it has been entered
             screen.Enter();
 
-            return previousState;
+            return previousScreen;
         }
 
         public IGameScreen ActiveScreen
@@ -293,7 +293,7 @@ namespace ToyBox
             }
         }
 
-        private void LeaveAllActiveStates()
+        private void LeaveAllActiveScreens()
         {
             for (int index = this.gameScreens.Count - 1; index >= 0; --index)
             {
