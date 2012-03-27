@@ -8,6 +8,7 @@
 *.cachefile
 *.orig
 *.pidb
+*.userprefs
 thumbs.db
 UpgradeLog.xml
 cachefile-*

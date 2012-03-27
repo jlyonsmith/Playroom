@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Playroom.MacOS</RootNamespace>
+    <AssemblyName>Playroom.MacOS</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>true</Externalconsole>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>true</Externalconsole>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="ParsedPathWriter.cs" />
+    <Compile Include="Pinata.cs" />
+    <Compile Include="PinataData.cs" />
+    <Compile Include="PinataDataReaderV1.cs" />
+    <Compile Include="PinataTool.cs" />
+    <Compile Include="PinboardData.cs" />
+    <Compile Include="PinboardDataReaderV1.cs" />
+    <Compile Include="PinboardDataWriter.cs" />
+    <Compile Include="PrismData.cs" />
+    <Compile Include="PrismDataReaderV1.cs" />
+    <Compile Include="PrismImporter.cs" />
+    <Compile Include="PrismProcessor.cs" />
+    <Compile Include="PrismTool.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Playroom.Pinata.targets" />
+    <None Include="Playroom.Prism.targets" />
+    <None Include="Playroom.targets" />
+  </ItemGroup>
+</Project>

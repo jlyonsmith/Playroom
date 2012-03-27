@@ -229,7 +229,7 @@ namespace ToyBox
             {
                 keyboards.Add(new GamePadKeyboard(player, this.gamePads[(int)player], this.keysWanted));
             }
-#if XBOX360 || WINDOWS_PHONE
+#if XBOX360 || WINDOWS_PHONE || MONOTOUCH
             // Add a dummy keyboard
             keyboards.Add(new NoKeyboard(null));
 #else 
