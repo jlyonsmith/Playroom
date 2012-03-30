@@ -82,6 +82,8 @@
     <Compile Include="TextAlignment.cs" />
     <Compile Include="TouchState.cs" />
     <Compile Include="XBoxGamePad.cs" />
+    <Compile Include="IPlatformService.cs" />
+    <Compile Include="PlatformManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\MonoGame.jlyonsmith\MonoGame.Framework\MonoGame.Framework.iOS.csproj">
