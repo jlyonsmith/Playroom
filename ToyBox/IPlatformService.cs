@@ -2,7 +2,7 @@ using System;
 
 namespace ToyBox
 {
-	public enum GamePlatform
+	public enum PlatformType
 	{
 		Unknown,
 		Windows7,
@@ -10,12 +10,12 @@ namespace ToyBox
 		iPhone3,
 		iPhone4,
 		iPad2,
-		iPad4
+		iPad3
 	}
 	
 	public interface IPlatformService
 	{
-		GamePlatform Platform { get; }
+		PlatformType Platform { get; }
 	}
 }
 

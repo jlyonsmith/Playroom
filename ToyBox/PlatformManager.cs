@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 #if WINDOWS_PHONE
 using Microsoft.Phone.Shell;
@@ -12,7 +13,7 @@ namespace ToyBox
 	public class PlatformManager : GameComponent, IPlatformService, IDisposable
 	{
 		#region Fields
-		private GamePlatform platform;
+		private PlatformType platform;
 		#endregion
 		
 		#region Construction
@@ -49,35 +50,42 @@ namespace ToyBox
             base.Initialize();
 
 #if MONOTOUCH
-			switch ((int)UIScreen.MainScreen.Bounds.Width)
+			// Use for debugging new iOS screen resolutions
+			// Debug.WriteLine(((int)UIScreen.MainScreen.CurrentMode.Size.Width).ToString());
+			
+			switch ((int)UIScreen.MainScreen.CurrentMode.Size.Width)
 			{
-			case 640:
-				platform = GamePlatform.iPhone4;
-				break;
+			case 480:
 			case 320:
-				platform = GamePlatform.iPhone3;
+				platform = PlatformType.iPhone3;
+				break;
+			case 960:
+			case 640:
+				platform = PlatformType.iPhone4;
 				break;
 			case 1024:
-				platform = GamePlatform.iPad2;
+			case 768:
+				platform = PlatformType.iPad2;
 				break;
 			case 2048:
-				platform = GamePlatform.iPad4;
+			case 1536:
+				platform = PlatformType.iPad3;
 				break;
 			default:
-				platform = GamePlatform.Unknown;
+				platform = PlatformType.Unknown;
 				break;
 			}
-				
+			
 #elif WINDOWS
-			platform = GamePlatform.Windows7;
+			platform = PlatformType.Windows7;
 #elif WINDOWS_PHONE
-			platform = GamePlatform.WindowsPhone7;
+			platform = PlatformType.WindowsPhone7;
 #endif
         }
 
 
-		#region IHardwarePlatformService Implementation
-		public GamePlatform Platform { get { return this.platform; } }
+		#region IPlatformService Implementation
+		public PlatformType Platform { get { return this.platform; } }
 		#endregion
 	}
 }
