@@ -27,7 +27,7 @@
     <ItemGroup>
       <!-- Add metadata to the pinata file item list for the output file names -->
       <Pinata>
-        <OutputName Condition="'%(Pinata.OutputName)' == ''">$(IntermediateOutputPath)Rectangles.cs</OutputName>
+        <OutputName Condition="'%(Pinata.OutputName)' == ''">$(BaseIntermediateOutputPath)Rectangles.cs</OutputName>
       </Pinata>
       <!-- Add generated file to list of sources to be compiled-->
       <Compile Include="%(Pinata.OutputName)" />

@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pinboard", "Pinboard\Pinboa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playroom", "Playroom\Playroom.csproj", "{D9A6DF85-1760-45A1-A26F-598989F58A0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", "..\..\Toaster\1.5\ToolBelt\ToolBelt.csproj", "{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{EF23CF01-49BD-4A29-8365-804058AD5D23}"
 	ProjectSection(SolutionItems) = preProject
 		Scripts\UpdateVersion.csr = Scripts\UpdateVersion.csr
@@ -19,6 +17,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestContent1", "Test\TestContent1\TestContent1.contentproj", "{CEA0ADCB-A8CE-424A-98D7-1117A3573054}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pinata", "Pinata\Pinata.csproj", "{DBF99B02-4C45-4F79-A9F8-6C90446D7D85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", "..\Toaster\ToolBelt\ToolBelt.csproj", "{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,14 +44,6 @@ Global
 		{D9A6DF85-1760-45A1-A26F-598989F58A0B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D9A6DF85-1760-45A1-A26F-598989F58A0B}.Release|x86.ActiveCfg = Release|x86
 		{D9A6DF85-1760-45A1-A26F-598989F58A0B}.Release|x86.Build.0 = Release|x86
-		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Debug|x86.Build.0 = Debug|Any CPU
-		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Release|x86.ActiveCfg = Release|Any CPU
-		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Release|x86.Build.0 = Release|Any CPU
 		{B94C9D6F-1585-4DE7-9597-10D9517029B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B94C9D6F-1585-4DE7-9597-10D9517029B6}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{B94C9D6F-1585-4DE7-9597-10D9517029B6}.Release|Any CPU.ActiveCfg = Debug|Any CPU
@@ -66,6 +58,12 @@ Global
 		{DBF99B02-4C45-4F79-A9F8-6C90446D7D85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBF99B02-4C45-4F79-A9F8-6C90446D7D85}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DBF99B02-4C45-4F79-A9F8-6C90446D7D85}.Release|x86.ActiveCfg = Release|Any CPU
+		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
