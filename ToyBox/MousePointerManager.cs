@@ -53,7 +53,7 @@ namespace ToyBox
 #if WINDOWS
             spriteService = (ISpriteService)this.Game.Services.GetService(typeof(ISpriteService));
 
-            this.mousePointerTexture = this.Game.Content.Load<Texture2D>("Textures/Arrow");
+            this.mousePointerTexture = this.Game.Content.Load<Texture2D>("Windows/Textures/Arrow");
             this.mouseSprite = new TextureSprite(
                     new SpriteTexture(this.mousePointerTexture, null),
                     new Point(-this.mousePointerTexture.Width, -this.mousePointerTexture.Height),

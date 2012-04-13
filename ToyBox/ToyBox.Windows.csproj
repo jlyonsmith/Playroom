@@ -48,6 +48,8 @@
     <Compile Include="CollectionHelper.cs" />
     <Compile Include="GameScreen.cs" />
     <Compile Include="GameScreenManager.cs" />
+    <Compile Include="IPlatformService.cs" />
+    <Compile Include="PlatformManager.cs" />
     <Compile Include="TextAlignment.cs" />
     <Compile Include="IGamePad.cs" />
     <Compile Include="IGameScreenService.cs" />

@@ -31,13 +31,9 @@ namespace ToyBox
         {
             if (disposing)
             {
-#if WINDOWS
-                this.spriteService.DetachSprite(mouseSprite);
-#endif
-
                 if (this.Game.Services != null)
                 {
-                    this.Game.Services.RemoveService(typeof(IMousePointerService));
+                    this.Game.Services.RemoveService(typeof(IPlatformService));
                 }
             }
 

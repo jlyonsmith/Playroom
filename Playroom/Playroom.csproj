@@ -112,7 +112,7 @@
     </Buckle>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Toaster\ToolBelt\ToolBelt.csproj">
+    <ProjectReference Include="..\..\..\Toaster\1.5\ToolBelt\ToolBelt.csproj">
       <Project>{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}</Project>
       <Name>ToolBelt</Name>
     </ProjectReference>
