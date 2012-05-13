@@ -5,8 +5,8 @@ namespace ToyBox
 	public enum PlatformType
 	{
 		Unknown,
-		Windows7,
-		WindowsPhone7,
+		Windows,
+		WinPhone7,
 		iPhone3,
 		iPhone4,
 		iPad2,

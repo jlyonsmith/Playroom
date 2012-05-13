@@ -73,9 +73,9 @@ namespace ToyBox
 			}
 			
 #elif WINDOWS
-			platform = PlatformType.Windows7;
+			platform = PlatformType.Windows;
 #elif WINDOWS_PHONE
-			platform = PlatformType.WindowsPhone7;
+			platform = PlatformType.WinPhone7;
 #endif
         }
 
