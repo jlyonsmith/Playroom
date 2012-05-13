@@ -6,15 +6,18 @@ using ToolBelt;
 
 namespace Playroom
 {
-    public class PrismData
+    public class RawPrismData
     {
-        // Set by reader
         public ParsedPath PrismFile { get; set; }
         public ParsedPath PinboardFile { get; set; }
         public string RectangleName { get; set; }
         public SvgToPngConverter Converter { get; set; }
         public ParsedPath SvgDirectory { get; set; }
         public List<List<ParsedPath>> SvgFiles { get; set; }
+    }
+
+    public class PrismData : RawPrismData
+    {
         public ParsedPath PngFile { get; set; }
         public PinboardData Pinboard { get; set; }
     }

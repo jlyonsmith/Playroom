@@ -60,7 +60,7 @@ The stepping value can be used to generate inter-day builds.",
         // Create all the different version bits
         string versionMajorMinor = projectRoot.LastDirectoryNoSeparator;
 
-		if (!Regex.IsMatch(versionMajorMinor, @"[0-9]{1,2}\.[0-9]{1}"))
+		if (!Regex.IsMatch(versionMajorMinor, @"[0-9]{1,2}\.[0-9]{1}$"))
 		{
 			ConsoleUtility.WriteMessage(MessageType.Error,
 				@"Version must be in the form <major>.<minor> where major and minor are numbers and minor is 0 to 9.
@@ -270,13 +270,13 @@ Please correct the solution files parent folder name.");
 	{
 		try
 		{
-			string rootFile = "*.sln";
+			string fileSpec = "*.sln";
 
-			FileInfo[] files = DirectoryUtility.GetFiles(rootFile, SearchScope.RecurseParentDirectories);
+			FileInfo[] files = DirectoryInfoUtility.GetFiles(Environment.CurrentDirectory, fileSpec, SearchScope.RecurseParentDirectories);
 
 			if (files.Length == 0)
 			{
-				Console.WriteLine("Unable to find file '{0}' to determine project root", rootFile);
+				Console.WriteLine("Unable to find file '{0}' to determine project root", fileSpec);
 				return null;
 			}
 
