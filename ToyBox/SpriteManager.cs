@@ -52,7 +52,8 @@ namespace ToyBox
         public SpriteManager(Game game)
             : base(game)
         {
-            sprites = new List<Sprite>();
+            Enabled = true;
+			sprites = new List<Sprite>();
             readOnlySprites = sprites.AsReadOnly();
             animations = new List<Animation>();
             readOnlyAnimations = animations.AsReadOnly();
@@ -111,7 +112,7 @@ namespace ToyBox
 
             base.Update(gameTime);
         }
-
+		
         public void AttachSprite(Sprite sprite, params Set<Sprite>[] spriteSets)
         {
 #if DEBUG
@@ -201,7 +202,10 @@ namespace ToyBox
 
         public void Draw()
         {
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
+            if (!Enabled)
+				return;
+			
+			spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
 
             foreach (var sprite in sprites)
             {

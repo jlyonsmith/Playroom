@@ -13,7 +13,7 @@ namespace ToyBox
     {
         ReadOnlyCollection<Sprite> Sprites { get; }
         ReadOnlyCollection<Animation> Animations { get; }
-        void AttachSprite(Sprite sprite, params Set<Sprite>[] spriteSets);
+		void AttachSprite(Sprite sprite, params Set<Sprite>[] spriteSets);
         void DetachSprite(Sprite sprite);
         void DetachAllSprites();
         void AttachAnimation(Sprite sprite, Animation animation, params ActiveAnimationSetUpdater[] animationUpdaters);

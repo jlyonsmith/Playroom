@@ -6,6 +6,7 @@ using Microsoft.Phone.Shell;
 #elif MONOTOUCH
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using MonoTouch.iAd;
 #endif
 
 namespace ToyBox
@@ -14,6 +15,7 @@ namespace ToyBox
 	{
 		#region Fields
 		private PlatformType platform;
+		private Size adBannerSize;
 		#endregion
 		
 		#region Construction
@@ -72,6 +74,13 @@ namespace ToyBox
 				break;
 			}
 			
+			System.Drawing.SizeF size = ADBannerView.SizeFromContentSizeIdentifier(ADBannerView.SizeIdentifierLandscape);
+			
+			if (platform == PlatformType.iPhone4 || platform == PlatformType.iPad3)
+				adBannerSize = new Size((int)size.Width * 2, (int)size.Height * 2);
+			else
+				adBannerSize = new Size((int)size.Width, (int)size.Height);
+			
 #elif WINDOWS
 			platform = PlatformType.Windows7;
 #elif WINDOWS_PHONE
@@ -82,6 +91,8 @@ namespace ToyBox
 
 		#region IPlatformService Implementation
 		public PlatformType Platform { get { return this.platform; } }
+		
+		public Size AdBannerSize { get { return this.adBannerSize; } }
 		#endregion
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Xna.Framework;
 
 namespace ToyBox
 {
@@ -16,6 +17,8 @@ namespace ToyBox
 	public interface IPlatformService
 	{
 		PlatformType Platform { get; }
+		Size AdBannerSize { get; }
 	}
+	
 }
 
