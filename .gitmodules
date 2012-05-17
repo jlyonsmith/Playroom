@@ -1,0 +1,3 @@
+[submodule "ToolBelt"]
+	path = ToolBelt
+	url = git@github.com:jlyonsmith/ToolBelt.git
