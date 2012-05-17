@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playroom", "Playroom\Playro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pinata", "Pinata\Pinata.csproj", "{DBF99B02-4C45-4F79-A9F8-6C90446D7D85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", "..\..\Toaster\1.5\ToolBelt\ToolBelt.csproj", "{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", "ToolBelt\ToolBelt\ToolBelt.csproj", "{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
