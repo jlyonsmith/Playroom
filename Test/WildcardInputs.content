@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Content>
+  <CompilerAssemblyFiles>
+    <File>$(BuildContentInstallDir)\Playroom.dll</File>
+  </CompilerAssemblyFiles>
+  <!-- Test wildcard inputs -->
+  <Items>
+    <Item>
+      <InputFiles>
+        <File>$(InputRootDir)\*.pinboard</File>
+      </InputFiles>
+      <OutputFiles>
+        <File>$(OutputRootDir)\Rectangles.cs</File>
+      </OutputFiles>
+      <Properties>
+        <Namespace>Company.Product</Namespace>
+      </Properties>
+    </Item>
+  </Items>
+</Content>
