@@ -9,11 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pinboard", "Pinboard\Pinboa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildContent", "BuildContent\BuildContent.csproj", "{95B09EAB-7C4F-409C-B099-328C0DA3AF80}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{4709BFE5-4DC7-49D6-9A37-7E1B88D20091}"
-	ProjectSection(SolutionItems) = preProject
-		Test\WildcardInputs.content = Test\WildcardInputs.content
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

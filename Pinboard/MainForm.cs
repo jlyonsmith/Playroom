@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.IO;
 using Playroom;
+using ToolBelt;
 
 namespace Jamoki.Tools.Pinboard
 {
@@ -16,7 +17,7 @@ namespace Jamoki.Tools.Pinboard
     {
         private readonly string fileDialogFilter = "Pinboard Files (*.pinboard)|*.pinboard|All files (*.*)|*.*";
         private PropertiesForm propertiesForm;
-        private PinboardData data;
+        private PinboardFileV1 data;
         private string fileName;
         private string tempFileName;
         private int nextTempFileNum;
@@ -44,7 +45,7 @@ namespace Jamoki.Tools.Pinboard
             }
         }
 
-        private void SetPinboardData(PinboardData data)
+        private void SetPinboardData(PinboardFileV1 data)
         {
             this.data = data;
 
@@ -80,20 +81,14 @@ namespace Jamoki.Tools.Pinboard
 
         private void OpenFile(string fileName)
         {
-            PinboardData data = null;
+            PinboardFileV1 data = null;
 
             try
             {
-                using (XmlReader reader = XmlReader.Create(fileName))
-                {
-                    data = PinboardDataReaderV1.ReadXml(reader);
-                }
+                data = PinboardFileReaderV1.ReadFile(new ParsedPath(fileName, PathType.File));
             }
-            catch (Exception ex)
+            catch
             {
-                if (!(ex is XmlException || ex is FormatException))
-                    throw;
-
                 MessageBox.Show("Unable to load pinboard file", "Error Loading File",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -142,7 +137,7 @@ namespace Jamoki.Tools.Pinboard
             fileName = null;
             tempFileName = "PinboardFile" + nextTempFileNum.ToString() + ".pinboard";
             nextTempFileNum++;
-            SetPinboardData(PinboardData.Default);
+            SetPinboardData(PinboardFileV1.Default);
             SetPinboardSize();
             SetWindowTitle();
         }

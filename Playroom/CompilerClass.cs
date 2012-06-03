@@ -18,12 +18,16 @@ namespace Playroom
             this.Instance = Activator.CreateInstance(this.Type);
             this.CompileMethod = this.Type.GetMethod(
                 "Compile", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance);
+            this.ContextProperty = this.Type.GetProperty("Context");
+            this.ItemProperty = this.Type.GetProperty("Item");
         }
 
         public Assembly Assembly { get; private set; }
         public Type Type { get; private set; }
         public Object Instance { get; private set; }
-        public MethodInfo CompileMethod { get; set; }
+        public MethodInfo CompileMethod { get; private set; }
+        public PropertyInfo ContextProperty { get; private set; }
+        public PropertyInfo ItemProperty { get; private set; }
         public string Name { get { return this.Type.FullName; } }
         public string[] InputExtensions 
         { 

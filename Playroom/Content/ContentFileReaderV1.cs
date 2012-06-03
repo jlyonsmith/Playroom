@@ -18,9 +18,8 @@ namespace Playroom
         private string outputFilesAtom;
         private string propertiesAtom;
         private XmlReader reader;
-        private PropertyCollection properties;
 
-        public ContentFileReaderV1(XmlReader reader, PropertyCollection properties)
+        private ContentFileReaderV1(XmlReader reader)
         {
             contentAtom = reader.NameTable.Add("Content");
             compilerAssemblyFilesAtom = reader.NameTable.Add("CompilerAssemblyFiles");
@@ -31,13 +30,15 @@ namespace Playroom
             propertiesAtom = reader.NameTable.Add("Properties");
 
             this.reader = reader;
-            this.properties = properties;
             this.reader.MoveToContent();
         }
 
-        public ContentFileV1 Read()
+        public static ContentFileV1 ReadFile(ParsedPath contentFile)
         {
-            return ReadContentElement();
+            using (XmlReader reader = XmlReader.Create(contentFile))
+            {
+                return new ContentFileReaderV1(reader).ReadContentElement();
+            }
         }
 
         private ContentFileV1 ReadContentElement()
@@ -179,6 +180,10 @@ namespace Playroom
         private List<Tuple<string, string>> ReadPropertiesElement()
         {
             List<Tuple<string, string>> list = new List<Tuple<string, string>>();
+
+            // This element is optional
+            if (!reader.IsStartElement(propertiesAtom))
+                return list;
 
             // Read outer collection element
             reader.ReadStartElement(propertiesAtom);

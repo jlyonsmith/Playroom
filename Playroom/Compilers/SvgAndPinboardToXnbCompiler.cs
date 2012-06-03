@@ -25,7 +25,10 @@ namespace Playroom
             get { return new string[] { ".xnb" }; }
         }
 
-        public void Compile(BuildContext buildContext, BuildItem buildItem)
+        public BuildContext Context { get; set; }
+        public BuildItem Item { get; set; }
+
+        public void Compile()
         {
             /*
             ParsedPath prismFile = new ParsedPath(fileName, PathType.File);
@@ -159,16 +162,14 @@ namespace Playroom
             public System.Drawing.Rectangle TargetRectangle { get; set; }
         }
 
-        private static Dictionary<ParsedPath, PinboardData> pinboardDataCache;
-        private BuildContext Context { get; set; }
-        private ParsedPath PrismFile { get; set; }
+        private static Dictionary<ParsedPath, PinboardFileV1> pinboardDataCache;
 
-        private PinboardData ReadPinboardFile(ParsedPath pinboardFile)
+        private PinboardFileV1 ReadPinboardFile(ParsedPath pinboardFile)
         {
-            PinboardData data = null;
+            PinboardFileV1 data = null;
 
             if (pinboardDataCache == null)
-                pinboardDataCache = new Dictionary<ParsedPath, PinboardData>();
+                pinboardDataCache = new Dictionary<ParsedPath, PinboardFileV1>();
 
             if (pinboardDataCache.TryGetValue(pinboardFile, out data))
             {
@@ -177,10 +178,7 @@ namespace Playroom
 
             try
             {
-                using (XmlReader reader = XmlReader.Create(pinboardFile))
-                {
-                    data = PinboardDataReaderV1.ReadXml(reader);
-                }
+                data = PinboardFileReaderV1.ReadFile(pinboardFile);
             }
             catch
             {
@@ -268,7 +266,7 @@ namespace Playroom
 
             if (ret != 0 || output.IndexOf("CRITICAL **") != -1)
             {
-                throw new ContentCompilerException(String.Format("Error running Inkscape on '{0}'", svgFile));
+                throw new ContentFileException(Context.ContentFile, Item.LineNumber, String.Format("Error running Inkscape on '{0}'", svgFile));
             }
 
             return true;
@@ -290,7 +288,7 @@ namespace Playroom
             int ret = Command.Run(command, out output);
 
             if (ret != 0)
-                throw new ContentCompilerException(String.Format("Error running RSVG-Convert on '{0}'", svgFile));
+                throw new ContentFileException(Context.ContentFile, Item.LineNumber, String.Format("Error running RSVG-Convert on '{0}'", svgFile));
 
             return true;
         }

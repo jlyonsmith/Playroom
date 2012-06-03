@@ -11,26 +11,25 @@ using Microsoft.Xna.Framework.Content;
 
 namespace Playroom
 {
-    [ContentTypeWriter]
     public class ParsedPathWriter : ContentTypeWriter<ParsedPath>
     {
-        public override string GetRuntimeReader(TargetPlatform targetPlatform)
+        public override void Write(ContentWriter writer, ParsedPath value)
         {
-            return typeof(ParsedPathReader).AssemblyQualifiedName;
+            writer.Write(value.ToString());
+            writer.Write((short)(value.IsVolume ? PathType.Volume : value.IsDirectory ? PathType.Directory : PathType.File));
         }
-        
-        protected override void Write(ContentWriter output, ParsedPath value)
+
+        public override ContentTypeReaderName GetReaderName()
         {
-            output.Write(value.ToString());
-            output.Write((short)(value.IsVolume ? PathType.Volume : value.IsDirectory ? PathType.Directory : PathType.File));
+            return new ContentTypeReaderName();
         }
     }
 
     public class ParsedPathReader : ContentTypeReader<ParsedPath>
     {
-        protected override ParsedPath Read(ContentReader input, ParsedPath existingInstance)
+        public override void Read(ContentReader reader, out ParsedPath value)
         {
-            return new ParsedPath(input.ReadString(), (PathType)input.ReadUInt16());
+            value = new ParsedPath(reader.ReadString(), (PathType)reader.ReadUInt16());
         }
     }
 }

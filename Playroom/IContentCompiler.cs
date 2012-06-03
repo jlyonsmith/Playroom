@@ -10,6 +10,8 @@ namespace Playroom
     {
         string[] InputExtensions { get; }
         string[] OutputExtensions { get; }
-        void Compile(BuildContext buildContext, BuildItem buildItem);
+        BuildContext Context { get; set; }
+        BuildItem Item { get; set; }
+        void Compile();
     }
 }

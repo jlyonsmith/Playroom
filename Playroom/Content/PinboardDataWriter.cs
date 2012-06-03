@@ -9,12 +9,12 @@ namespace Playroom
 {
     public static class PinboardDataWriter
     {
-        public static void WriteXml(XmlWriter writer, PinboardData data)
+        public static void WriteXml(XmlWriter writer, PinboardFileV1 data)
         {
             WritePinboardXml(writer, data);
         }
                
-        private static void WritePinboardXml(XmlWriter writer, PinboardData data)
+        private static void WritePinboardXml(XmlWriter writer, PinboardFileV1 data)
         {
             writer.WriteStartElement("Pinboard");
             writer.WriteAttributeString("Format", "1");
@@ -25,7 +25,7 @@ namespace Playroom
             writer.WriteEndElement();
         }
 
-        private static void WriteRectanglesXml(XmlWriter writer, PinboardData data)
+        private static void WriteRectanglesXml(XmlWriter writer, PinboardFileV1 data)
         {
             writer.WriteStartElement("Rectangles");
 
@@ -37,7 +37,7 @@ namespace Playroom
             writer.WriteEndElement();
         }
 
-        private static void WriteRectangleXml(XmlWriter writer, RectangleInfo rectInfo)
+        private static void WriteRectangleXml(XmlWriter writer, PinboardFileV1.RectangleInfo rectInfo)
         {
             writer.WriteStartElement("Rectangle");
             writer.WriteElementString("Name", rectInfo.Name.ToString());

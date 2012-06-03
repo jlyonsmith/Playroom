@@ -23,7 +23,7 @@ namespace Jamoki.Tools.Pinboard
         private BufferedGraphicsContext bufferContext;
         private bool bufferDirty;
         private int nextRectNum;
-        private PinboardData data;
+        private PinboardFileV1 data;
         private bool dataDirty;
         private PropertiesForm propertiesForm;
         
@@ -40,7 +40,7 @@ namespace Jamoki.Tools.Pinboard
             nextRectNum = 0;
         }
 
-        public PinboardData Data 
+        public PinboardFileV1 Data 
         {
             get
             {
@@ -48,7 +48,7 @@ namespace Jamoki.Tools.Pinboard
             }
             set
             {
-                PinboardData oldData = data;
+                PinboardFileV1 oldData = data;
                 
                 data = value;
                 selectedIndex = -1;
@@ -100,7 +100,7 @@ namespace Jamoki.Tools.Pinboard
 
         public event EventHandler<EventArgs> DataDirtied;
 
-        public RectangleInfo Selection 
+        public PinboardFileV1.RectangleInfo Selection 
         { 
             get 
             {
@@ -179,7 +179,7 @@ namespace Jamoki.Tools.Pinboard
 
                 this.Capture = true;
 
-                RectangleInfo dragRectInfo = Data.RectInfos[index];
+                PinboardFileV1.RectangleInfo dragRectInfo = Data.RectInfos[index];
                 Point[] points = this.GetCornerPoints(dragRectInfo.Rectangle);
 
                 if (Vector.IsPointInTriangle(e.Location, points[0], points[1], points[2]))
@@ -281,7 +281,7 @@ namespace Jamoki.Tools.Pinboard
 
         public void SetRectangleSizeFromPoint(Point point)
         {
-            RectangleInfo selection = Data.RectInfos[selectedIndex];
+            PinboardFileV1.RectangleInfo selection = Data.RectInfos[selectedIndex];
             int x = point.X + dragOffset.X;
             int y = point.Y + dragOffset.Y;
             
@@ -302,7 +302,7 @@ namespace Jamoki.Tools.Pinboard
 
         public void SetRectanglePositionFromPoint(Point point)
         {
-            RectangleInfo selection = Data.RectInfos[selectedIndex];
+            PinboardFileV1.RectangleInfo selection = Data.RectInfos[selectedIndex];
             int x = point.X - dragOffset.X;
             int y = point.Y - dragOffset.Y;
 
@@ -385,17 +385,17 @@ namespace Jamoki.Tools.Pinboard
                 return;
             }
 
-            DrawRectangleInfo(g, Data.ScreenRectInfo, selectedIndex == -1);
+            DrawPinboardFile(g, Data.ScreenRectInfo, selectedIndex == -1);
 
             for (int i = 0; i < Data.RectInfos.Count; i++)
             {
-                RectangleInfo rectInfo = Data.RectInfos[i];
+                PinboardFileV1.RectangleInfo rectInfo = Data.RectInfos[i];
 
-                DrawRectangleInfo(g, rectInfo, i == selectedIndex);
+                DrawPinboardFile(g, rectInfo, i == selectedIndex);
             }
         }
 
-        private void DrawRectangleInfo(Graphics g, RectangleInfo rectInfo, bool selected)
+        private void DrawPinboardFile(Graphics g, PinboardFileV1.RectangleInfo rectInfo, bool selected)
         {
             using (SolidBrush brush = new SolidBrush(rectInfo.Color))
             {
@@ -503,7 +503,7 @@ namespace Jamoki.Tools.Pinboard
                     case Keys.PageUp:
                         if (e.Modifiers == Keys.None && selectedIndex < Data.RectInfos.Count - 1)
                         {
-                            RectangleInfo rectInfo = Data.RectInfos[selectedIndex];
+                            PinboardFileV1.RectangleInfo rectInfo = Data.RectInfos[selectedIndex];
 
                             Data.RectInfos[selectedIndex] = Data.RectInfos[selectedIndex + 1];
                             selectedIndex++;
@@ -515,7 +515,7 @@ namespace Jamoki.Tools.Pinboard
                     case Keys.PageDown:
                         if (e.Modifiers == Keys.None && selectedIndex > 0)
                         {
-                            RectangleInfo rectInfo = Data.RectInfos[selectedIndex];
+                            PinboardFileV1.RectangleInfo rectInfo = Data.RectInfos[selectedIndex];
 
                             Data.RectInfos[selectedIndex] = Data.RectInfos[selectedIndex - 1];
                             selectedIndex--;
@@ -594,7 +594,7 @@ namespace Jamoki.Tools.Pinboard
         {
             if (selectedIndex != -1)
             {
-                RectangleInfo rectInfo = new RectangleInfo(Data.RectInfos[selectedIndex]);
+                PinboardFileV1.RectangleInfo rectInfo = new PinboardFileV1.RectangleInfo(Data.RectInfos[selectedIndex]);
 
                 rectInfo.Name += "_Copy";
                 Data.RectInfos.Insert(selectedIndex, rectInfo);
@@ -608,7 +608,7 @@ namespace Jamoki.Tools.Pinboard
         public void NewRectangle()
         {
             this.Data.RectInfos.Add(
-                new RectangleInfo(new Rectangle(0, 0, 100, 100), "Rectangle" + nextRectNum.ToString()));
+                new PinboardFileV1.RectangleInfo(new Rectangle(0, 0, 100, 100), "Rectangle" + nextRectNum.ToString()));
 
             nextRectNum++;
             selectedIndex = Data.RectInfos.Count - 1;

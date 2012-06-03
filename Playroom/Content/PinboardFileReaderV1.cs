@@ -4,31 +4,40 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Drawing;
+using ToolBelt;
 
 namespace Playroom
 {
-    public static class PinboardDataReaderV1
+    public class PinboardFileReaderV1
     {
-        public static string rectanglesAtom;
+        public string rectanglesAtom;
+        private XmlReader reader;
 
-        public static PinboardData ReadXml(XmlReader reader)
+        private PinboardFileReaderV1(XmlReader reader)
         {
             rectanglesAtom = reader.NameTable.Add("Rectangles");
             
-            reader.MoveToContent();
-            PinboardData data = ReadPinboardXml(reader);
-            return data;
+            this.reader = reader;
+            this.reader.MoveToContent();
         }
 
-        private static PinboardData ReadPinboardXml(XmlReader reader)
+        public static PinboardFileV1 ReadFile(ParsedPath contentFile)
         {
-            PinboardData data = new PinboardData();
+            using (XmlReader reader = XmlReader.Create(contentFile))
+            {
+                return new PinboardFileReaderV1(reader).ReadPinboardXml();
+            }
+        }
+
+        private PinboardFileV1 ReadPinboardXml()
+        {
+            PinboardFileV1 data = new PinboardFileV1();
             
             reader.ReadStartElement("Pinboard");
             reader.MoveToContent();
-            data.ScreenRectInfo = ReadRectangleXml(reader);
+            data.ScreenRectInfo = ReadRectangleXml();
 
-            data.RectInfos = ReadRectanglesXml(reader);
+            data.RectInfos = ReadRectanglesXml();
             
             reader.ReadEndElement();
             reader.MoveToContent();
@@ -36,9 +45,9 @@ namespace Playroom
             return data;
         }
 
-        private static List<RectangleInfo> ReadRectanglesXml(XmlReader reader)
+        private List<PinboardFileV1.RectangleInfo> ReadRectanglesXml()
         {
-            List<RectangleInfo> list = new List<RectangleInfo>();
+            List<PinboardFileV1.RectangleInfo> list = new List<PinboardFileV1.RectangleInfo>();
             bool empty = reader.IsEmptyElement;
 
             reader.ReadStartElement(rectanglesAtom);
@@ -55,7 +64,7 @@ namespace Playroom
                         break;
                     }
 
-                    RectangleInfo rectInfo = ReadRectangleXml(reader);
+                    PinboardFileV1.RectangleInfo rectInfo = ReadRectangleXml();
 
                     list.Add(rectInfo);
                 }
@@ -64,9 +73,9 @@ namespace Playroom
             return list;
         }
 
-        private static RectangleInfo ReadRectangleXml(XmlReader reader)
+        private PinboardFileV1.RectangleInfo ReadRectangleXml()
         {
-            RectangleInfo rectInfo = new RectangleInfo();
+            PinboardFileV1.RectangleInfo rectInfo = new PinboardFileV1.RectangleInfo();
 
             // Read <Rectangle>
             reader.ReadStartElement("Rectangle");
@@ -81,14 +90,14 @@ namespace Playroom
             reader.MoveToContent();
             rectInfo.Height = reader.ReadElementContentAsInt("Height", "");
             reader.MoveToContent();
-            rectInfo.Color = ReadColorXml(reader);
+            rectInfo.Color = ReadColorXml();
             reader.ReadEndElement();
             reader.MoveToContent();
 
             return rectInfo;
         }
 
-        private static Color ReadColorXml(XmlReader reader)
+        private Color ReadColorXml()
         {
             int a, r, g, b;
 

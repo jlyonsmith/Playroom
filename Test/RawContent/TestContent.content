@@ -16,5 +16,13 @@
         <Namespace>Company.Product</Namespace>
       </Properties>
     </Item>
+    <Item>
+      <InputFiles>
+        <File>$(InputRootDir)\Platform2\Pinboards\Logo.pinboard</File>
+      </InputFiles>
+      <OutputFiles>
+        <File>$(OutputRootDir)\Platform2\Pinboards\Logo.xnb</File>
+      </OutputFiles>
+    </Item>
   </Items>
 </Content>

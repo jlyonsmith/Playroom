@@ -90,6 +90,29 @@ namespace Playroom
 
             this.ContentFile = this.ContentFile.MakeFullPath();
 
+            try
+            {
+                SafeExecute();
+            }
+            catch (Exception e)
+            {
+                if (e is ContentFileException)
+                {
+                    Output.Error((ParsedPath)e.Data["ContentFile"], (int)e.Data["LineNumber"], 0, e.Message);
+                }
+                else if (e is ApplicationException)
+                {
+                    Output.Error(e.Message);
+                }
+                else
+                {
+                    Output.Error(e.ToString());
+                }
+            }
+        }
+
+        public void SafeExecute()
+        {
             PropertyCollection propCollection = new PropertyCollection();
 
             // Initialize properties from the environment and command line
@@ -103,20 +126,9 @@ namespace Playroom
             
             Output.Message(MessageImportance.Low, "Reading content file '{0}'", this.ContentFile);
 
-            ContentFileV1 contentData = ReadContentDataV1(this.ContentFile, propCollection);
-
-            if (contentData == null)
-                return;
-
+            ContentFileV1 contentData = ContentFileReaderV1.ReadFile(this.ContentFile);
             List<CompilerClass> compilerClasses = LoadCompilerClasses(contentData, propCollection);
-
-            if (compilerClasses == null)
-                return;
-
             List<BuildItem> buildItems = PrepareBuildItems(contentData, propCollection);
-
-            if (buildItems == null)
-                return;
 
             foreach (var buildItem in buildItems)
             {
@@ -125,16 +137,22 @@ namespace Playroom
                     if (buildItem.InputExtensions.SequenceEqual(compilerClass.InputExtensions) &&
                         buildItem.OutputExtensions.SequenceEqual(compilerClass.OutputExtensions))
                     {
-                        Output.Message("Invoking '{0}' compiler", compilerClass.Name);
+                        // TODO: More output?
+                        Output.Message("Building item with '{0}' compiler", compilerClass.Name);
+
+                        compilerClass.ContextProperty.SetValue(compilerClass.Instance, buildContext, null);
+                        compilerClass.ItemProperty.SetValue(compilerClass.Instance, buildItem, null);
 
                         try
                         {
-                             compilerClass.CompileMethod.Invoke(compilerClass.Instance, new object[] { buildContext, buildItem });
+                            compilerClass.CompileMethod.Invoke(compilerClass.Instance, null);
                         }
-                        catch (Exception e)
+                        catch (TargetInvocationException e)
                         {
-                            Output.Error(this.ContentFile, buildItem.LineNumber, 0, e.Message); 
-                            return;
+                            if (e.InnerException is ContentFileException)
+                                throw e.InnerException;
+                            else
+                                throw;
                         }
                     }
                 }
@@ -173,8 +191,7 @@ namespace Playroom
 
                         if (files.Count == 0)
                         {
-                            Output.Error("Build item has no inputs after expansions");
-                            return null;
+                            throw new ContentFileException(this.ContentFile, buildItem.LineNumber, "Wildcard input refers to no files after expansion");
                         }
 
                         buildItem.InputFiles = buildItem.InputFiles.Concat(files).ToList<ParsedPath>();
@@ -183,8 +200,7 @@ namespace Playroom
                     {
                         if (!File.Exists(inputFile))
                         {
-                            Output.Error("Input file '{0}' does not exist", inputFile);
-                            return null;
+                            throw new ContentFileException(this.ContentFile, buildItem.LineNumber, String.Format("Input file '{0}' does not exist", inputFile));
                         }
 
                         buildItem.InputFiles.Add(inputFile);
@@ -199,14 +215,10 @@ namespace Playroom
 
                     if (outputFile.HasWildcards)
                     {
-                        IList<ParsedPath> files = DirectoryUtility.GetFiles(outputFile, SearchScope.RecurseSubDirectoriesBreadthFirst);
+                        throw new ContentFileException(this.ContentFile, buildItem.LineNumber, "Output item cannot have wildcards");
+                    }
 
-                        buildItem.OutputFiles.Concat(files);
-                    }
-                    else
-                    {
-                        buildItem.OutputFiles.Add(outputFile);
-                    }
+                    buildItem.OutputFiles.Add(outputFile);
                 }
 
                 bool needsRebuild = IsCompileRequired(buildItem.InputFiles, buildItem.OutputFiles);
@@ -275,8 +287,7 @@ namespace Playroom
                 }
                 catch (Exception e)
                 {
-                    Output.Error("Unable to load content compiler assembly file '{0}'. {1}", assemblyFile, e.ToString());
-                    return null;
+                    throw new ApplicationException(String.Format("Unable to load content compiler assembly file '{0}'. {1}", assemblyFile, e.ToString()), e);
                 }
 
                 Type[] types;
@@ -295,65 +306,26 @@ namespace Playroom
                     foreach (Exception ex in e.LoaderExceptions)
                         message += Environment.NewLine + "   " + ex.Message;
 
-                    Output.Error(message);
-
                     // Not being able to reflect on classes in the test assembly is a critical error
-                    return null;
+                    throw new ApplicationException(message, e);
                 }
 
-                //
-                // Go through all the types in the test assembly and find all the compiler classes, those
-                // that inherit from IContentCompiler
-                //
-
-                try
+                // Go through all the types in the test assembly and find all the 
+                // compiler classes, those that inherit from IContentCompiler.
+                foreach (var type in types)
                 {
-                    foreach (var type in types)
+                    Type interfaceType = type.GetInterface(typeof(IContentCompiler).ToString());
+
+                    if (interfaceType != null)
                     {
-                        Type interfaceType = type.GetInterface(typeof(IContentCompiler).ToString());
+                        CompilerClass compilerClass = new CompilerClass(assembly, type);
 
-                        if (interfaceType != null)
-                        {
-                            CompilerClass compilerClass = new CompilerClass(assembly, type);
-
-                            compilerClasses.Add(compilerClass);
-                        }
+                        compilerClasses.Add(compilerClass);
                     }
-                }
-                catch (Exception e)
-                {
-                    // If we have any problems loading the test assembly that's a critical error
-                    // that indicates a deployment problem and we must stop.
-                    Output.Error("Problem loading compiler assembly. {0}", e.ToString());
-
-                    return null;
                 }
             }
 
             return compilerClasses;
-        }
-
-        private ContentFileV1 ReadContentDataV1(ParsedPath fileName, PropertyCollection propCollection)
-        {
-            ContentFileV1 contentData = null;
-
-            try
-            {
-                using (XmlReader reader = XmlReader.Create(fileName))
-                {
-                    contentData = new ContentFileReaderV1(reader, propCollection).Read();
-                }
-            }
-            catch (Exception ex)
-            {
-                if (!(ex is XmlException || ex is FormatException))
-                    throw;
-
-                Output.Error("Unable to read content file '{0}'", fileName);
-                return null;
-            }
-
-            return contentData;
         }
 
         #endregion

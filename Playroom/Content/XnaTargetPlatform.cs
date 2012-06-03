@@ -5,7 +5,10 @@ using System.Text;
 
 namespace Playroom
 {
-    class StringToXnbAndCsConverter
+    public enum XnaTargetPlatform
     {
+        Windows,
+        Xbox360,
+        WindowsPhone
     }
 }

@@ -81,7 +81,7 @@ namespace Jamoki.Tools.Pinboard
 
         private void SetSelectionValuesAndMode()
         {
-            RectangleInfo rectInfo = pinboardControl.Selection;
+            PinboardFileV1.RectangleInfo rectInfo = pinboardControl.Selection;
 
             if (rectInfo != null)
             {
@@ -126,8 +126,8 @@ namespace Jamoki.Tools.Pinboard
 
             inErrorState = true;
 
-            PinboardData data = pinboardControl.Data;
-            RectangleInfo selection = pinboardControl.Selection;
+            PinboardFileV1 data = pinboardControl.Data;
+            PinboardFileV1.RectangleInfo selection = pinboardControl.Selection;
             int selectionIndex = pinboardControl.SelectionIndex;
 
             if (pinboardControl.SelectionIndex == -1)
@@ -178,7 +178,7 @@ namespace Jamoki.Tools.Pinboard
                             if (i == selectionIndex)
                                 continue;
 
-                            RectangleInfo rectInfo = data.RectInfos[i];
+                            PinboardFileV1.RectangleInfo rectInfo = data.RectInfos[i];
 
                             if (name == rectInfo.Name)
                             {

@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Playroom.Compilers;
 using ToolBelt;
 using System.IO;
 using System.Xml;
 
-namespace Playroom.Converters
+namespace Playroom
 {
     public class PinboardToCsCompiler : IContentCompiler
     {
@@ -24,62 +23,93 @@ namespace Playroom.Converters
             public List<Class> Classes { get; set; }
         }
 
+        private class FileNameEqualityComparer : IEqualityComparer<ParsedPath>
+        {
+            #region IEqualityComparer<ParsedPath> Members
+
+            public bool Equals(ParsedPath x, ParsedPath y)
+            {
+                return String.Compare(x.File.ToString(), y.File.ToString(), StringComparison.InvariantCultureIgnoreCase) == 0;
+            }
+
+            public int GetHashCode(ParsedPath path)
+            {
+                return path.File.GetHashCode();
+            }
+
+            #endregion
+        }
+
         #endregion
         
         #region IContentCompiler Members
 
         public string[] InputExtensions { get { return new string[] { ".pinboard" }; } }
-
         public string[] OutputExtensions { get { return new string[] { ".cs" }; } }
+        public BuildContext Context { get; set; }
+        public BuildItem Item { get; set; }
 
-        public void Compile(BuildContext buildContext, BuildItem buildItem)
+        public void Compile()
         {
-            List<PinboardData> inputPinboards = new List<PinboardData>();
+            IEnumerable<ParsedPath> pinboardFiles = Item.InputFiles.Where(f => f.Extension == ".pinboard");
+            IEnumerable<ParsedPath> distinctPinboardFiles = pinboardFiles.Distinct<ParsedPath>(new FileNameEqualityComparer());
 
-            foreach (var pinboardFile in buildItem.InputFiles)
-            {
-                buildContext.Output.Message(MessageImportance.Low, "Reading pinboard file '{0}'", pinboardFile);
+            Dictionary<ParsedPath, PinboardFileV1> pinboards = ReadPinboardFiles(pinboardFiles);
 
-                PinboardData pinboardData = ReadPinboardData(pinboardFile);
-
-                if (pinboardData == null)
-                {
-                    buildContext.Output.Error("Unable to read pinboard file '{0}'", pinboardFile);
-                    return;
-                }
-
-                inputPinboards.Add(pinboardData);
-            }
+            ReconcilePinboards(pinboardFiles, distinctPinboardFiles, pinboards);
 
             TextWriter writer;
-            bool closeWriter = true;
-            ParsedPath csFile = buildItem.OutputFiles[0];
+            ParsedPath csFile = Item.OutputFiles.Where(f => f.Extension == ".cs").First();
 
-            if (!String.IsNullOrEmpty(csFile))
+            Context.Output.Message(MessageImportance.Normal, "Writing output file '{0}'", csFile);
+
+            using (writer = new StreamWriter(csFile, false, Encoding.UTF8))
             {
-                buildContext.Output.Message(MessageImportance.Normal, "Writing output file '{0}'", csFile);
+                RectangleData rectangleData = CreateRectangleData(distinctPinboardFiles, pinboards);
 
-                writer = new StreamWriter(csFile, false, Encoding.UTF8);
-            }
-            else
-            {
-                writer = Console.Out;
-                closeWriter = false;
-            }
-
-            RectangleData rectangleData = null;
-
-            WriteCsOutput(writer, rectangleData);
-
-            if (closeWriter)
-            {
-                writer.Close();
+                WriteCsOutput(writer, rectangleData);
             }
         }
 
         #endregion
 
         #region Methods
+
+        private RectangleData CreateRectangleData(IEnumerable<ParsedPath> distinctPinboardFiles, Dictionary<ParsedPath, PinboardFileV1> pinboards)
+        {
+            RectangleData rectData = new RectangleData();
+
+            if (!Item.Properties.ContainsKey("Namespace"))
+                throw new ContentFileException(Context.ContentFile, Item.LineNumber, "Item does not contain Namespace property");
+
+            rectData.Namespace = Item.Properties["Namespace"];
+            rectData.Classes = new List<RectangleData.Class>();
+
+            foreach (var pinboardFile in distinctPinboardFiles)
+            {
+                PinboardFileV1 pinboard = pinboards[pinboardFile];
+
+                RectangleData.Class rectClass = new RectangleData.Class();
+
+                rectClass.ClassNamePrefix = pinboardFile.File;
+
+                List<string> names = new List<string>();
+
+                names.Add("Screen");
+
+                foreach (var rectInfo in pinboard.RectInfos)
+                {
+                    names.Add(rectInfo.Name);
+                }
+
+                rectClass.RectangleNames = names;
+
+                rectData.Classes.Add(rectClass);
+            }
+
+            return rectData;
+        }
+
         private void WriteCsOutput(TextWriter writer, RectangleData rectangleData)
         {
             writer.WriteLine("using System;");
@@ -119,25 +149,71 @@ namespace Playroom.Converters
             writer.WriteLine("}");
         }
 
-        public static PinboardData ReadPinboardData(ParsedPath pinboardPath)
+        private Dictionary<ParsedPath, PinboardFileV1> ReadPinboardFiles(IEnumerable<ParsedPath> pinboardFiles)
         {
-            PinboardData pinboardData = null;
+            Dictionary<ParsedPath, PinboardFileV1> pinboards = new Dictionary<ParsedPath, PinboardFileV1>();
 
-            try
+            foreach (var pinboardFile in pinboardFiles)
             {
-                using (XmlReader reader = XmlReader.Create(pinboardPath))
+                Context.Output.Message(MessageImportance.Low, "Reading pinboard file '{0}'", pinboardFile);
+
+                PinboardFileV1 pinboard = null;
+
+                try
                 {
-                    pinboardData = PinboardDataReaderV1.ReadXml(reader);
+                    pinboard = PinboardFileReaderV1.ReadFile(pinboardFile);
+                }
+                catch (Exception e)
+                {
+                    throw new ContentFileException(Context.ContentFile, Item.LineNumber, String.Format("Unable to read pinboard file '{0}'", pinboardFile), e);
+                }
+
+                pinboards.Add(pinboardFile, pinboard);
+            }
+
+            return pinboards;
+        }
+
+        private void ReconcilePinboards(
+            IEnumerable<ParsedPath> pinboardFiles, 
+            IEnumerable<ParsedPath> distinctPinboardFiles, 
+            Dictionary<ParsedPath, PinboardFileV1> pinboards)
+        {
+            foreach (var distinctPinboardFile in distinctPinboardFiles)
+            {
+                PinboardFileV1 goldPinboard = null;
+                ParsedPath goldPinboardFile = null;
+
+                foreach (var pinboardFile in pinboardFiles.Where(p => p.File == distinctPinboardFile.File))
+                {
+                    if (goldPinboard == null)
+                    {
+                        goldPinboard = pinboards[pinboardFile]; 
+                        goldPinboardFile = pinboardFile;
+                    }
+                    else
+                    {
+                        PinboardFileV1 pinboard = pinboards[pinboardFile];
+
+                        if (goldPinboard.RectInfos.Count != pinboard.RectInfos.Count)
+                        {
+                            throw new ContentFileException(Context.ContentFile, Item.LineNumber, string.Format("Pinboard '{0}' and '{1}' have a different number of rectangles",
+                                goldPinboardFile, pinboardFile));
+                        }
+
+                        for (int i = 0; i < goldPinboard.RectInfos.Count; i++)
+                        {
+                            if (goldPinboard.RectInfos[i].Name != pinboard.RectInfos[i].Name)
+                            {
+                                throw new ContentFileException(Context.ContentFile, Item.LineNumber, string.Format("RectangleInfo named {0} at depth {1} in pinboard '{2}' is different from pinboard '{3}'",
+                                    goldPinboard.RectInfos[i].Name, i, goldPinboardFile, pinboardFile));
+                            }
+                        }
+                    }
                 }
             }
-            catch (Exception e)
-            {
-                if (!(e is XmlException || e is IOException))
-                    throw;
-            }
-
-            return pinboardData;
         }
+
         #endregion
     }
 }

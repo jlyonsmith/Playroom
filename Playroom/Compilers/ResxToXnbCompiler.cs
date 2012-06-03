@@ -5,24 +5,26 @@ using System.Text;
 
 namespace Playroom
 {
-    public class SvgToPdfCompiler : IContentCompiler
+    public class ResxToXnbCompiler : IContentCompiler
     {
         #region IContentCompiler Members
 
         public string[] InputExtensions
         {
-            get { return new string[] { ".svg" }; }
+            get { throw new NotImplementedException(); }
         }
 
         public string[] OutputExtensions
         {
-            get { return new string[] { ".pdf" }; }
+            get { throw new NotImplementedException(); }
         }
+
         public BuildContext Context { get; set; }
         public BuildItem Item { get; set; }
 
         public void Compile()
         {
+            throw new NotImplementedException();
         }
 
         #endregion

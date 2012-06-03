@@ -81,33 +81,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Content\ContentTypeWriter.cs" />
-    <None Include="Content\ContentWriter.cs" />
+    <Compile Include="ContentReader.cs" />
+    <Compile Include="Content\ContentTypeWriter.cs" />
     <Compile Include="BuildContext.cs" />
     <Compile Include="BuildContentTool.cs" />
     <Compile Include="BuildItem.cs" />
     <Compile Include="CompilerClass.cs" />
-    <Compile Include="Compilers\IContentCompiler.cs" />
+    <Compile Include="Content\ContentTypeReader.cs" />
+    <Compile Include="Content\XnbFileWriterV5.cs" />
+    <Compile Include="IContentCompiler.cs" />
+    <Compile Include="Compilers\ResxToXnbCompiler.cs" />
     <Compile Include="Compilers\SpritefontAndStringsToXnbCompiler.cs" />
     <Compile Include="Compilers\SvgToPdfCompiler.cs" />
     <Compile Include="Compilers\WavToXnbCompiler.cs" />
-    <Compile Include="ContentCompilerException.cs" />
+    <Compile Include="ContentFileException.cs" />
     <Compile Include="Content\ContentFileV1.cs" />
+    <Compile Include="ContentWriter.cs" />
     <Compile Include="PropertyCollectionExtensions.cs" />
     <Compile Include="ToolPaths.cs" />
-    <Compile Include="Writers\ParsedPathWriter.cs" />
+    <Compile Include="Content\ParsedPathWriter.cs" />
     <Compile Include="Compilers\PinboardToCsCompiler.cs" />
     <Compile Include="Compilers\PinboardToXnbCompiler.cs" />
     <Compile Include="Compilers\StringToXnbAndCsCompiler.cs" />
     <Compile Include="Compilers\SvgAndPinboardToXnbCompiler.cs" />
     <Compile Include="BuildContent.cs" />
-    <Compile Include="PinboardProcessor.cs" />
-    <Compile Include="Content\PinboardData.cs" />
-    <Compile Include="Content\PinboardDataReaderV1.cs" />
-    <Compile Include="Writers\PinboardDataWriter.cs" />
+    <Compile Include="Content\PinboardFileV1.cs" />
+    <Compile Include="Content\PinboardFileReaderV1.cs" />
+    <Compile Include="Content\PinboardDataWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Content\ContentFileReaderV1.cs" />
-    <None Include="Content\TargetPlatform.cs" />
+    <Compile Include="ContentTypeReaderName.cs" />
+    <None Include="Content\XnaTargetPlatform.cs" />
   </ItemGroup>
   <ItemGroup>
     <Buckle Include="PlayroomResources.resx">
