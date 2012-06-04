@@ -10,36 +10,17 @@ namespace Playroom
     public class ContentWriter : BinaryWriter
     {
         private Dictionary<object, bool> activeObjects;
-        private Dictionary<Type, int> typeTable;
-        private IList<ContentTypeWriter> availableTypeWriters;
-        private List<ContentTypeWriter> usedTypeWriters;
-        private List<object> sharedResources;
+        private XnbFileWriterV5 xnbWriter;
 
-        public ContentWriter(Stream stream, IList<ContentTypeWriter> availableTypeWriters)
-            : base(stream)
+        public ContentWriter(Stream stream, XnbFileWriterV5 xnbWriter) : base(stream)
         {
-            this.availableTypeWriters = availableTypeWriters;
+            this.xnbWriter = xnbWriter;
             this.activeObjects = new Dictionary<object, bool>();
-            this.typeTable = new Dictionary<Type, int>();
-            this.usedTypeWriters = new List<ContentTypeWriter>();
-            this.sharedResources = new List<object>();
         }
 
-        public ReadOnlyCollection<ContentTypeReaderName> GetTypeReaderNames()
+        public void WriteEncodedInt32(int value)
         {
-            return usedTypeWriters.Select<ContentTypeWriter, ContentTypeReaderName>(c => c.GetReaderName()).ToList().AsReadOnly();
-        }
-
-        public ReadOnlyCollection<object> GetSharedResources()
-        {
-            return sharedResources.AsReadOnly();
-        }
-
-        public int AddSharedResource(object obj)
-        {
-            sharedResources.Add(obj);
-            
-            return sharedResources.Count - 1;
+            this.Write7BitEncodedInt(value);
         }
 
         public void WriteObject<T>(T value)
@@ -51,9 +32,10 @@ namespace Playroom
             else
             {
                 int typeIndex;
-                ContentTypeWriter typeWriter = GetTypeWriter(value.GetType(), out typeIndex);
+                ContentTypeWriter typeWriter = xnbWriter.GetTypeWriter(value.GetType(), out typeIndex);
 
-                Write7BitEncodedInt(typeIndex);
+                // Index to to type writers is 1 based; 0 is NULL
+                Write7BitEncodedInt(typeIndex + 1);
 
                 if (activeObjects.ContainsKey(value))
                     throw new InvalidOperationException("Recursive object graph detected");
@@ -64,22 +46,12 @@ namespace Playroom
             }
         }
 
-        private ContentTypeWriter GetTypeWriter(Type type, out int typeIndex)
+        internal void WriteObject<T>(T value, ContentTypeWriter writer)
         {
-            // Is it a type writer we have already used?
-            if (this.typeTable.TryGetValue(type, out typeIndex))
-            {
-                return usedTypeWriters[typeIndex];
-            }
-
-            ContentTypeWriter typeWriter = availableTypeWriters.First(t => t.Type == type);
-
-            // Add it to the list of used type writers
-            typeIndex = usedTypeWriters.Count;
-            usedTypeWriters.Add(typeWriter);
-            typeTable.Add(type, typeIndex);
-            
-            return typeWriter;
+            if (writer.IsValueTargetType)
+                InvokeWriter<T>(value, writer);
+            else
+                WriteObject<T>(value);
         }
 
         private void InvokeWriter<T>(T value, ContentTypeWriter writer)

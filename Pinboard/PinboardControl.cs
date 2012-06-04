@@ -618,7 +618,7 @@ namespace Jamoki.Tools.Pinboard
 
         private void PropertiesForm_ScreenSizeChanged(object sender, ScreenSizeChangedEventArgs args)
         {
-            // TODO-john-2012: Move this into a Resize menu item
+            // TODO: Move this into a Resize menu item
             SizeF scale = new SizeF(
                 (float)Data.ScreenRectInfo.Size.Width / args.OldSize.Width, 
                 (float)Data.ScreenRectInfo.Size.Height / args.OldSize.Height);

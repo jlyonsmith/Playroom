@@ -33,11 +33,7 @@ namespace Playroom
                 rectangles[i + 1] = new Rectangle(pinboard.RectInfos[i].X, pinboard.RectInfos[i].Y, pinboard.RectInfos[i].Width, pinboard.RectInfos[i].Height);
             }
 
-            List<ContentTypeWriter> typeWriters = new List<ContentTypeWriter>();
-
-            // TODO: 
-
-            XnbFileWriterV5.WriteFile(rectangles, typeWriters, xnbFile);
+            XnbFileWriterV5.WriteFile(rectangles, xnbFile);
         }
 
         #endregion

@@ -35,8 +35,18 @@ namespace Playroom
             {
                 if (inputExtensions == null)
                 {
-                    inputExtensions = ((string[])this.Type.GetProperty("InputExtensions").GetValue(this.Instance, null))
-                        .OrderBy(s => s, StringComparer.CurrentCultureIgnoreCase).ToArray<string>();
+                    try
+                    {
+                        inputExtensions = ((string[])this.Type.GetProperty("InputExtensions").GetValue(this.Instance, null))
+                            .OrderBy(s => s, StringComparer.CurrentCultureIgnoreCase).ToArray<string>();
+                    }
+                    catch (Exception e)
+                    {
+                        if (e is TargetInvocationException)
+                            throw new ApplicationException(String.Format("Invalid result returned by compiler '{0}' InputExtensions property", this.Name));
+                        else
+                            throw;
+                    }
                 }
 
                 return inputExtensions;
@@ -48,8 +58,18 @@ namespace Playroom
             {
                 if (outputExtensions == null)
                 {
-                    outputExtensions = ((string[])this.Type.GetProperty("OutputExtensions").GetValue(this.Instance, null))
-                        .OrderBy(s => s, StringComparer.CurrentCultureIgnoreCase).ToArray<string>();
+                    try
+                    {
+                        outputExtensions = ((string[])this.Type.GetProperty("OutputExtensions").GetValue(this.Instance, null))
+                            .OrderBy(s => s, StringComparer.CurrentCultureIgnoreCase).ToArray<string>();
+                    }
+                    catch (Exception e)
+                    {
+                        if (e is TargetInvocationException)
+                            throw new ApplicationException(String.Format("Invalid result returned by compiler '{0}' OutputExtensions property", this.Name));
+                        else
+                            throw;
+                    }
                 }
 
                 return outputExtensions;

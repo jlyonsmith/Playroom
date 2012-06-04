@@ -11,12 +11,12 @@ namespace Playroom
 
         public string[] InputExtensions
         {
-            get { throw new NotImplementedException(); }
+            get { return new string[] { ".resx" }; }
         }
 
         public string[] OutputExtensions
         {
-            get { throw new NotImplementedException(); }
+            get { return new string[] { ".xnb" }; }
         }
 
         public BuildContext Context { get; set; }
@@ -24,7 +24,6 @@ namespace Playroom
 
         public void Compile()
         {
-            throw new NotImplementedException();
         }
 
         #endregion

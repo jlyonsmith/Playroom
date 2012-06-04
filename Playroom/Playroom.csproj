@@ -88,6 +88,7 @@
     <Compile Include="BuildItem.cs" />
     <Compile Include="CompilerClass.cs" />
     <Compile Include="Content\ContentTypeReader.cs" />
+    <Compile Include="Content\XnaBuiltinTypeWriters.cs" />
     <Compile Include="Content\XnbFileWriterV5.cs" />
     <Compile Include="IContentCompiler.cs" />
     <Compile Include="Compilers\ResxToXnbCompiler.cs" />
@@ -110,7 +111,6 @@
     <Compile Include="Content\PinboardDataWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Content\ContentFileReaderV1.cs" />
-    <Compile Include="ContentTypeReaderName.cs" />
     <None Include="Content\XnaTargetPlatform.cs" />
   </ItemGroup>
   <ItemGroup>

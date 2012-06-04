@@ -67,6 +67,29 @@ namespace Playroom
 
         public void Execute()
         {
+            try
+            {
+                RealExecute();
+            }
+            catch (Exception e)
+            {
+                if (e is ContentFileException)
+                {
+                    Output.Error((ParsedPath)e.Data["ContentFile"], (int)e.Data["LineNumber"], 0, e.Message);
+                }
+                else if (e is ApplicationException)
+                {
+                    Output.Error(e.Message);
+                }
+                else
+                {
+                    Output.Error(e.ToString());
+                }
+            }
+        }
+
+        private void RealExecute()
+        {
             if (!NoLogo)
                 Console.WriteLine(Parser.LogoBanner);
 
@@ -90,29 +113,6 @@ namespace Playroom
 
             this.ContentFile = this.ContentFile.MakeFullPath();
 
-            try
-            {
-                SafeExecute();
-            }
-            catch (Exception e)
-            {
-                if (e is ContentFileException)
-                {
-                    Output.Error((ParsedPath)e.Data["ContentFile"], (int)e.Data["LineNumber"], 0, e.Message);
-                }
-                else if (e is ApplicationException)
-                {
-                    Output.Error(e.Message);
-                }
-                else
-                {
-                    Output.Error(e.ToString());
-                }
-            }
-        }
-
-        public void SafeExecute()
-        {
             PropertyCollection propCollection = new PropertyCollection();
 
             // Initialize properties from the environment and command line
@@ -123,10 +123,11 @@ namespace Playroom
             propCollection.AddFromPropertyString(this.Properties);
 
             BuildContext buildContext = new BuildContext(this.Output, propCollection, this.ContentFile);
-            
-            Output.Message(MessageImportance.Low, "Reading content file '{0}'", this.ContentFile);
 
             ContentFileV1 contentData = ContentFileReaderV1.ReadFile(this.ContentFile);
+            
+            Output.Message(MessageImportance.Low, "Read content file '{0}'", this.ContentFile);
+
             List<CompilerClass> compilerClasses = LoadCompilerClasses(contentData, propCollection);
             List<BuildItem> buildItems = PrepareBuildItems(contentData, propCollection);
 
