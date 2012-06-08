@@ -1,4 +1,8 @@
-﻿using System;
+﻿//
+// This file was generated on 6/8/2012 12:06:18 PM.
+//
+
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Text;

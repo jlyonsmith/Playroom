@@ -21,7 +21,8 @@ namespace Playroom
             new Int32Writer(),
             new StringWriter(),
             new RectangleWriter(),
-            new ArrayWriter<Microsoft.Xna.Framework.Rectangle>()
+            new ArrayWriter<Microsoft.Xna.Framework.Rectangle>(),
+            new ArrayWriter<System.String>()
         };
         
         private XnbFileWriterV5(FileStream fileStream)

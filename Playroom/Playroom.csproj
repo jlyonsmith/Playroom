@@ -76,11 +76,13 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compilers\StringsToXnbAndCsCompiler.cs" />
     <Compile Include="ContentReader.cs" />
     <Compile Include="Content\ContentTypeWriter.cs" />
     <Compile Include="BuildContext.cs" />
@@ -88,11 +90,13 @@
     <Compile Include="BuildItem.cs" />
     <Compile Include="CompilerClass.cs" />
     <Compile Include="Content\ContentTypeReader.cs" />
+    <Compile Include="Content\StringsFileReaderV1.cs" />
+    <Compile Include="Content\StringsFileV1.cs" />
     <Compile Include="Content\XnaBuiltinTypeWriters.cs" />
     <Compile Include="Content\XnbFileWriterV5.cs" />
     <Compile Include="IContentCompiler.cs" />
-    <Compile Include="Compilers\ResxToXnbCompiler.cs" />
-    <Compile Include="Compilers\SpritefontAndStringsToXnbCompiler.cs" />
+    <Compile Include="Compilers\ResxToStringsCompiler.cs" />
+    <Compile Include="Compilers\SpritefontAndResxToXnbCompiler.cs" />
     <Compile Include="Compilers\SvgToPdfCompiler.cs" />
     <Compile Include="Compilers\WavToXnbCompiler.cs" />
     <Compile Include="ContentFileException.cs" />
@@ -103,7 +107,6 @@
     <Compile Include="Content\ParsedPathWriter.cs" />
     <Compile Include="Compilers\PinboardToCsCompiler.cs" />
     <Compile Include="Compilers\PinboardToXnbCompiler.cs" />
-    <Compile Include="Compilers\StringToXnbAndCsCompiler.cs" />
     <Compile Include="Compilers\SvgAndPinboardToXnbCompiler.cs" />
     <Compile Include="BuildContent.cs" />
     <Compile Include="Content\PinboardFileV1.cs" />

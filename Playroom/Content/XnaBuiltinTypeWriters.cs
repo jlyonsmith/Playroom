@@ -10,7 +10,7 @@ namespace Playroom
     {
         public override string GetReaderTypeName()
         {
-            // It looks like any type that is in the MS.Xna.Framework assembly doesn't need to be fully qualified with an assembly
+            // It looks like any type that is in the Microsoft.Xna.Framework assembly doesn't need to be fully qualified with an assembly
             string name = GetShortTypeName(this.GetType()).Replace("Writer", "Reader") + GetGenericArgumentRuntimeTypes();
 
             return String.Format("Microsoft.Xna.Framework.Content.{0}", name); // ", Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553"

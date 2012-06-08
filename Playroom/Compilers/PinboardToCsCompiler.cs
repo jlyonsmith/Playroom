@@ -112,6 +112,10 @@ namespace Playroom
 
         private void WriteCsOutput(TextWriter writer, RectangleData rectangleData)
         {
+            writer.WriteLine("//");
+            writer.WriteLine("// This file was generated on {0}.", DateTime.Now);
+            writer.WriteLine("//");
+            writer.WriteLine();
             writer.WriteLine("using System;");
             writer.WriteLine("using Microsoft.Xna.Framework;");
             writer.WriteLine("using Microsoft.Xna.Framework.Graphics;");

@@ -73,17 +73,19 @@ namespace Playroom
             }
             catch (Exception e)
             {
-                if (e is ContentFileException)
+                ContentFileException contentEx = e as ContentFileException;
+
+                if (contentEx != null)
                 {
-                    Output.Error((ParsedPath)e.Data["ContentFile"], (int)e.Data["LineNumber"], 0, e.Message);
-                }
-                else if (e is ApplicationException)
-                {
-                    Output.Error(e.Message);
+                    Output.Error(contentEx.FileName, contentEx.LineNumber, 0, e.Message);
                 }
                 else
                 {
+#if DEBUG
                     Output.Error(e.ToString());
+#else
+                    Output.Error(e.Message);
+#endif
                 }
             }
         }
@@ -124,7 +126,16 @@ namespace Playroom
 
             BuildContext buildContext = new BuildContext(this.Output, propCollection, this.ContentFile);
 
-            ContentFileV1 contentData = ContentFileReaderV1.ReadFile(this.ContentFile);
+            ContentFileV1 contentData = null;
+
+            try
+            {
+                contentData = ContentFileReaderV1.ReadFile(this.ContentFile);
+            }
+            catch (Exception e)
+            {
+                throw new ContentFileException(this.ContentFile, (int)e.Data["LineNumber"], e.Message, e);
+            }
             
             Output.Message(MessageImportance.Low, "Read content file '{0}'", this.ContentFile);
 
@@ -150,10 +161,17 @@ namespace Playroom
                         }
                         catch (TargetInvocationException e)
                         {
-                            if (e.InnerException is ContentFileException)
-                                throw e.InnerException;
+                            ContentFileException contentEx = e.InnerException as ContentFileException;
+                            
+                            if (contentEx != null)
+                            {
+                                contentEx.EnsureFileNameAndLineNumber(buildContext.ContentFile, buildItem.LineNumber);
+                                throw contentEx;
+                            }
                             else
-                                throw;
+                            {
+                                throw new ContentFileException(this.ContentFile, buildItem.LineNumber, e.InnerException);
+                            }
                         }
                     }
                 }

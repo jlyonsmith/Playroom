@@ -35,19 +35,17 @@ namespace Playroom
 
         public static ContentFileV1 ReadFile(ParsedPath contentFile)
         {
-            try
+            using (XmlReader reader = XmlReader.Create(contentFile))
             {
-                using (XmlReader reader = XmlReader.Create(contentFile))
+                try
                 {
                     return new ContentFileReaderV1(reader).ReadContentElement();
                 }
-            }
-            catch (Exception e)
-            {
-                if (e is DirectoryNotFoundException || e is FileNotFoundException)
-                    throw new ApplicationException(String.Format("File '{0}' could not be found", contentFile));
-                else
+                catch (Exception e)
+                {
+                    e.Data["LineNumber"] = ((IXmlLineInfo)reader).LineNumber;
                     throw;
+                }
             }
         }
 

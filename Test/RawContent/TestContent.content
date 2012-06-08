@@ -24,5 +24,25 @@
         <File>$(OutputRootDir)\Platform2\Pinboards\Logo.xnb</File>
       </OutputFiles>
     </Item>
+    <Item>
+      <InputFiles>
+        <File>$(InputRootDir)\Platform1\Strings\SpiderResources.resx</File>
+      </InputFiles>
+      <OutputFiles>
+        <File>$(OutputRootDir)\Platform1\Strings\Spider.strings</File>
+      </OutputFiles>
+    </Item>
+    <Item>
+      <InputFiles>
+        <File>$(InputRootDir)\Platform1\Strings\Spider.strings</File>
+      </InputFiles>
+      <OutputFiles>
+        <File>$(OutputRootDir)\SpiderStrings.cs</File>
+        <File>$(OUtputRootDir)\Platform1\Strings\Spider.xnb</File>
+      </OutputFiles>
+      <Properties>
+        <Namespace>Company.Product</Namespace>
+      </Properties>
+    </Item>
   </Items>
 </Content>

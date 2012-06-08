@@ -5,8 +5,6 @@ using System.Text;
 
 namespace Playroom
 {
-    // TODO: Add methods to have these return their name based on the metadata
-
     public abstract class ContentTypeReader
     {
         public Type Type { get; private set; }

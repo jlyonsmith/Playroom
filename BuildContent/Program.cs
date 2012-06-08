@@ -27,7 +27,7 @@ namespace BuildContent
                 tool.Output.Error(e.Message);
             }
 
-            return tool.Output.HasOutputErrors ? 1 : 0;
+            return tool.ExitCode;
         }
     }
 }

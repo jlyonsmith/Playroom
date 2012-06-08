@@ -9,6 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pinboard", "Pinboard\Pinboa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildContent", "BuildContent\BuildContent.csproj", "{95B09EAB-7C4F-409C-B099-328C0DA3AF80}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{2B6921C5-BA77-4DDA-9A61-1D6083B8A61A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RawContent", "RawContent", "{5BF4D7DB-516A-4DDD-A37B-79B8D8FAD679}"
+	ProjectSection(SolutionItems) = preProject
+		Test\RawContent\TestContent.content = Test\RawContent\TestContent.content
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,5 +73,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5BF4D7DB-516A-4DDD-A37B-79B8D8FAD679} = {2B6921C5-BA77-4DDA-9A61-1D6083B8A61A}
 	EndGlobalSection
 EndGlobal

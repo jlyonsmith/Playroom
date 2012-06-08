@@ -1,0 +1,5 @@
+﻿<Prism>
+  <PinboardFile>..\Pinboards\About.pinboard</PinboardFile>
+  <Rectangle>BackButton</Rectangle>
+  <SvgFile>..\..\Common\Textures\BackButton.svg</SvgFile>
+</Prism>
