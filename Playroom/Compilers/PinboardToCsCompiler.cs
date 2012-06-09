@@ -11,7 +11,7 @@ namespace Playroom
     public class PinboardToCsCompiler : IContentCompiler
     {
         #region Classes
-        private class RectangleData
+        private class RectanglesContent
         {
             public class Class
             {
@@ -65,7 +65,7 @@ namespace Playroom
 
             using (writer = new StreamWriter(csFile, false, Encoding.UTF8))
             {
-                RectangleData rectangleData = CreateRectangleData(distinctPinboardFiles, pinboards);
+                RectanglesContent rectangleData = CreateRectangleData(distinctPinboardFiles, pinboards);
 
                 WriteCsOutput(writer, rectangleData);
             }
@@ -75,21 +75,21 @@ namespace Playroom
 
         #region Methods
 
-        private RectangleData CreateRectangleData(IEnumerable<ParsedPath> distinctPinboardFiles, Dictionary<ParsedPath, PinboardFileV1> pinboards)
+        private RectanglesContent CreateRectangleData(IEnumerable<ParsedPath> distinctPinboardFiles, Dictionary<ParsedPath, PinboardFileV1> pinboards)
         {
-            RectangleData rectData = new RectangleData();
+            RectanglesContent rectData = new RectanglesContent();
 
             if (!Item.Properties.ContainsKey("Namespace"))
                 throw new ContentFileException(Context.ContentFile, Item.LineNumber, "Item does not contain Namespace property");
 
             rectData.Namespace = Item.Properties["Namespace"];
-            rectData.Classes = new List<RectangleData.Class>();
+            rectData.Classes = new List<RectanglesContent.Class>();
 
             foreach (var pinboardFile in distinctPinboardFiles)
             {
                 PinboardFileV1 pinboard = pinboards[pinboardFile];
 
-                RectangleData.Class rectClass = new RectangleData.Class();
+                RectanglesContent.Class rectClass = new RectanglesContent.Class();
 
                 rectClass.ClassNamePrefix = pinboardFile.File;
 
@@ -110,7 +110,7 @@ namespace Playroom
             return rectData;
         }
 
-        private void WriteCsOutput(TextWriter writer, RectangleData rectangleData)
+        private void WriteCsOutput(TextWriter writer, RectanglesContent rectangleData)
         {
             writer.WriteLine("//");
             writer.WriteLine("// This file was generated on {0}.", DateTime.Now);
@@ -126,7 +126,7 @@ namespace Playroom
 
             for (int i = 0; i < rectangleData.Classes.Count; i++)
             {
-                RectangleData.Class classData = rectangleData.Classes[i];
+                RectanglesContent.Class classData = rectangleData.Classes[i];
 
                 writer.WriteLine("\tpublic class {0}Rectangles", classData.ClassNamePrefix);
                 writer.WriteLine("\t{");

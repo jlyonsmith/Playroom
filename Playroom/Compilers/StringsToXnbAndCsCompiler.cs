@@ -10,7 +10,7 @@ namespace Playroom
     public class StringsToXnbAndCsCompiler : IContentCompiler
     {
         #region Classes
-        class StringsData
+        class StringsContent
         {
             public class String
             {
@@ -21,7 +21,7 @@ namespace Playroom
 
             public string Namespace { get; set; }
             public string ClassPrefix { get; set; }
-            public List<StringsData.String> Strings { get; set; }
+            public List<StringsContent.String> Strings { get; set; }
         }
 
         #endregion
@@ -47,7 +47,7 @@ namespace Playroom
             ParsedPath xnbFile = Item.OutputFiles.Where(f => f.Extension == ".xnb").First();
             ParsedPath csFile = Item.OutputFiles.Where(f => f.Extension == ".cs").First();
 
-            StringsData stringsData = CreateStringsData(stringsFile, StringsFileReaderV1.ReadFile(stringsFile));
+            StringsContent stringsData = CreateStringsData(stringsFile, StringsFileReaderV1.ReadFile(stringsFile));
 
             string[] strings = stringsData.Strings.Select(s => s.Value).ToArray();
 
@@ -61,12 +61,12 @@ namespace Playroom
 
         #endregion
 
-        private StringsData CreateStringsData(ParsedPath stringsFilePath, StringsFileV1 stringsFile)
+        private StringsContent CreateStringsData(ParsedPath stringsFilePath, StringsFileV1 stringsFile)
         {
-            StringsData stringsData = new StringsData();
+            StringsContent stringsData = new StringsContent();
 
             stringsData.ClassPrefix = stringsFilePath.File;
-            stringsData.Strings = new List<StringsData.String>();
+            stringsData.Strings = new List<StringsContent.String>();
 
             if (!Item.Properties.Contains("Namespace"))
                 throw new ContentFileException("Item requires a Namespace property");
@@ -75,7 +75,7 @@ namespace Playroom
 
             foreach (var s in stringsFile.Strings)
             {
-                StringsData.String d = new StringsData.String();
+                StringsContent.String d = new StringsContent.String();
 
                 d.Name = s.Name;
                 d.Value = s.Value;
@@ -99,7 +99,7 @@ namespace Playroom
             return stringsData;
         }
 
-        private void WriteCsOutput(TextWriter writer, StringsData stringsData)
+        private void WriteCsOutput(TextWriter writer, StringsContent stringsData)
         {
             writer.WriteLine("//");
             writer.WriteLine("// This file was generated on {0}.", DateTime.Now);
@@ -116,7 +116,7 @@ namespace Playroom
 
             for (int i = 0; i < stringsData.Strings.Count; i++)
             {
-                StringsData.String s = stringsData.Strings[i];
+                StringsContent.String s = stringsData.Strings[i];
 
                 if (s.ArgCount == 0)
                 {

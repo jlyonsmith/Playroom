@@ -49,7 +49,7 @@ namespace Playroom
             }
             catch (Exception e)
             {
-                throw new InvalidContentException(String.Format("Unable to read prism data. {0}", e.Message), new ContentIdentity(fileName), e);
+                throw new InvalidOperationException(String.Format("Unable to read prism data. {0}", e.Message), new ContentIdentity(fileName), e);
             }
 
             pinataData.PrismFile = prismFile;
@@ -97,7 +97,7 @@ namespace Playroom
                         RectangleInfo rectInfo = pinataData.Pinboard.GetRectangleInfoByName(pinataData.RectangleName);
 
                         if (rectInfo == null)
-                            throw new InvalidContentException(
+                            throw new InvalidOperationException(
                                 String.Format("Rectangle '{0}' not found in pinboard '{1}'", pinataData.RectangleName, pinataData.PinboardFile),
                                 new ContentIdentity(pinataData.PrismFile));
 
@@ -107,7 +107,7 @@ namespace Playroom
                             new Rectangle(col * rectInfo.Width, row * rectInfo.Height, rectInfo.Width, rectInfo.Height)));
 
                         if (!File.Exists(pathList[col]))
-                            throw new InvalidContentException(
+                            throw new InvalidOperationException(
                                 PlayroomResources.FileNotFound(pathList[col]), new ContentIdentity(pinataData.PrismFile));
 
                         switch (pinataData.Converter)
