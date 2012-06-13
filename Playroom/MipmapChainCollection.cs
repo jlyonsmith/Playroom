@@ -6,50 +6,35 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.ObjectModel;
 
-namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
+namespace Playroom
 {
     public sealed class MipmapChainCollection : Collection<MipmapChain>
     {
-        private bool fixedSize;
-
-        internal MipmapChainCollection(int initialSize, bool fixedSize)
+        internal MipmapChainCollection(int initialSize)
         {
             for (int i = 0; i < initialSize; i++)
             {
                 base.Add(new MipmapChain());
             }
-            this.fixedSize = fixedSize;
         }
 
         protected override void ClearItems()
         {
-            if (this.fixedSize)
-            {
-                throw new NotSupportedException();
-            }
-
             base.ClearItems();
         }
 
         protected override void InsertItem(int index, MipmapChain item)
         {
-            if (this.fixedSize)
-            {
-                throw new NotSupportedException();
-            }
             if (item == null)
             {
                 throw new ArgumentNullException("item");
             }
+
             base.InsertItem(index, item);
         }
 
         protected override void RemoveItem(int index)
         {
-            if (this.fixedSize)
-            {
-                throw new NotSupportedException();
-            }
             base.RemoveItem(index);
         }
 
@@ -59,6 +44,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
             {
                 throw new ArgumentNullException("item");
             }
+
             base.SetItem(index, item);
         }
     }

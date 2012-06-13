@@ -95,10 +95,13 @@
     <Compile Include="Content\StringsFileV1.cs" />
     <Compile Include="Content\XnaTypeWriters.cs" />
     <Compile Include="Content\XnbFileWriterV5.cs" />
+    <Compile Include="DxtBitmapContent.cs" />
     <Compile Include="ImageFileFormat.cs" />
     <Compile Include="MipmapChain.cs" />
     <Compile Include="MipmapChainCollection.cs" />
-    <Compile Include="PixelBitmapFormat.cs" />
+    <Compile Include="PixelBitmapContent.cs" />
+    <Compile Include="Rgba.cs" />
+    <Compile Include="Squish.cs" />
     <Compile Include="Texture2DContent.cs" />
     <Compile Include="TextureContent.cs" />
     <Compile Include="IContentCompiler.cs" />
@@ -137,4 +140,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Toaster\Toaster.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

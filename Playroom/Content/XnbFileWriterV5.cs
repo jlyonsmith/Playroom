@@ -22,7 +22,8 @@ namespace Playroom
             new StringWriter(),
             new RectangleWriter(),
             new ArrayWriter<Microsoft.Xna.Framework.Rectangle>(),
-            new ArrayWriter<System.String>()
+            new ArrayWriter<System.String>(),
+            new Texture2DWriter()
         };
         
         private XnbFileWriterV5(FileStream fileStream)

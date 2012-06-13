@@ -7,15 +7,17 @@ using Microsoft.Xna.Framework.Graphics;
 using ToolBelt;
 using System.Runtime.InteropServices;
 
-namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
+namespace Playroom
 {
     public class PixelBitmapContent<T> : BitmapContent
     {
+        private SurfaceFormat format;
         private T[][] pixelData;
         private int pixelSize;
 
-        public PixelBitmapContent(SurfaceFormat format, int width, int height) : base(format, width, height)
+        public PixelBitmapContent(SurfaceFormat format, int width, int height) : base(width, height)
         {
+            this.format = format;
             this.pixelData = new T[height][];
             this.pixelSize = Marshal.SizeOf(typeof(T));
 
@@ -56,11 +58,15 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
 
         public override byte[] GetPixelData()
         {
-            int num2 = pixelSize * base.Width;
-            byte[] destinationArray = new byte[num2 * base.Height];
+            int stride = pixelSize * base.Width;
+            byte[] destinationArray = new byte[stride * base.Height];
 
             for (int i = 0; i < base.Height; i++)
             {
+                GCHandle h = GCHandle.Alloc(this.pixelData[i], GCHandleType.Pinned);
+                IntPtr p = (IntPtr)h.AddrOfPinnedObject();
+                Marshal.Copy(p, destinationArray, i * stride, stride);
+                h.Free();
             }
 
             return destinationArray;
@@ -68,12 +74,26 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
         
         public override void SetPixelData(byte[] sourceData)
         {
-            int count = pixelSize * base.Width;
+            int stride = pixelSize * base.Width;
+            
+            this.pixelData = new T[base.Height][];
 
             for (int i = 0; i < base.Height; i++)
             {
-                // TODO: ...
+                T[] row = new T[stride];
+
+                GCHandle h = GCHandle.Alloc(row, GCHandleType.Pinned);
+                IntPtr p = (IntPtr)h.AddrOfPinnedObject();
+                Marshal.Copy(sourceData, i * stride, p, stride);
+                h.Free();
+                
+                this.pixelData[i] = row;
             }
+        }
+
+        public override SurfaceFormat Format
+        {
+            get { return format; }
         }
 
         public override string ToString()

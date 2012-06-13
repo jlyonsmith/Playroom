@@ -8,7 +8,7 @@ using ToolBelt;
 using System.Collections.ObjectModel;
 using System.Reflection;
 
-namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
+namespace Playroom
 {
     public abstract class TextureContent
     {

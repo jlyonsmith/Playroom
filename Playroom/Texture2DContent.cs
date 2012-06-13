@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
+namespace Playroom
 {
     public class Texture2DContent : TextureContent
     {
-        public Texture2DContent() : base(new MipmapChainCollection(1, true))
+        public Texture2DContent() : base(new MipmapChainCollection(1))
         {
         }
 

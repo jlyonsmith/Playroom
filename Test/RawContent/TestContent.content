@@ -44,5 +44,25 @@
         <Namespace>Company.Product</Namespace>
       </Properties>
     </Item>
+    <Item>
+      <InputFiles>
+        <File>$(InputRootDir)\Platform1\Strings\Spider.strings</File>
+      </InputFiles>
+      <OutputFiles>
+        <File>$(OutputRootDir)\SpiderStrings.cs</File>
+        <File>$(OUtputRootDir)\Platform1\Strings\Spider.xnb</File>
+      </OutputFiles>
+      <Properties>
+        <Namespace>Company.Product</Namespace>
+      </Properties>
+    </Item>
+    <Item>
+      <InputFiles>
+        <File>$(InputRootDir)\Platform2\Textures\Arrow.png</File>
+      </InputFiles>
+      <OutputFiles>
+        <File>$(OutputRootDir)\Platform2\Textures\Arrow.xnb</File>
+      </OutputFiles>
+    </Item>
   </Items>
 </Content>
