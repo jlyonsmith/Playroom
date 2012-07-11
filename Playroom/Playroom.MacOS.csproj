@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>Playroom.MacOS</RootNamespace>
     <AssemblyName>Playroom.MacOS</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,6 +20,7 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <Externalconsole>true</Externalconsole>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
@@ -30,29 +30,78 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <Externalconsole>true</Externalconsole>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="Mono.CSharp" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="ParsedPathWriter.cs" />
-    <Compile Include="Pinata.cs" />
-    <Compile Include="PinataData.cs" />
-    <Compile Include="PinataDataReaderV1.cs" />
-    <Compile Include="PinataTool.cs" />
-    <Compile Include="PinboardData.cs" />
-    <Compile Include="PinboardDataReaderV1.cs" />
-    <Compile Include="PinboardDataWriter.cs" />
-    <Compile Include="PrismData.cs" />
-    <Compile Include="PrismDataReaderV1.cs" />
-    <Compile Include="PrismImporter.cs" />
-    <Compile Include="PrismProcessor.cs" />
-    <Compile Include="PrismTool.cs" />
+    <Folder Include="Compilers\" />
+    <Folder Include="Content\" />
+    <Folder Include="Properties\" />
+    <Folder Include="Xna\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Playroom.Pinata.targets" />
-    <None Include="Playroom.Prism.targets" />
-    <None Include="Playroom.targets" />
+    <Compile Include="Compilers\PinboardToCsCompiler.cs" />
+    <Compile Include="Compilers\PinboardToXnbCompiler.cs" />
+    <Compile Include="Compilers\PngToXnbCompiler.cs" />
+    <Compile Include="Compilers\ResxToStringsCompiler.cs" />
+    <Compile Include="Compilers\SpritefontAndResxToXnbCompiler.cs" />
+    <Compile Include="Compilers\StringsToXnbAndCsCompiler.cs" />
+    <Compile Include="Compilers\SvgAndPinboardToXnbCompiler.cs" />
+    <Compile Include="Compilers\SvgToPdfCompiler.cs" />
+    <Compile Include="Compilers\WavToXnbCompiler.cs" />
+    <Compile Include="Content\ContentFileReaderV1.cs" />
+    <Compile Include="Content\ContentFileV1.cs" />
+    <Compile Include="Content\ContentTypeReader.cs" />
+    <Compile Include="Content\ContentTypeWriter.cs" />
+    <Compile Include="Content\ParsedPathWriter.cs" />
+    <Compile Include="Content\PinboardDataWriter.cs" />
+    <Compile Include="Content\PinboardFileReaderV1.cs" />
+    <Compile Include="Content\PinboardFileV1.cs" />
+    <Compile Include="Content\StringsFileReaderV1.cs" />
+    <Compile Include="Content\StringsFileV1.cs" />
+    <Compile Include="Content\XnaTargetPlatform.cs" />
+    <Compile Include="Content\XnaTypeWriters.cs" />
+    <Compile Include="Content\XnbFileWriterV5.cs" />
+    <Compile Include="BitmapContent.cs" />
+    <Compile Include="BuildContent.cs" />
+    <Compile Include="BuildContentTool.cs" />
+    <Compile Include="BuildContext.cs" />
+    <Compile Include="BuildItem.cs" />
+    <Compile Include="CompilerClass.cs" />
+    <Compile Include="ContentFileException.cs" />
+    <Compile Include="ContentReader.cs" />
+    <Compile Include="ContentWriter.cs" />
+    <Compile Include="DxtBitmapContent.cs" />
+    <Compile Include="IContentCompiler.cs" />
+    <Compile Include="ImageFileFormat.cs" />
+    <Compile Include="MipmapChain.cs" />
+    <Compile Include="MipmapChainCollection.cs" />
+    <Compile Include="PixelBitmapContent.cs" />
+    <Compile Include="PropertyCollectionExtensions.cs" />
+    <Compile Include="Rgba.cs" />
+    <Compile Include="Squish.cs" />
+    <Compile Include="Texture2DContent.cs" />
+    <Compile Include="TextureContent.cs" />
+    <Compile Include="ToolPaths.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Xna\Rectangle.cs" />
+    <Compile Include="Xna\SurfaceFormat.cs" />
+    <Compile Include="Xna\Point.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PlayroomResources.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ToolBelt\ToolBelt\ToolBelt.MacOS.csproj">
+      <Project>{2055D34D-3DF2-444B-937B-32CC1A6E11DF}</Project>
+      <Name>ToolBelt.MacOS</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

@@ -1,7 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playroom.MacOS", "Playroom\Playroom.MacOS.csproj", "{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildContent", "BuildContent\BuildContent.csproj", "{95B09EAB-7C4F-409C-B099-328C0DA3AF80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.MacOS", "ToolBelt\ToolBelt\ToolBelt.MacOS.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,12 +13,31 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|x86.Build.0 = Debug|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.ActiveCfg = Release|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.Build.0 = Release|Any CPU
 		{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}.Debug|x86.ActiveCfg = Debug|x86
 		{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}.Debug|x86.Build.0 = Debug|x86
 		{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}.Release|x86.ActiveCfg = Release|x86
 		{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}.Release|x86.Build.0 = Release|x86
+		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Debug|x86.ActiveCfg = Debug|x86
+		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Debug|x86.Build.0 = Debug|x86
+		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Release|x86.ActiveCfg = Release|x86
+		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Playroom\Playroom.MacOS.csproj
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = None
+		$1.ResourceNamePolicy = FileFormatDefault
+		$0.TextStylePolicy = $2
+		$2.FileWidth = 120
+		$2.TabsToSpaces = False
+		$2.EolMarker = Windows
+		$2.inheritsSet = VisualStudio
+		$2.inheritsScope = text/plain
+		$2.scope = text/plain
 	EndGlobalSection
 EndGlobal

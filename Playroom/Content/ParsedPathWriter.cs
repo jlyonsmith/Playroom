@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Playroom;
 using ToolBelt;
-using Microsoft.Xna.Framework.Content;
 
 namespace Playroom
 {

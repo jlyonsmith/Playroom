@@ -29,6 +29,7 @@ namespace Playroom
 
         public void Compile()
         {
+#if WINDOWS
             ParsedPath resxFile = Item.InputFiles.Where(f => f.Extension == ".resx").First();
             ParsedPath stringsFile = Item.OutputFiles.Where(f => f.Extension == ".strings").First();
 
@@ -68,6 +69,7 @@ namespace Playroom
                     xmlWriter.WriteEndElement();
                 }
             }
+#endif // WINDOWS
         }
 
         #endregion

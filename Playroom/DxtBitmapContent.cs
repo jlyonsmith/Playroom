@@ -34,13 +34,12 @@ namespace Playroom
         {
             this.pixelData = (byte[])sourceData.Clone();
         }
+
+		public int BlockSize { get { return blockSize; } }
     }
 
     public class Dxt5BitmapContent : DxtBitmapContent
     {
-        private const int BlockSize = 0x10;
-        private const SurfaceFormat GpuFormat = SurfaceFormat.Dxt5;
-
         public Dxt5BitmapContent(int width, int height)
             : base(0x10, width, height)
         {

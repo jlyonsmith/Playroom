@@ -12,7 +12,6 @@ namespace Playroom
     {
         private string contentAtom;
         private string compilerAssemblyFilesAtom;
-        private string assemblyAtom;
         private string itemsAtom;
         private string inputFilesAtom;
         private string outputFilesAtom;
@@ -23,7 +22,6 @@ namespace Playroom
         {
             contentAtom = reader.NameTable.Add("Content");
             compilerAssemblyFilesAtom = reader.NameTable.Add("CompilerAssemblyFiles");
-            assemblyAtom = reader.NameTable.Add("Assembly");
             itemsAtom = reader.NameTable.Add("Items");
             inputFilesAtom = reader.NameTable.Add("InputFiles");
             outputFilesAtom = reader.NameTable.Add("OutputFiles");
