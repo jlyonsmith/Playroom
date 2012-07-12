@@ -54,9 +54,9 @@ namespace Playroom
     {
         private class Native
         {
-            [DllImport("Squish", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, SetLastError = false, PreserveSig = true)]
+            [DllImport("Squish2", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, SetLastError = false, PreserveSig = true)]
             public static extern void SquishCompressMasked(IntPtr rgba, int mask, IntPtr block, int flags);
-            [DllImport("Squish", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, SetLastError = false, PreserveSig = true)]
+            [DllImport("Squish2", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, SetLastError = false, PreserveSig = true)]
             public static extern void SquishDecompress(IntPtr rgba, IntPtr block, int flags);
         }
 

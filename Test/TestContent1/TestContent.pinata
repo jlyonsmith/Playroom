@@ -1,9 +1,0 @@
-﻿<Pinata>
-  <Namespace>Jamoki.Games.Spider</Namespace>
-  <Classes>
-    <Class>
-      <Prefix>Test</Prefix>
-      <Pinboard>TestPinboard.pinboard</Pinboard>
-    </Class>
-  </Classes>
-</Pinata>

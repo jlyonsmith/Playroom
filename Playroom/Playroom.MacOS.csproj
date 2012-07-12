@@ -8,7 +8,7 @@
     <ProjectGuid>{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Playroom.MacOS</RootNamespace>
-    <AssemblyName>Playroom.MacOS</AssemblyName>
+    <AssemblyName>Playroom</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>

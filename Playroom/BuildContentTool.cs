@@ -10,7 +10,7 @@ using System.IO;
 namespace Playroom
 {
     [CommandLineDescription("XNA Content Builder")]
-    [CommandLineTitle("BuildContent Tool")]
+    [CommandLineTitle("Build Content Tool")]
     public class BuildContentTool : ITool, IProcessCommandLine
     {
         #region Fields
@@ -90,30 +90,33 @@ namespace Playroom
             }
         }
 
-        private void RealExecute()
-        {
-            if (!NoLogo)
-                Console.WriteLine(Parser.LogoBanner);
+        private void RealExecute ()
+		{
+			if (!NoLogo)
+				Console.WriteLine (Parser.LogoBanner);
 
-            if (!runningFromCommandLine)
-            {
-                Parser.GetTargetArguments(this);
-                Output.Message(MessageImportance.Normal, Parser.CommandName + Parser.Arguments);
-            }
+			if (!runningFromCommandLine) {
+				Parser.GetTargetArguments (this);
+				Output.Message (MessageImportance.Normal, Parser.CommandName + Parser.Arguments);
+			}
 
-            if (ShowHelp)
-            {
-                Console.WriteLine(Parser.Usage);
-                return;
-            }
+			if (ShowHelp) {
+				Console.WriteLine (Parser.Usage);
+				return;
+			}
 
-            if (String.IsNullOrEmpty(ContentFile))
-            {
-                Output.Error("A .content file must be specified");
-                return;
-            }
+			if (String.IsNullOrEmpty (ContentFile)) {
+				Output.Error ("A .content file must be specified");
+				return;
+			}
 
-            this.ContentFile = this.ContentFile.MakeFullPath();
+			this.ContentFile = this.ContentFile.MakeFullPath ();
+
+			if (!File.Exists (this.ContentFile)) 
+			{
+				Output.Error("Content file '{0}' does not exist", this.ContentFile);
+				return;
+			}
 
             PropertyCollection propCollection = new PropertyCollection();
 
@@ -149,7 +152,7 @@ namespace Playroom
                     if (buildItem.InputExtensions.SequenceEqual(compilerClass.InputExtensions) &&
                         buildItem.OutputExtensions.SequenceEqual(compilerClass.OutputExtensions))
                     {
-                        // TODO: More output?
+                        // TODO: More output...
                         Output.Message("Building item with '{0}' compiler", compilerClass.Name);
 
                         compilerClass.ContextProperty.SetValue(compilerClass.Instance, buildContext, null);

@@ -7,16 +7,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildContent", "BuildConten
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.MacOS", "ToolBelt\ToolBelt\ToolBelt.MacOS.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
 EndProject
+Project("{2857B73E-F847-4B02-9238-064979017E93}") = "Squish2.MacOS", "Squish2\Squish2\Squish2.MacOS.cproj", "{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|x86.Build.0 = Debug|Any CPU
-		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.ActiveCfg = Release|Any CPU
-		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.Build.0 = Release|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|x86.ActiveCfg = Debug|x86
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|x86.Build.0 = Debug|x86
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.ActiveCfg = Release|x86
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.Build.0 = Release|x86
 		{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}.Debug|x86.ActiveCfg = Debug|x86
 		{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}.Debug|x86.Build.0 = Debug|x86
 		{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}.Release|x86.ActiveCfg = Release|x86
@@ -25,9 +27,13 @@ Global
 		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Debug|x86.Build.0 = Debug|x86
 		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Release|x86.ActiveCfg = Release|x86
 		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Release|x86.Build.0 = Release|x86
+		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Debug|x86.Build.0 = Debug|Any CPU
+		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Release|x86.ActiveCfg = Release|Any CPU
+		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Playroom\Playroom.MacOS.csproj
+		StartupItem = BuildContent\BuildContent.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = None
