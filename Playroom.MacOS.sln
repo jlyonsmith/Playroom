@@ -9,6 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.MacOS", "ToolBelt\
 EndProject
 Project("{2857B73E-F847-4B02-9238-064979017E93}") = "Squish2.MacOS", "Squish2\Squish2\Squish2.MacOS.cproj", "{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{6BE02424-B483-44A3-8C1A-9819FC704D0B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RawContent", "RawContent", "{FEB7E5A8-73FC-4112-AFBD-D72CD03060B4}"
+	ProjectSection(SolutionItems) = preProject
+		Test\RawContent\TestContent.v1.content = Test\RawContent\TestContent.v1.content
+		Test\RawContent\TestContent.v2.content = Test\RawContent\TestContent.v2.content
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -27,10 +35,13 @@ Global
 		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Debug|x86.Build.0 = Debug|x86
 		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Release|x86.ActiveCfg = Release|x86
 		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Release|x86.Build.0 = Release|x86
-		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Debug|x86.Build.0 = Debug|Any CPU
-		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Release|x86.ActiveCfg = Release|Any CPU
-		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Release|x86.Build.0 = Release|Any CPU
+		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Debug|x86.ActiveCfg = Debug|x86
+		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Debug|x86.Build.0 = Debug|x86
+		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Release|x86.ActiveCfg = Release|x86
+		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FEB7E5A8-73FC-4112-AFBD-D72CD03060B4} = {6BE02424-B483-44A3-8C1A-9819FC704D0B}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = BuildContent\BuildContent.csproj
@@ -45,5 +56,27 @@ Global
 		$2.inheritsSet = VisualStudio
 		$2.inheritsScope = text/plain
 		$2.scope = text/plain
+		$0.TextStylePolicy = $3
+		$3.inheritsSet = null
+		$3.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $4
+		$4.AnonymousMethodBraceStyle = NextLine
+		$4.PropertyBraceStyle = NextLine
+		$4.PropertyGetBraceStyle = NextLine
+		$4.PropertySetBraceStyle = NextLine
+		$4.EventBraceStyle = NextLine
+		$4.EventAddBraceStyle = NextLine
+		$4.EventRemoveBraceStyle = NextLine
+		$4.StatementBraceStyle = NextLine
+		$4.BeforeMethodDeclarationParentheses = False
+		$4.BeforeMethodCallParentheses = False
+		$4.BeforeConstructorDeclarationParentheses = False
+		$4.BeforeIndexerDeclarationBracket = False
+		$4.BeforeDelegateDeclarationParentheses = False
+		$4.NewParentheses = False
+		$4.SpacesBeforeBrackets = False
+		$4.inheritsSet = Mono
+		$4.inheritsScope = text/x-csharp
+		$4.scope = text/x-csharp
 	EndGlobalSection
 EndGlobal

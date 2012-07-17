@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Content Version = "2">
+	<ItemGroup>
+		<CompilerAssembly Include="$(BuildContentInstallDir)\Playroom.dll" />
+	</ItemGroup>
+
+	<!-- PinboardToCsCompiler -->
+
+	<Target 
+		Name="ExampleRectangles"
+			Inputs="$(InputRootDir)\*.pinboard"
+			Outputs="$(OutputRootDir)\$(TargetName).cs">
+		<PropertyGroup>
+			<Namespace>Company.Product</Namespace>
+		</PropertyGroup>
+	</Target>
+
+	<!-- PinboardToXnbCompiler -->
+
+	<Target
+		Name="ExamplePinboard"
+		Inputs="$(InputRootDir)\Example.pinboard"
+		Outputs="$(OutputRootDir)\$(TargetName).xnb">
+	</Target>
+
+	<!-- ResxToStringsCompiler -->
+
+	<Target
+		Name="ExampleResx"
+		Inputs="$(InputRootDir)\Example.resx"
+			Outputs="$(OutputRootDir)\$(TargetName).strings">
+	</Target>
+
+	<!-- StringsToXnbAndCsCompiler -->
+
+	<Target
+		Name="ExampleStrings2"
+		Inputs="$(InputRootDir)\Example.strings"
+		Outputs="$(OutputRootDir)\$(TargetName).cs;
+			$(OutputRootDir)\Platform1\Strings\$(TargetName).xnb">
+		<PropertyGroup>
+			<Namespace>Company.Product</Namespace>
+		</PropertyGroup>
+	</Target>
+	
+	<!-- PngToXnbCompiler -->
+	
+	<Target
+		Name="ExamplePng"
+		Inputs="$(InputRootDir)\Example.png"
+		Outputs="$(OutputRootDir)\$(TargetName).xnb">
+	</Target>
+	
+	<!-- SpritefontAndStringsToXnbCompiler --> 
+
+	<Target
+		Name="ExampleSpritefontStringsXnb"
+		Inputs="$(InputRootDir)\Example.spritefont;
+			$(InputRootDir)\Example.strings"
+		Outputs="$(OutputRootDir)\$(TargetName).xnb">
+	<!-- Leave this as having an end element -->
+	</Target>
+	
+	<!-- SvgAndPinboardToXnbCompiler -->
+
+	<Target
+		Name="ExampleSvgPinboardXnb"
+		Inputs="$(InputRootDir)\Example.svg;
+		$(InputRootDir)\Example.pinboard"
+		Outputs="$(OutputRootDir)\$(TargetName).xnb"/>
+	
+	<!-- SvgToXnbCompiler -->
+
+	<Target
+		Name="ExampleSvgXnb"
+		Inputs="$(InputRootDir)\Example.svg"
+		Outputs="$(OutputRootDir)\$(TargetName).xnb"/>
+	
+	<!-- SvgToPdfCompiler -->
+
+	<Target
+		Name="ExampleSvgPdf"
+		Inputs="$(InputRootDir)\Example.svg"
+		Outputs="$(OutputRootDir)\$(TargetName).pdf"/>
+	
+	<!-- PdfAndPinboardToXnbCompiler -->
+
+	<Target
+		Name="ExamplePdfPinboardSvg"
+		Inputs="$(InputRootDir)\Example.pdf;
+			$(InputRootDir)\Example.pinboard"
+		Outputs="$(OutputRootDir)\$(TargetName).xnb"/>
+
+	<!-- WavToXnbCompiler -->
+
+	<Target
+		Name="ExampleWavXnb"
+		Inputs="$(InputRootDir)\Example.wav"
+		Outputs="$(OutputRootDir)\$(TargetName).xnb"/>
+	
+</Content>

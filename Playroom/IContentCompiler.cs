@@ -11,7 +11,7 @@ namespace Playroom
         string[] InputExtensions { get; }
         string[] OutputExtensions { get; }
         BuildContext Context { get; set; }
-        BuildItem Item { get; set; }
+        BuildTarget Target { get; set; }
         void Compile();
     }
 }

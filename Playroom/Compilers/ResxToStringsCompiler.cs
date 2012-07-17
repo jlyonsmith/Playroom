@@ -25,13 +25,13 @@ namespace Playroom
         }
 
         public BuildContext Context { get; set; }
-        public BuildItem Item { get; set; }
+        public BuildTarget Target { get; set; }
 
         public void Compile()
         {
 #if WINDOWS
-            ParsedPath resxFile = Item.InputFiles.Where(f => f.Extension == ".resx").First();
-            ParsedPath stringsFile = Item.OutputFiles.Where(f => f.Extension == ".strings").First();
+            ParsedPath resxFile = Target.InputFiles.Where(f => f.Extension == ".resx").First();
+            ParsedPath stringsFile = Target.OutputFiles.Where(f => f.Extension == ".strings").First();
 
             using (ResXResourceReader resxReader = new ResXResourceReader(resxFile))
             {

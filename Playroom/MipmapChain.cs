@@ -8,7 +8,6 @@ namespace Playroom
 {
     public sealed class MipmapChain : Collection<BitmapContent>
     {
-        // Methods
         public MipmapChain()
         {
         }

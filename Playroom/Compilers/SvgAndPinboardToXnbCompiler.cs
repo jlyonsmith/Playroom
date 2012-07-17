@@ -26,7 +26,7 @@ namespace Playroom
         }
 
         public BuildContext Context { get; set; }
-        public BuildItem Item { get; set; }
+        public BuildTarget Target { get; set; }
 
         public void Compile()
         {
@@ -266,7 +266,7 @@ namespace Playroom
 
             if (ret != 0 || output.IndexOf("CRITICAL **") != -1)
             {
-                throw new ContentFileException(Context.ContentFile, Item.LineNumber, String.Format("Error running Inkscape on '{0}'", svgFile));
+                throw new ContentFileException(Context.ContentFile, Target.LineNumber, String.Format("Error running Inkscape on '{0}'", svgFile));
             }
 
             return true;
@@ -288,7 +288,7 @@ namespace Playroom
             int ret = Command.Run(command, out output);
 
             if (ret != 0)
-                throw new ContentFileException(Context.ContentFile, Item.LineNumber, String.Format("Error running RSVG-Convert on '{0}'", svgFile));
+                throw new ContentFileException(Context.ContentFile, Target.LineNumber, String.Format("Error running RSVG-Convert on '{0}'", svgFile));
 
             return true;
         }

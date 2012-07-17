@@ -39,13 +39,13 @@ namespace Playroom
         }
 
         public BuildContext Context { get; set; }
-        public BuildItem Item { get; set; }
+        public BuildTarget Target { get; set; }
 
         public void Compile()
         {
-            ParsedPath stringsFile = Item.InputFiles.Where(f => f.Extension == ".strings").First();
-            ParsedPath xnbFile = Item.OutputFiles.Where(f => f.Extension == ".xnb").First();
-            ParsedPath csFile = Item.OutputFiles.Where(f => f.Extension == ".cs").First();
+            ParsedPath stringsFile = Target.InputFiles.Where(f => f.Extension == ".strings").First();
+            ParsedPath xnbFile = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
+            ParsedPath csFile = Target.OutputFiles.Where(f => f.Extension == ".cs").First();
 
             StringsContent stringsData = CreateStringsData(stringsFile, StringsFileReaderV1.ReadFile(stringsFile));
 
@@ -68,10 +68,10 @@ namespace Playroom
             stringsData.ClassPrefix = stringsFilePath.File;
             stringsData.Strings = new List<StringsContent.String>();
 
-            if (!Item.Properties.Contains("Namespace"))
+            if (!Target.Properties.ContainsKey("Namespace"))
                 throw new ContentFileException("Item requires a Namespace property");
 
-            stringsData.Namespace = Item.Properties["Namespace"];
+            stringsData.Namespace = Target.Properties["Namespace"];
 
             foreach (var s in stringsFile.Strings)
             {

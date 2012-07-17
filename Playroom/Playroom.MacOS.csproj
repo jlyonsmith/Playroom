@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Playroom.MacOS</RootNamespace>
+    <RootNamespace>Playroom</RootNamespace>
     <AssemblyName>Playroom</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -51,13 +51,10 @@
     <Compile Include="Compilers\PinboardToXnbCompiler.cs" />
     <Compile Include="Compilers\PngToXnbCompiler.cs" />
     <Compile Include="Compilers\ResxToStringsCompiler.cs" />
-    <Compile Include="Compilers\SpritefontAndResxToXnbCompiler.cs" />
     <Compile Include="Compilers\StringsToXnbAndCsCompiler.cs" />
     <Compile Include="Compilers\SvgAndPinboardToXnbCompiler.cs" />
     <Compile Include="Compilers\SvgToPdfCompiler.cs" />
     <Compile Include="Compilers\WavToXnbCompiler.cs" />
-    <Compile Include="Content\ContentFileReaderV1.cs" />
-    <Compile Include="Content\ContentFileV1.cs" />
     <Compile Include="Content\ContentTypeReader.cs" />
     <Compile Include="Content\ContentTypeWriter.cs" />
     <Compile Include="Content\ParsedPathWriter.cs" />
@@ -73,7 +70,6 @@
     <Compile Include="BuildContent.cs" />
     <Compile Include="BuildContentTool.cs" />
     <Compile Include="BuildContext.cs" />
-    <Compile Include="BuildItem.cs" />
     <Compile Include="CompilerClass.cs" />
     <Compile Include="ContentFileException.cs" />
     <Compile Include="ContentReader.cs" />
@@ -84,7 +80,6 @@
     <Compile Include="MipmapChain.cs" />
     <Compile Include="MipmapChainCollection.cs" />
     <Compile Include="PixelBitmapContent.cs" />
-    <Compile Include="PropertyCollectionExtensions.cs" />
     <Compile Include="Rgba.cs" />
     <Compile Include="Squish.cs" />
     <Compile Include="Texture2DContent.cs" />
@@ -94,6 +89,13 @@
     <Compile Include="Xna\Rectangle.cs" />
     <Compile Include="Xna\SurfaceFormat.cs" />
     <Compile Include="Xna\Point.cs" />
+    <Compile Include="Compilers\PdfAndPinboardToXnbCompiler.cs" />
+    <Compile Include="Compilers\SpritefontAndStringsToXnbCompiler.cs" />
+    <Compile Include="BuildTarget.cs" />
+    <Compile Include="PropertyGroup.cs" />
+    <Compile Include="ItemGroup.cs" />
+    <Compile Include="Content\ContentFileReaderV2.cs" />
+    <Compile Include="Content\ContentFileV2.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PlayroomResources.resx" />

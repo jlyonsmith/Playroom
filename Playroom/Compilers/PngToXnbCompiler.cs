@@ -17,12 +17,12 @@ namespace Playroom.Compilers
         public string[] OutputExtensions { get { return new string[] { ".xnb" }; } }
 
         public BuildContext Context { get; set; }
-        public BuildItem Item { get; set; }
+        public BuildTarget Target { get; set; }
 
         public void Compile()
         {
-            ParsedPath pngFile = Item.InputFiles.Where(f => f.Extension == ".png").First();
-            ParsedPath xnbFile = Item.OutputFiles.Where(f => f.Extension == ".xnb").First();
+            ParsedPath pngFile = Target.InputFiles.Where(f => f.Extension == ".png").First();
+            ParsedPath xnbFile = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
 
             BitmapContent bitmapContent = BitmapContent.FromFile(pngFile);
             byte[] pixelData;

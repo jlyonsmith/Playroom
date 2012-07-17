@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,6 +42,9 @@ namespace Playroom
         [CommandLineArgument("rebuild", Description = "Force a rebuild even if all files are up-to-date")]
         public bool Rebuild { get; set; }
 
+		[CommandLineArgument("test", Description = "Test mode.  Indicates what would content will be compiled, but does not actually compile it")]
+		public bool TestMode { get; set; }
+
         public OutputHelper Output { get; set; }
 
         private CommandLineParser parser;
@@ -69,28 +72,35 @@ namespace Playroom
         {
             try
             {
-                RealExecute();
+                SafeExecute();
             }
             catch (Exception e)
             {
-                ContentFileException contentEx = e as ContentFileException;
+				do 
+				{
+	                if (e is ContentFileException)
+	                {
+		                ContentFileException contentEx = (ContentFileException)e;
 
-                if (contentEx != null)
-                {
-                    Output.Error(contentEx.FileName, contentEx.LineNumber, 0, e.Message);
-                }
-                else
-                {
+	                    Output.Error(contentEx.FileName, contentEx.LineNumber, 0, e.Message);
+	                }
+	                else
+	                {
 #if DEBUG
-                    Output.Error(e.ToString());
+						// When debugging, output the stack trace too
+	                    Output.Error(e.ToString());
 #else
-                    Output.Error(e.Message);
+	                    Output.Error(e.Message);
 #endif
-                }
+	                }
+
+					e = e.InnerException;
+				}
+				while (e != null);
             }
         }
 
-        private void RealExecute ()
+        private void SafeExecute ()
 		{
 			if (!NoLogo)
 				Console.WriteLine (Parser.LogoBanner);
@@ -118,22 +128,22 @@ namespace Playroom
 				return;
 			}
 
-            PropertyCollection propCollection = new PropertyCollection();
-
             // Initialize properties from the environment and command line
-            propCollection.AddFromEnvironment();
-            propCollection.AddWellKnownProperties(
+            PropertyGroup globalProps = new PropertyGroup();
+
+            globalProps.AddFromEnvironment();
+            globalProps.AddWellKnownProperties(
                 new ParsedPath(Assembly.GetExecutingAssembly().Location, PathType.File).VolumeAndDirectory,
                 ContentFile.VolumeAndDirectory);
-            propCollection.AddFromPropertyString(this.Properties);
+            globalProps.AddFromPropertyString(this.Properties);
 
-            BuildContext buildContext = new BuildContext(this.Output, propCollection, this.ContentFile);
+            BuildContext buildContext = new BuildContext(this.Output, globalProps, this.ContentFile);
 
-            ContentFileV1 contentData = null;
+            ContentFileV2 contentFile = null;
 
             try
             {
-                contentData = ContentFileReaderV1.ReadFile(this.ContentFile);
+                contentFile = ContentFileReaderV2.ReadFile(this.ContentFile);
             }
             catch (Exception e)
             {
@@ -142,21 +152,28 @@ namespace Playroom
             
             Output.Message(MessageImportance.Low, "Read content file '{0}'", this.ContentFile);
 
-            List<CompilerClass> compilerClasses = LoadCompilerClasses(contentData, propCollection);
-            List<BuildItem> buildItems = PrepareBuildItems(contentData, propCollection);
+            ItemGroup globalItems = new ItemGroup();
 
-            foreach (var buildItem in buildItems)
+			globalItems.ExpandAndAdd(contentFile.Items, globalProps);
+
+			List<CompilerClass> compilerClasses = LoadCompilerClasses(globalItems, globalProps);
+            List<BuildTarget> BuildTargets = PrepareBuildTargets(contentFile.Targets, globalItems, globalProps);
+
+            foreach (var BuildTarget in BuildTargets)
             {
                 foreach (var compilerClass in compilerClasses)
                 {
-                    if (buildItem.InputExtensions.SequenceEqual(compilerClass.InputExtensions) &&
-                        buildItem.OutputExtensions.SequenceEqual(compilerClass.OutputExtensions))
+                    if (BuildTarget.InputExtensions.SequenceEqual(compilerClass.InputExtensions) &&
+                        BuildTarget.OutputExtensions.SequenceEqual(compilerClass.OutputExtensions))
                     {
                         // TODO: More output...
                         Output.Message("Building item with '{0}' compiler", compilerClass.Name);
 
+						if (TestMode)
+							continue;
+
                         compilerClass.ContextProperty.SetValue(compilerClass.Instance, buildContext, null);
-                        compilerClass.ItemProperty.SetValue(compilerClass.Instance, buildItem, null);
+                        compilerClass.ItemProperty.SetValue(compilerClass.Instance, BuildTarget, null);
 
                         try
                         {
@@ -168,12 +185,12 @@ namespace Playroom
                             
                             if (contentEx != null)
                             {
-                                contentEx.EnsureFileNameAndLineNumber(buildContext.ContentFile, buildItem.LineNumber);
+                                contentEx.EnsureFileNameAndLineNumber(buildContext.ContentFile, BuildTarget.LineNumber);
                                 throw contentEx;
                             }
                             else
                             {
-                                throw new ContentFileException(this.ContentFile, buildItem.LineNumber, e.InnerException);
+                                throw new ContentFileException(this.ContentFile, BuildTarget.LineNumber, e.InnerException);
                             }
                         }
                     }
@@ -187,79 +204,73 @@ namespace Playroom
         }
 
         #region Private Methods
-        private List<BuildItem> PrepareBuildItems(ContentFileV1 contentData, PropertyCollection propCollection)
+        private List<BuildTarget> PrepareBuildTargets(List<ContentFileV2.Target> rawTargets, ItemGroup globalItems, PropertyGroup globalProps)
         {
-            List<BuildItem> buildItems = new List<BuildItem>();
+            List<BuildTarget> buildTargets = new List<BuildTarget>();
 
-            foreach (var item in contentData.Items)
+            foreach (var rawTarget in rawTargets)
             {
-                BuildItem buildItem = new BuildItem();
+				PropertyGroup targetProps = new PropertyGroup(globalProps);
 
-                buildItem.LineNumber = item.LineNumber;
+				if (rawTarget.Properties != null)
+                	targetProps.ExpandAndAdd(rawTarget.Properties, globalProps);
 
-                buildItem.Properties = new PropertyCollection();
+				targetProps.Add("TargetName", rawTarget.Name);
 
-                buildItem.Properties.AddFromTupleList(item.Properties);
+				ItemGroup targetItems = new ItemGroup(globalItems);
 
-                buildItem.InputFiles = new List<ParsedPath>();
+				List<ParsedPath> inputFiles = new List<ParsedPath>();
+				string[] list = rawTarget.Inputs.Split(';');
 
-                foreach (var rawInputFile in item.InputFiles)
+                foreach (var rawInputFile in list)
                 {
-                    ParsedPath inputFile = new ParsedPath(propCollection.ReplaceVariables(rawInputFile), PathType.File);
+                    ParsedPath pathSpec = new ParsedPath(targetProps.ReplaceVariables(rawInputFile), PathType.File);
 
-                    if (inputFile.HasWildcards)
+                    if (pathSpec.HasWildcards && Directory.Exists(pathSpec.VolumeAndDirectory))
                     {
-                        IList<ParsedPath> files = DirectoryUtility.GetFiles(inputFile, SearchScope.RecurseSubDirectoriesBreadthFirst);
+                        IList<ParsedPath> files = DirectoryUtility.GetFiles(pathSpec, SearchScope.DirectoryOnly);
 
                         if (files.Count == 0)
                         {
-                            throw new ContentFileException(this.ContentFile, buildItem.LineNumber, "Wildcard input refers to no files after expansion");
+                            throw new ContentFileException(this.ContentFile, rawTarget.LineNumber, "Wildcard input refers to no files after expansion");
                         }
 
-                        buildItem.InputFiles = buildItem.InputFiles.Concat(files).ToList<ParsedPath>();
+                        inputFiles = inputFiles.Concat(files).ToList<ParsedPath>();
                     }
                     else
                     {
-                        if (!File.Exists(inputFile))
+                        if (!File.Exists(pathSpec))
                         {
-                            throw new ContentFileException(this.ContentFile, buildItem.LineNumber, String.Format("Input file '{0}' does not exist", inputFile));
+                            throw new ContentFileException(this.ContentFile, rawTarget.LineNumber, String.Format("Input file '{0}' does not exist", pathSpec));
                         }
 
-                        buildItem.InputFiles.Add(inputFile);
+                        inputFiles.Add(pathSpec);
                     }
                 }
 
-                buildItem.OutputFiles = new List<ParsedPath>();
+                List<ParsedPath> outputFiles = new List<ParsedPath>();
 
-                foreach (var rawOutputFile in item.OutputFiles)
+				list = rawTarget.Outputs.Split(';');
+
+                foreach (var rawOutputFile in list)
                 {
-                    ParsedPath outputFile = new ParsedPath(propCollection.ReplaceVariables(rawOutputFile), PathType.File);
+                    ParsedPath outputFile = new ParsedPath(targetProps.ReplaceVariables(rawOutputFile), PathType.File);
 
-                    if (outputFile.HasWildcards)
-                    {
-                        throw new ContentFileException(this.ContentFile, buildItem.LineNumber, "Output item cannot have wildcards");
-                    }
-
-                    buildItem.OutputFiles.Add(outputFile);
+                    outputFiles.Add(outputFile);
                 }
 
-                bool needsRebuild = IsCompileRequired(buildItem.InputFiles, buildItem.OutputFiles);
+				targetItems["TargetInputs"] = inputFiles;
+				targetItems["TargetOutputs"] = outputFiles;
+
+                bool needsRebuild = IsCompileRequired(inputFiles, outputFiles);
 
                 if (!needsRebuild)
                     continue;
 
-                Func<IList<ParsedPath>, IEnumerable<string>> extractAndSortExtensions = (files) =>
-                {
-                    return files.Select<ParsedPath, string>(f => f.Extension).Distinct<string>().OrderBy(s => s, StringComparer.CurrentCultureIgnoreCase);
-                };
-
-                buildItem.InputExtensions = extractAndSortExtensions(buildItem.InputFiles);
-                buildItem.OutputExtensions = extractAndSortExtensions(buildItem.OutputFiles);
-
-                buildItems.Add(buildItem);
+                buildTargets.Add(new BuildTarget(rawTarget.LineNumber, targetProps, targetItems));
             }
 
-            return buildItems;
+            return buildTargets;
         }
 
         private bool IsCompileRequired(IList<ParsedPath> inputFiles, IList<ParsedPath> outputFiles)
@@ -290,14 +301,14 @@ namespace Playroom
             return newestInputFile > oldestOutputFile;
         }
 
-        private List<CompilerClass> LoadCompilerClasses(ContentFileV1 contentData, PropertyCollection propCollection)
+        private List<CompilerClass> LoadCompilerClasses(ItemGroup itemGroup, PropertyGroup propGroup)
         {
             List<CompilerClass> compilerClasses = new List<CompilerClass>();
+			IList<ParsedPath> paths = itemGroup["CompilerAssembly"];
 
-            foreach (var rawAssemblyFile in contentData.CompilerAssemblyFiles)
+            foreach (var path in paths)
             {
                 Assembly assembly = null;
-                ParsedPath assemblyFile = new ParsedPath(propCollection.ReplaceVariables(rawAssemblyFile), PathType.File);
 
                 try
                 {
@@ -305,11 +316,11 @@ namespace Playroom
                     // assemblies end up in the correct load context.  If the assembly cannot be
                     // found it will raise a AssemblyResolve event where we will search for the 
                     // assembly.
-                    assembly = Assembly.LoadFrom(assemblyFile);
+                    assembly = Assembly.LoadFrom(path);
                 }
                 catch (Exception e)
                 {
-                    throw new ApplicationException(String.Format("Unable to load content compiler assembly file '{0}'. {1}", assemblyFile, e.ToString()), e);
+                    throw new ApplicationException(String.Format("Unable to load content compiler assembly file '{0}'. {1}", path, e.ToString()), e);
                 }
 
                 Type[] types;
@@ -321,7 +332,7 @@ namespace Playroom
                 }
                 catch (ReflectionTypeLoadException e)
                 {
-                    string message = String.Format("Unable to reflect on assembly '{0}'", assemblyFile);
+                    string message = String.Format("Unable to reflect on assembly '{0}'", path);
 
                     // There is one entry in the exceptions array for each null in the types array,
                     // and they correspond positionally.

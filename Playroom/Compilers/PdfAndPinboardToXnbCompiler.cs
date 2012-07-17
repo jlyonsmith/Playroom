@@ -1,17 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Playroom
 {
-    public class SvgToPdfCompiler : IContentCompiler
+    public class PdfAndPinboardToXnbCompiler : IContentCompiler
     {
         #region IContentCompiler Members
 
         public string[] InputExtensions
         {
-            get { return new string[] { ".svg" }; }
+            get { return new string[] { ".svg", ".pinboard" }; }
         }
 
         public string[] OutputExtensions

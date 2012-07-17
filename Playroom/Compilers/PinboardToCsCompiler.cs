@@ -47,11 +47,11 @@ namespace Playroom
         public string[] InputExtensions { get { return new string[] { ".pinboard" }; } }
         public string[] OutputExtensions { get { return new string[] { ".cs" }; } }
         public BuildContext Context { get; set; }
-        public BuildItem Item { get; set; }
+        public BuildTarget Target { get; set; }
 
         public void Compile()
         {
-            IEnumerable<ParsedPath> pinboardFiles = Item.InputFiles.Where(f => f.Extension == ".pinboard");
+            IEnumerable<ParsedPath> pinboardFiles = Target.InputFiles.Where(f => f.Extension == ".pinboard");
             IEnumerable<ParsedPath> distinctPinboardFiles = pinboardFiles.Distinct<ParsedPath>(new FileNameEqualityComparer());
 
             Dictionary<ParsedPath, PinboardFileV1> pinboards = ReadPinboardFiles(pinboardFiles);
@@ -59,7 +59,7 @@ namespace Playroom
             ReconcilePinboards(pinboardFiles, distinctPinboardFiles, pinboards);
 
             TextWriter writer;
-            ParsedPath csFile = Item.OutputFiles.Where(f => f.Extension == ".cs").First();
+            ParsedPath csFile = Target.OutputFiles.Where(f => f.Extension == ".cs").First();
 
             Context.Output.Message(MessageImportance.Normal, "Writing output file '{0}'", csFile);
 
@@ -79,10 +79,10 @@ namespace Playroom
         {
             RectanglesContent rectData = new RectanglesContent();
 
-            if (!Item.Properties.ContainsKey("Namespace"))
-                throw new ContentFileException(Context.ContentFile, Item.LineNumber, "Item does not contain Namespace property");
+            if (!Target.Properties.ContainsKey("Namespace"))
+                throw new ContentFileException(Context.ContentFile, Target.LineNumber, "Item does not contain Namespace property");
 
-            rectData.Namespace = Item.Properties["Namespace"];
+            rectData.Namespace = Target.Properties["Namespace"];
             rectData.Classes = new List<RectanglesContent.Class>();
 
             foreach (var pinboardFile in distinctPinboardFiles)
@@ -169,7 +169,7 @@ namespace Playroom
                 }
                 catch (Exception e)
                 {
-                    throw new ContentFileException(Context.ContentFile, Item.LineNumber, String.Format("Unable to read pinboard file '{0}'", pinboardFile), e);
+                    throw new ContentFileException(Context.ContentFile, Target.LineNumber, String.Format("Unable to read pinboard file '{0}'", pinboardFile), e);
                 }
 
                 pinboards.Add(pinboardFile, pinboard);
@@ -201,7 +201,7 @@ namespace Playroom
 
                         if (goldPinboard.RectInfos.Count != pinboard.RectInfos.Count)
                         {
-                            throw new ContentFileException(Context.ContentFile, Item.LineNumber, string.Format("Pinboard '{0}' and '{1}' have a different number of rectangles",
+                            throw new ContentFileException(Context.ContentFile, Target.LineNumber, string.Format("Pinboard '{0}' and '{1}' have a different number of rectangles",
                                 goldPinboardFile, pinboardFile));
                         }
 
@@ -209,7 +209,7 @@ namespace Playroom
                         {
                             if (goldPinboard.RectInfos[i].Name != pinboard.RectInfos[i].Name)
                             {
-                                throw new ContentFileException(Context.ContentFile, Item.LineNumber, string.Format("RectangleInfo named {0} at depth {1} in pinboard '{2}' is different from pinboard '{3}'",
+                                throw new ContentFileException(Context.ContentFile, Target.LineNumber, string.Format("RectangleInfo named {0} at depth {1} in pinboard '{2}' is different from pinboard '{3}'",
                                     goldPinboard.RectInfos[i].Name, i, goldPinboardFile, pinboardFile));
                             }
                         }

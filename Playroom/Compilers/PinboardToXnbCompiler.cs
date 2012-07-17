@@ -15,12 +15,12 @@ namespace Playroom
         public string[] InputExtensions { get { return new string[] { ".pinboard" }; } }
         public string[] OutputExtensions { get { return new string[] { ".xnb" }; } }
         public BuildContext Context { get; set; }
-        public BuildItem Item { get; set; }
+        public BuildTarget Target { get; set; }
 
         public void Compile()
         {
-            ParsedPath pinboardFile = Item.InputFiles.Where(f => f.Extension == ".pinboard").First();
-            ParsedPath xnbFile = Item.OutputFiles.Where(f => f.Extension == ".xnb").First();
+            ParsedPath pinboardFile = Target.InputFiles.Where(f => f.Extension == ".pinboard").First();
+            ParsedPath xnbFile = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
 
             PinboardFileV1 pinboard = PinboardFileReaderV1.ReadFile(pinboardFile);
 

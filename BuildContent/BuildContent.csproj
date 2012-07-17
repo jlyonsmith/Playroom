@@ -22,7 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Commandlineparameters>/Users/john/Projects/Playroom/Test/RawContent/TestContent.content -rebuild</Commandlineparameters>
+    <Commandlineparameters>/Users/john/Projects/Playroom/Test/RawContent/TestContent.v2.content -test -rebuild</Commandlineparameters>
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeExecute" command="cp ${SolutionDir}/Squish2/Squish2/bin/Debug/libSquish2.so ${ProjectDir}/bin/Debug/" workingdir="${ProjectDir}" />
