@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
+using Playroom;
 
-namespace Playroom
+namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
 {
     public abstract class DxtBitmapContent : BitmapContent
     {

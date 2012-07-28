@@ -5,8 +5,9 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.ObjectModel;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 
-namespace Playroom
+namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
 {
     public sealed class MipmapChainCollection : Collection<MipmapChain>
     {

@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ToolBelt;
+#if WINDOWS
 using Microsoft.Win32;
+#endif
 using System.IO;
 
 namespace Playroom
 {
     public static class ToolPaths
     {
-        public static ParsedPath InkscapeCom { get; set; }
-        public static ParsedPath RSvgConvertExe { get; set; }
+        public static ParsedPath Inkscape { get; set; }
+        public static ParsedPath RSvgConvert { get; set; }
 
         static ToolPaths()
         {
             try
             {
+#if WINDOWS
                 RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"svgfile\shell\Inkscape\command", false);
 
                 if (key != null)
@@ -31,7 +34,7 @@ namespace Playroom
                         ParsedPath path  = new ParsedPath(s, PathType.File).SetExtension(".com");
 
                         if (File.Exists(path))
-                            InkscapeCom = path;
+                            Inkscape = path;
                     }
                 }
 
@@ -49,9 +52,15 @@ namespace Playroom
                         ParsedPath path = new ParsedPath(s, PathType.File).SetFileAndExtension("rsvg-convert.exe");
 
                         if (File.Exists(path))
-                            RSvgConvertExe = path;
+                            RSvgConvert = path;
                     }
                 }
+#elif MACOS
+				ParsedPath path = new ParsedPath("/Applications/Inkscape.app/Contents/Resources/bin/inkscape", PathType.File);
+
+				if (File.Exists(path))
+					Inkscape = path;
+#endif
             }
             catch
             {

@@ -6,8 +6,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ToolBelt;
 using System.Runtime.InteropServices;
+using Playroom;
 
-namespace Playroom
+namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
 {
     public class PixelBitmapContent<T> : BitmapContent
     {
@@ -56,7 +57,7 @@ namespace Playroom
             this.pixelData[y][x] = value;
         }
 
-        public override byte[] GetPixelData()
+		public override byte[] GetPixelData()
         {
             int stride = pixelSize * base.Width;
             byte[] destinationArray = new byte[stride * base.Height];

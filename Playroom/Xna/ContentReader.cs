@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace Playroom
+namespace Microsoft.Xna.Framework.Content
 {
     public class ContentReader : BinaryReader
     {

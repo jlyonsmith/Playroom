@@ -7,8 +7,9 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Drawing;
 using ToolBelt;
 using System.Drawing.Imaging;
+using Playroom;
 
-namespace Playroom
+namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
 {
     public abstract class BitmapContent
     {

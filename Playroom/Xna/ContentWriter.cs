@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Collections.ObjectModel;
+using Microsoft.Xna.Framework.Content;
 
 namespace Playroom
 {

@@ -159,21 +159,34 @@ namespace Playroom
 			List<CompilerClass> compilerClasses = LoadCompilerClasses(globalItems, globalProps);
             List<BuildTarget> BuildTargets = PrepareBuildTargets(contentFile.Targets, globalItems, globalProps);
 
-            foreach (var BuildTarget in BuildTargets)
+            foreach (var buildTarget in BuildTargets)
             {
                 foreach (var compilerClass in compilerClasses)
                 {
-                    if (BuildTarget.InputExtensions.SequenceEqual(compilerClass.InputExtensions) &&
-                        BuildTarget.OutputExtensions.SequenceEqual(compilerClass.OutputExtensions))
+                    if (buildTarget.InputExtensions.SequenceEqual(compilerClass.InputExtensions) &&
+                        buildTarget.OutputExtensions.SequenceEqual(compilerClass.OutputExtensions))
                     {
-                        // TODO: More output...
-                        Output.Message("Building item with '{0}' compiler", compilerClass.Name);
+						string msg = String.Format("Building target '{0}' with '{1}' compiler", buildTarget.Name, compilerClass.Name);
+
+						foreach (var input in buildTarget.InputFiles)
+						{
+							msg += Environment.NewLine + "\t" + input;
+						}
+
+						msg += Environment.NewLine + "\t->";
+
+						foreach (var output in buildTarget.OutputFiles)
+						{
+							msg += Environment.NewLine + "\t" + output;
+						}
+
+						Output.Message(msg);
 
 						if (TestMode)
 							continue;
 
                         compilerClass.ContextProperty.SetValue(compilerClass.Instance, buildContext, null);
-                        compilerClass.ItemProperty.SetValue(compilerClass.Instance, BuildTarget, null);
+                        compilerClass.ItemProperty.SetValue(compilerClass.Instance, buildTarget, null);
 
                         try
                         {
@@ -185,12 +198,12 @@ namespace Playroom
                             
                             if (contentEx != null)
                             {
-                                contentEx.EnsureFileNameAndLineNumber(buildContext.ContentFile, BuildTarget.LineNumber);
+                                contentEx.EnsureFileNameAndLineNumber(buildContext.ContentFile, buildTarget.LineNumber);
                                 throw contentEx;
                             }
                             else
                             {
-                                throw new ContentFileException(this.ContentFile, BuildTarget.LineNumber, e.InnerException);
+                                throw new ContentFileException(this.ContentFile, buildTarget.LineNumber, e.InnerException);
                             }
                         }
                     }

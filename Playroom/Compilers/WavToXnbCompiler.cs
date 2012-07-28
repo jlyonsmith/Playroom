@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ToolBelt;
+using System.IO;
+using Microsoft.Xna.Framework.Content.Pipeline.Audio;
 
 namespace Playroom
 {
@@ -23,6 +26,12 @@ namespace Playroom
 
         public void Compile()
         {
+            ParsedPath wavFile = Target.InputFiles.Where(f => f.Extension == ".wav").First();
+            ParsedPath xnbFile = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
+
+			AudioContent ac = AudioContent.FromFile(wavFile);
+
+            XnbFileWriterV5.WriteFile(ac, xnbFile);
         }
 
         #endregion

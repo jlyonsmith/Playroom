@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using Playroom;
 
-namespace Playroom
+namespace Microsoft.Xna.Framework.Content
 {
     public abstract class ContentTypeWriter
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Playroom
+namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
 {
     public class Texture2DContent : TextureContent
     {

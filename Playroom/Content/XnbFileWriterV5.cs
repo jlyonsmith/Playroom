@@ -5,6 +5,8 @@ using System.Text;
 using System.IO;
 using ToolBelt;
 using System.Collections.ObjectModel;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 
 namespace Playroom
 {
@@ -19,11 +21,12 @@ namespace Playroom
         private readonly ContentTypeWriter[] availableTypeWriters = new ContentTypeWriter[]
         {
             new Int32Writer(),
-            new StringWriter(),
+            new Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler.StringWriter(),
             new RectangleWriter(),
             new ArrayWriter<Microsoft.Xna.Framework.Rectangle>(),
             new ArrayWriter<System.String>(),
-            new Texture2DWriter()
+            new Texture2DWriter(),
+			new SoundEffectWriter(),
         };
         
         private XnbFileWriterV5(FileStream fileStream)

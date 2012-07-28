@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <DefineConstants>DEBUG;MACOS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -31,6 +31,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <Externalconsole>true</Externalconsole>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>MACOS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -55,35 +56,19 @@
     <Compile Include="Compilers\SvgAndPinboardToXnbCompiler.cs" />
     <Compile Include="Compilers\SvgToPdfCompiler.cs" />
     <Compile Include="Compilers\WavToXnbCompiler.cs" />
-    <Compile Include="Content\ContentTypeReader.cs" />
-    <Compile Include="Content\ContentTypeWriter.cs" />
     <Compile Include="Content\ParsedPathWriter.cs" />
     <Compile Include="Content\PinboardDataWriter.cs" />
     <Compile Include="Content\PinboardFileReaderV1.cs" />
     <Compile Include="Content\PinboardFileV1.cs" />
     <Compile Include="Content\StringsFileReaderV1.cs" />
     <Compile Include="Content\StringsFileV1.cs" />
-    <Compile Include="Content\XnaTargetPlatform.cs" />
-    <Compile Include="Content\XnaTypeWriters.cs" />
     <Compile Include="Content\XnbFileWriterV5.cs" />
-    <Compile Include="BitmapContent.cs" />
     <Compile Include="BuildContent.cs" />
     <Compile Include="BuildContentTool.cs" />
     <Compile Include="BuildContext.cs" />
     <Compile Include="CompilerClass.cs" />
-    <Compile Include="ContentFileException.cs" />
-    <Compile Include="ContentReader.cs" />
-    <Compile Include="ContentWriter.cs" />
-    <Compile Include="DxtBitmapContent.cs" />
     <Compile Include="IContentCompiler.cs" />
-    <Compile Include="ImageFileFormat.cs" />
-    <Compile Include="MipmapChain.cs" />
-    <Compile Include="MipmapChainCollection.cs" />
-    <Compile Include="PixelBitmapContent.cs" />
-    <Compile Include="Rgba.cs" />
     <Compile Include="Squish.cs" />
-    <Compile Include="Texture2DContent.cs" />
-    <Compile Include="TextureContent.cs" />
     <Compile Include="ToolPaths.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Xna\Rectangle.cs" />
@@ -96,6 +81,29 @@
     <Compile Include="ItemGroup.cs" />
     <Compile Include="Content\ContentFileReaderV2.cs" />
     <Compile Include="Content\ContentFileV2.cs" />
+    <Compile Include="ContentFileException.cs" />
+    <Compile Include="Xna\BitmapContent.cs" />
+    <Compile Include="Xna\PixelBitmapContent.cs" />
+    <Compile Include="Xna\DxtBitmapContent.cs" />
+    <Compile Include="Rgba.cs" />
+    <Compile Include="Xna\TextureContent.cs" />
+    <Compile Include="Xna\MipmapChain.cs" />
+    <Compile Include="Xna\MipmapChainCollection.cs" />
+    <Compile Include="Xna\ContentReader.cs" />
+    <Compile Include="Xna\ContentWriter.cs" />
+    <Compile Include="ImageFileFormat.cs" />
+    <Compile Include="Xna\Texture2DContent.cs" />
+    <Compile Include="Xna\ContentTypeReader.cs" />
+    <Compile Include="Xna\ContentTypeWriter.cs" />
+    <Compile Include="Xna\TargetPlatform.cs" />
+    <Compile Include="Xna\TypeWriters.cs" />
+    <Compile Include="Xna\AudioContent.cs" />
+    <Compile Include="Xna\AudioFileType.cs" />
+    <Compile Include="Xna\AudioFormat.cs" />
+    <Compile Include="Xna\Vector3.cs" />
+    <Compile Include="Xna\SpriteFontContent.cs" />
+    <Compile Include="Content\SpriteFontFile.cs" />
+    <Compile Include="Content\SpriteFontFileReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PlayroomResources.resx" />

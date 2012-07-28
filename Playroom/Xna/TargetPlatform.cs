@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Playroom
+namespace Microsoft.Xna.Framework.Content.Pipeline
 {
-    public enum XnaTargetPlatform
+	public enum TargetPlatform
     {
         Windows,
         Xbox360,

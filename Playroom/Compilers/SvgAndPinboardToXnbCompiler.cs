@@ -255,7 +255,7 @@ namespace Playroom
 
             string output;
             string command = string.Format("\"{0}\" --export-png=\"{4}\" --export-width={2} --export-height={3} --export-dpi=96 --file=\"{1}\"",
-                ToolPaths.InkscapeCom, // 0
+                ToolPaths.Inkscape, // 0
                 svgFile, // 1
                 width.ToString(), // 2
                 height.ToString(), // 3
@@ -278,7 +278,7 @@ namespace Playroom
 
             string output;
             string command = string.Format("\"{0}\" \"{1}\" --format=png --dpi-x=96 --dpi-y=96 --width={2} --height={3} --output \"{4}\"",
-                ToolPaths.RSvgConvertExe, // 0
+                ToolPaths.RSvgConvert, // 0
                 svgFile, // 1
                 width.ToString(), // 2
                 height.ToString(), // 3

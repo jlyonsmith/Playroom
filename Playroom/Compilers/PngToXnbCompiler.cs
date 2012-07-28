@@ -6,6 +6,7 @@ using ToolBelt;
 using Playroom;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 
 namespace Playroom.Compilers
 {
@@ -27,9 +28,9 @@ namespace Playroom.Compilers
             BitmapContent bitmapContent = BitmapContent.FromFile(pngFile);
             byte[] pixelData;
 
-            // TODO: If requested, DXT compress the image
             pixelData = bitmapContent.GetPixelData();
 
+            // TODO: Only if requested, DXT compress the image
             pixelData = Squish.CompressImage(
                 pixelData, bitmapContent.Width, bitmapContent.Height, 
                 SquishMethod.Dxt5, SquishFit.IterativeCluster, SquishMetric.Default, SquishExtra.None);

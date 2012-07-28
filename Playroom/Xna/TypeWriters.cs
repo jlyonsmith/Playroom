@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
+using Microsoft.Xna.Framework.Content.Pipeline.Audio;
 using Playroom;
+using System.Collections.ObjectModel;
 
-namespace Playroom
+namespace Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler
 {
     public abstract class XnaTypeWriter<T> : ContentTypeWriter<T>
     {
@@ -79,6 +83,16 @@ namespace Playroom
         }
     }
 
+    public abstract class XnaAudioTypeWriter<T> : ContentTypeWriter<T>
+    {
+        public override string GetReaderTypeName()
+        {
+            string name = GetShortTypeName(this.GetType()).Replace("Writer", "Reader") + GetGenericArgumentRuntimeTypes();
+
+            return String.Format("Microsoft.Xna.Framework.Content.{0}, Microsoft.Xna.Framework.Audio, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553", name);
+        }
+    }
+
     public abstract class BaseTextureWriter<T> : XnaGraphicsTypeWriter<T> where T : TextureContent
     {
         public BaseTextureWriter()
@@ -120,4 +134,35 @@ namespace Playroom
             output.Write(mipLevels);
         }
     }
+
+	public class SoundEffectWriter : XnaAudioTypeWriter<AudioContent>
+	{
+        public override void Write(ContentWriter output, AudioContent value)
+        {
+			ushort pcmFormat;
+
+			if (value.FileType != AudioFileType.Wav)
+				throw new NotImplementedException("Only WAV file support currently implemented");
+			else
+				pcmFormat = 1;
+
+			output.Write((uint)18); // total size of the following WAVEFORMATEX structure
+			output.Write((ushort)pcmFormat);
+			output.Write((ushort)value.AudioFormat.Channels);
+			output.Write((uint)value.AudioFormat.SampleRate);
+			output.Write((uint)value.AudioFormat.AverageBytesPerSecond);
+			output.Write((ushort)value.AudioFormat.BlockAlign);
+			output.Write((ushort)value.AudioFormat.BitsPerSample);
+			output.Write((ushort)0); // No extra bytes
+
+			byte[] data = value.Data;
+
+			output.Write(data.Length);
+			output.Write(data);
+
+			output.Write(value.LoopStart);
+			output.Write(value.LoopEnd);
+			output.Write(value.Duration.Milliseconds);
+        }
+	}
 }
