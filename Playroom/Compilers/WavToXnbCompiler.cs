@@ -26,12 +26,13 @@ namespace Playroom
 
         public void Compile()
         {
-            ParsedPath wavFile = Target.InputFiles.Where(f => f.Extension == ".wav").First();
-            ParsedPath xnbFile = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
+            ParsedPath wavFileName = Target.InputFiles.Where(f => f.Extension == ".wav").First();
+            ParsedPath xnbFileName = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
 
-			AudioContent ac = AudioContent.FromFile(wavFile);
+			WavFile wavFile = WavFileReader.ReadFile(wavFileName);
+			AudioContent ac = new AudioContent(wavFile);
 
-            XnbFileWriterV5.WriteFile(ac, xnbFile);
+            XnbFileWriterV5.WriteFile(ac, xnbFileName);
         }
 
         #endregion

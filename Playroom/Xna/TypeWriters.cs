@@ -113,7 +113,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler
             {
                 foreach (BitmapContent content in chain)
                 {
-                    byte[] pixelData = content.GetPixelData();
+					byte[] pixelData = content.Data;
 
                     output.Write(pixelData.Length);
                     output.Write(pixelData);

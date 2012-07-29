@@ -17,7 +17,7 @@ namespace Playroom
         private List<ContentTypeWriter> usedTypeWriters;
         private List<object> sharedResources;
 
-        // TODO: This list should come from reflection on the assembly
+        // TODO: This list should come from reflection on the compiler assemblies
         private readonly ContentTypeWriter[] availableTypeWriters = new ContentTypeWriter[]
         {
             new Int32Writer(),

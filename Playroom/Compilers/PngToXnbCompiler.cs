@@ -21,29 +21,57 @@ namespace Playroom.Compilers
         public BuildTarget Target { get; set; }
 
         public void Compile()
-        {
-            ParsedPath pngFile = Target.InputFiles.Where(f => f.Extension == ".png").First();
-            ParsedPath xnbFile = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
+		{
+			ParsedPath pngFileName = Target.InputFiles.Where(f => f.Extension == ".png").First();
+			ParsedPath xnbFileName = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
 
-            BitmapContent bitmapContent = BitmapContent.FromFile(pngFile);
-            byte[] pixelData;
+			PngFile pngFile = PngFileReader.ReadFile(pngFileName);
+			string compressionType;
+			SquishMethod? squishMethod = null;
+			SurfaceFormat surfaceFormat = SurfaceFormat.Color;
 
-            pixelData = bitmapContent.GetPixelData();
+			if (Context.Properties.TryGetValue("CompressionType", out compressionType))
+			{
+				switch (compressionType.ToLower())
+				{
+				case "dxt1":
+					squishMethod = SquishMethod.Dxt1;
+					surfaceFormat = SurfaceFormat.Dxt1;
+					break;
+				case "dxt3":
+					squishMethod = SquishMethod.Dxt3;
+					surfaceFormat = SurfaceFormat.Dxt3;
+					break;
+				case "dxt5":
+					squishMethod = SquishMethod.Dxt5;
+					surfaceFormat = SurfaceFormat.Dxt5;
+					break;
+				case "none":
+					surfaceFormat = SurfaceFormat.Color;
+					break;
+				}
+			}
 
-            // TODO: Only if requested, DXT compress the image
-            pixelData = Squish.CompressImage(
-                pixelData, bitmapContent.Width, bitmapContent.Height, 
-                SquishMethod.Dxt5, SquishFit.IterativeCluster, SquishMetric.Default, SquishExtra.None);
+			BitmapContent bitmapContent;
 
-            Dxt5BitmapContent content = new Dxt5BitmapContent(bitmapContent.Width, bitmapContent.Height);
+			if (squishMethod.HasValue)
+			{
+				byte[] rgbaData = Squish.CompressImage(
+	                pngFile.RgbaData, pngFile.Width, pngFile.Height, 
+	                squishMethod.Value, SquishFit.IterativeCluster, SquishMetric.Default, SquishExtra.None);
 
-            content.SetPixelData(pixelData);
+				bitmapContent = new BitmapContent(surfaceFormat, pngFile.Width, pngFile.Height, rgbaData);
+			} 
+			else
+			{
+				bitmapContent = new BitmapContent(SurfaceFormat.Color, pngFile.Width, pngFile.Height, pngFile.RgbaData);
+			}
 
             Texture2DContent textureContent = new Texture2DContent();
             
-            textureContent.Mipmaps = content;
+            textureContent.Mipmaps = bitmapContent;
 
-            XnbFileWriterV5.WriteFile(textureContent, xnbFile);
+            XnbFileWriterV5.WriteFile(textureContent, xnbFileName);
         }
 
         #endregion

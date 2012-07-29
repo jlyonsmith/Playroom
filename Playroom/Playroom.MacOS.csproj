@@ -83,8 +83,6 @@
     <Compile Include="Content\ContentFileV2.cs" />
     <Compile Include="ContentFileException.cs" />
     <Compile Include="Xna\BitmapContent.cs" />
-    <Compile Include="Xna\PixelBitmapContent.cs" />
-    <Compile Include="Xna\DxtBitmapContent.cs" />
     <Compile Include="Rgba.cs" />
     <Compile Include="Xna\TextureContent.cs" />
     <Compile Include="Xna\MipmapChain.cs" />
@@ -104,6 +102,10 @@
     <Compile Include="Xna\SpriteFontContent.cs" />
     <Compile Include="Content\SpriteFontFile.cs" />
     <Compile Include="Content\SpriteFontFileReader.cs" />
+    <Compile Include="Content\WavFile.cs" />
+    <Compile Include="Content\WavFileReader.cs" />
+    <Compile Include="Content\PngFileReader.cs" />
+    <Compile Include="Content\PngFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PlayroomResources.resx" />
