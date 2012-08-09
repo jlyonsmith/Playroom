@@ -67,9 +67,7 @@ namespace Playroom.Compilers
 				bitmapContent = new BitmapContent(SurfaceFormat.Color, pngFile.Width, pngFile.Height, pngFile.RgbaData);
 			}
 
-            Texture2DContent textureContent = new Texture2DContent();
-            
-            textureContent.Mipmaps = bitmapContent;
+            Texture2DContent textureContent = new Texture2DContent(bitmapContent);
 
             XnbFileWriterV5.WriteFile(textureContent, xnbFileName);
         }

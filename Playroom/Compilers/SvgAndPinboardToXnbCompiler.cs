@@ -3,16 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ToolBelt;
-using Microsoft.Win32;
 using System.IO;
 using System.Xml;
-using System.Drawing;
-using System.Drawing.Imaging;
+using Cairo;
 
 namespace Playroom
 {
     class SvgAndPinboardToXnbConverter : IContentCompiler
     {
+		#region Classes
+        private class ImagePlacement
+        {
+            public ImagePlacement(ParsedPath pngFile, Cairo.Rectangle targetRectangle)
+            {
+                this.ImageFile = pngFile;
+                this.TargetRectangle = targetRectangle;
+            }
+
+            public ParsedPath ImageFile { get; set; }
+            public Cairo.Rectangle TargetRectangle { get; set; }
+        }
+
+		#endregion
+
         #region IContentCompiler Members
 
         public string[] InputExtensions
@@ -29,103 +42,72 @@ namespace Playroom
         public BuildTarget Target { get; set; }
 
         public void Compile()
-        {
-            /*
-            ParsedPath prismFile = new ParsedPath(fileName, PathType.File);
+		{
+			IEnumerable<ParsedPath> svgFileNames = Target.InputFiles.Where(f => f.Extension == ".svg");
+			ParsedPath pinboardFileName = Target.InputFiles.Where(f => f.Extension == ".pinboard").First();
+			ParsedPath xnbFileName = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
+			PinboardFileV1 pinboardFile = ReadPinboardFile(pinboardFileName);
+			List<ImagePlacement> placements = new List<ImagePlacement>();
 
-            if (!File.Exists(prismFile))
-            {
-                throw new FileNotFoundException(PlayroomResources.FileNotFound(prismFile));
-            }
+			string rectangleName;
 
-            PrismData pinataData = null;
+			if (this.Context.Properties.TryGetValue("Rectangle", out rectangleName))
+				throw new ContentFileException("Rectangle property must be present");
 
-            try
-            {
-                using (XmlReader reader = XmlReader.Create(prismFile))
-                {
-                    pinataData = PrismDataReaderV1.ReadXml(reader);
-                }
-            }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException(String.Format("Unable to read prism data. {0}", e.Message), new ContentIdentity(fileName), e);
-            }
+			PinboardFileV1.RectangleInfo rectInfo = pinboardFile.GetRectangleInfoByName(rectangleName);
 
-            pinataData.PrismFile = prismFile;
-            pinataData.PngFile = new ParsedPath(context.IntermediateDirectory, PathType.Directory).SetFileAndExtension(prismFile.File + ".png");
-            pinataData.PinboardFile = pinataData.PinboardFile.MakeFullPath(prismFile);
+			if (rectInfo == null)
+				throw new ContentFileException("Rectangle {0} not found in pinboard file {1}".CultureFormat(rectangleName, pinboardFileName));
 
-            if (pinataData.SvgDirectory != null)
-                pinataData.SvgDirectory = pinataData.SvgDirectory.MakeFullPath(prismFile);
+			string converterName;
 
-            ParsedPath intermediateDir = new ParsedPath(context.IntermediateDirectory, PathType.Directory);
+			if (!this.Context.Properties.TryGetValue("Converter", out converterName))
+			{
+				converterName = "Inkscape";
+			}
 
-            this.Context = context;
-            this.PrismFile = pinataData.PrismFile;
+			converterName = converterName.ToLower();
 
-            // Make all .svg paths absolute and add dependencies on them
-            for (int i = 0; i < pinataData.SvgFiles.Count; i++)
-            {
-                List<ParsedPath> list = pinataData.SvgFiles[i];
+			if (converterName != "inkscape" && converterName != "rsvg")
+				throw new ContentFileException("Unknown SVG converter '{0}'".CultureFormat(converterName));
 
-                for (int j = 0; j < list.Count; j++)
-                {
-                    list[j] = list[j].MakeFullPath(pinataData.SvgDirectory == null ? pinataData.PrismFile : pinataData.SvgDirectory);
-
-                    context.AddDependency(list[j]);
-                }
-            }
-
-            // Grab the pinboard data and add a dependency
-            pinataData.Pinboard = ReadPinboardFile(pinataData.PinboardFile);
-            context.AddDependency(pinataData.PinboardFile);
-
-            ParsedPath tmpPath = new ParsedPath(context.IntermediateDirectory, PathType.Directory);
-
-            List<ImagePlacement> placements = new List<ImagePlacement>();
+			ParsedPath outputRootDir = new ParsedPath(this.Context.Properties.ReplaceVariables(
+				this.Context.Properties["OutputRootDir"]), PathType.File);
 
             try
             {
                 // Go through each SVG and output a temporary PNG file.  Create an ImagePlacement for each SVG/PNG processed
-                for (int row = 0; row < pinataData.SvgFiles.Count; row++)
+				int row = 0;
+
+				foreach (var svgFileName in svgFileNames)
                 {
-                    List<ParsedPath> pathList = pinataData.SvgFiles[row];
+					int col = 0;
 
-                    for (int col = 0; col < pathList.Count; col++)
+                    if (rectInfo == null)
+                        throw new InvalidOperationException(
+                            "Rectangle '{0}' not found in pinboard '{1}'".CultureFormat(rectangleName, pinboardFileName));
+
+                    ParsedPath pngFile = outputRootDir.SetFileAndExtension(String.Format("{0}_{1}_{2}.png", 
+                  		svgFileName, row, col));
+
+                    placements.Add(new ImagePlacement(pngFile,
+                        new Rectangle(col * rectInfo.Width, row * rectInfo.Height, rectInfo.Width, rectInfo.Height)));
+
+                    switch (converterName)
                     {
-                        RectangleInfo rectInfo = pinataData.Pinboard.GetRectangleInfoByName(pinataData.RectangleName);
+                        default:
+                        case "rsvg":
+                            ConvertSvgToPngWithRSvg(svgFileName, pngFile, rectInfo.Width, rectInfo.Height);
+                            break;
 
-                        if (rectInfo == null)
-                            throw new InvalidOperationException(
-                                String.Format("Rectangle '{0}' not found in pinboard '{1}'", pinataData.RectangleName, pinataData.PinboardFile),
-                                new ContentIdentity(pinataData.PrismFile));
-
-                        ParsedPath tmpPngFile = tmpPath.SetFileAndExtension(String.Format("{0}_{1}_{2}.png", pinataData.PngFile.File, row, col));
-
-                        placements.Add(new ImagePlacement(tmpPngFile,
-                            new Rectangle(col * rectInfo.Width, row * rectInfo.Height, rectInfo.Width, rectInfo.Height)));
-
-                        if (!File.Exists(pathList[col]))
-                            throw new InvalidOperationException(
-                                PlayroomResources.FileNotFound(pathList[col]), new ContentIdentity(pinataData.PrismFile));
-
-                        switch (pinataData.Converter)
-                        {
-                            default:
-                            case SvgToPngConverter.RSvg:
-                                ConvertSvgToPngWithRSvg(pathList[col], tmpPngFile, rectInfo.Width, rectInfo.Height);
-                                break;
-
-                            case SvgToPngConverter.Inkscape:
-                                ConvertSvgToPngWithInkscape(pathList[col], tmpPngFile, rectInfo.Width, rectInfo.Height);
-                                break;
-                        }
+                        case "inkscape":
+                            ConvertSvgToPngWithInkscape(svgFileName, pngFile, rectInfo.Width, rectInfo.Height);
+                            break;
                     }
                 }
 
                 // Combine all the PNG files into the final PNG using the ImagePlacements and delete the temp files.
-                CombineImages(placements, pinataData.PngFile);
+                CombineImages(placements, xnbFileName.SetExtension(".png"));
             }
             finally
             {
@@ -135,31 +117,6 @@ namespace Playroom
                         File.Delete(placement.ImageFile);
                 }
             }
-
-            OpaqueDataDictionary processorParams = new OpaqueDataDictionary();
-
-            processorParams["ColorKeyEnabled"] = false;
-            processorParams["PremultiplyAlpha"] = true;
-            processorParams["GenerateMipmaps"] = false;
-            processorParams["TextureFormat"] = TextureProcessorOutputFormat.Color;
-
-            ExternalReference<TextureContent> exRef = new ExternalReference<TextureContent>(pinataData.PngFile);
-            TextureContent textureContent = context.BuildAndLoadAsset<TextureContent, TextureContent>(exRef, "TextureProcessor", processorParams, "TextureImporter");
-
-            return textureContent;
-            */
-        }
-
-        private class ImagePlacement
-        {
-            public ImagePlacement(ParsedPath pngFile, System.Drawing.Rectangle targetRectangle)
-            {
-                this.ImageFile = pngFile;
-                this.TargetRectangle = targetRectangle;
-            }
-
-            public ParsedPath ImageFile { get; set; }
-            public System.Drawing.Rectangle TargetRectangle { get; set; }
         }
 
         private static Dictionary<ParsedPath, PinboardFileV1> pinboardDataCache;
@@ -197,34 +154,35 @@ namespace Playroom
 
             try
             {
-                int width = 0;
-                int height = 0;
+                double width = 0;
+                double height = 0;
 
                 foreach (var placement in placements)
                 {
-                    if (placement.TargetRectangle.Right > width)
-                        width = placement.TargetRectangle.Right;
+                    if (placement.TargetRectangle.Width > width)
+                        width = placement.TargetRectangle.Width;
 
-                    if (placement.TargetRectangle.Bottom > height)
-                        height = placement.TargetRectangle.Bottom;
+                    if (placement.TargetRectangle.Height> height)
+                        height = placement.TargetRectangle.Height;
                 }
 
-                using (Bitmap combinedImage = new Bitmap(width, height))
+                using (ImageSurface combinedImage = new ImageSurface(Format.Argb32, (int)width, (int)height))
                 {
-                    using (Graphics g = Graphics.FromImage(combinedImage))
+                    using (Cairo.Context g = new Cairo.Context(combinedImage))
                     {
                         foreach (var placement in placements)
                         {
-                            using (Bitmap image = new Bitmap(placement.ImageFile))
+                            using (ImageSurface image = new ImageSurface(placement.ImageFile))
                             {
-                                image.SetResolution(96, 96);
+                                image.SetFallbackResolution(96, 96);
 
-                                g.DrawImageUnscaled(image, placement.TargetRectangle);
+                                g.SetSourceSurface(image, (int)placement.TargetRectangle.X, (int)placement.TargetRectangle.Y);
+								g.Paint();
                             }
                         }
                     }
 
-                    SavePng(combinedImage, imageFileName);
+                    combinedImage.WriteToPng(imageFileName);
                 }
             }
             catch (Exception e)
@@ -234,19 +192,6 @@ namespace Playroom
             }
 
             return true;
-        }
-
-        private void SavePng(Image image, string pngFileName)
-        {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                image.Save(stream, ImageFormat.Png);
-
-                using (Stream fileStream = new FileStream(pngFileName, FileMode.Create))
-                {
-                    stream.WriteTo(fileStream);
-                }
-            }
         }
 
         private bool ConvertSvgToPngWithInkscape(string svgFile, string pngFile, int width, int height)

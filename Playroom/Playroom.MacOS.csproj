@@ -39,6 +39,7 @@
     <Reference Include="System.Core" />
     <Reference Include="Mono.CSharp" />
     <Reference Include="System.Drawing" />
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

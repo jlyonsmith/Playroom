@@ -13,8 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{6BE02424-B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RawContent", "RawContent", "{FEB7E5A8-73FC-4112-AFBD-D72CD03060B4}"
 	ProjectSection(SolutionItems) = preProject
-		Test\RawContent\TestContent.v1.content = Test\RawContent\TestContent.v1.content
-		Test\RawContent\TestContent.v2.content = Test\RawContent\TestContent.v2.content
+		Test\RawContent\TestContent.content = Test\RawContent\TestContent.content
+		Test\RawContent\TestSpriteFont.content = Test\RawContent\TestSpriteFont.content
 	EndProjectSection
 EndProject
 Global

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Playroom
 {
-    struct Rgba
+    public struct Rgba
     {
         public Rgba(byte r, byte g, byte b, byte a)
         {

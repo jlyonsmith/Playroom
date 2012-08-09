@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework;
 
 namespace Playroom
 {
@@ -23,6 +24,13 @@ namespace Playroom
         {
             this.Write7BitEncodedInt(value);
         }
+
+		public void Write(Vector3 value)
+		{
+			this.Write(value.X);
+			this.Write(value.Y);
+			this.Write(value.Z);
+		}
 
         public void WriteObject<T>(T value)
         {

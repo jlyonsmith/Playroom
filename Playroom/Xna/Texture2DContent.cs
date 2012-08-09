@@ -7,8 +7,14 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
 {
     public class Texture2DContent : TextureContent
     {
-        public Texture2DContent() : base(new MipmapChainCollection(1))
+        public Texture2DContent(BitmapContent bitmapContent) : base(new MipmapChainCollection(1))
         {
+			base.Faces[0] = bitmapContent;
+        }
+
+        public Texture2DContent(MipmapChain mipmaps) : base(new MipmapChainCollection(1))
+        {
+			base.Faces[0] = mipmaps;
         }
 
         public MipmapChain Mipmaps
@@ -16,10 +22,6 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
             get
             {
                 return base.Faces[0];
-            }
-            set
-            {
-                base.Faces[0] = value;
             }
         }
     }

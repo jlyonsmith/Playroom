@@ -80,6 +80,12 @@ namespace Playroom
 					case "Target":
 						ContentFileV2.Target target = ReadTargetElement();
 
+						foreach (var otherTarget in data.Targets)
+						{
+							if (String.CompareOrdinal(target.Name, otherTarget.Name) == 0)
+								throw new XmlException("Duplicate target name '{0}'".CultureFormat(target.Name));
+						}
+
 						data.Targets.Add(target);
 						continue;
 					}

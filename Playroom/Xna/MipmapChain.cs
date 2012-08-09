@@ -20,10 +20,6 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
 
         protected override void InsertItem(int index, BitmapContent item)
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException("item");
-            }
             base.InsertItem(index, item);
         }
 
@@ -34,10 +30,6 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
 
         protected override void SetItem(int index, BitmapContent item)
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException("item");
-            }
             base.SetItem(index, item);
         }
     }

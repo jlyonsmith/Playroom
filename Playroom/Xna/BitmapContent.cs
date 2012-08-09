@@ -14,7 +14,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
     {
 		public int Height { get; private set; }
 		public int Width { get; private set; }
-		public SurfaceFormat Format { get; set; }
+		public SurfaceFormat Format { get; private set; }
 		public byte[] Data { get; private set; }
 
 		internal BitmapContent(SurfaceFormat format, int width, int height, byte[] data)
