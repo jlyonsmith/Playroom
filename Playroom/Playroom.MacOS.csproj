@@ -44,9 +44,9 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Compilers\" />
-    <Folder Include="Content\" />
     <Folder Include="Properties\" />
     <Folder Include="Xna\" />
+    <Folder Include="Formats\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compilers\PinboardToCsCompiler.cs" />
@@ -57,13 +57,6 @@
     <Compile Include="Compilers\SvgAndPinboardToXnbCompiler.cs" />
     <Compile Include="Compilers\SvgToPdfCompiler.cs" />
     <Compile Include="Compilers\WavToXnbCompiler.cs" />
-    <Compile Include="Content\ParsedPathWriter.cs" />
-    <Compile Include="Content\PinboardDataWriter.cs" />
-    <Compile Include="Content\PinboardFileReaderV1.cs" />
-    <Compile Include="Content\PinboardFileV1.cs" />
-    <Compile Include="Content\StringsFileReaderV1.cs" />
-    <Compile Include="Content\StringsFileV1.cs" />
-    <Compile Include="Content\XnbFileWriterV5.cs" />
     <Compile Include="BuildContent.cs" />
     <Compile Include="BuildContentTool.cs" />
     <Compile Include="BuildContext.cs" />
@@ -80,8 +73,6 @@
     <Compile Include="BuildTarget.cs" />
     <Compile Include="PropertyGroup.cs" />
     <Compile Include="ItemGroup.cs" />
-    <Compile Include="Content\ContentFileReaderV2.cs" />
-    <Compile Include="Content\ContentFileV2.cs" />
     <Compile Include="ContentFileException.cs" />
     <Compile Include="Xna\BitmapContent.cs" />
     <Compile Include="Rgba.cs" />
@@ -101,12 +92,22 @@
     <Compile Include="Xna\AudioFormat.cs" />
     <Compile Include="Xna\Vector3.cs" />
     <Compile Include="Xna\SpriteFontContent.cs" />
-    <Compile Include="Content\SpriteFontFile.cs" />
-    <Compile Include="Content\SpriteFontFileReader.cs" />
-    <Compile Include="Content\WavFile.cs" />
-    <Compile Include="Content\WavFileReader.cs" />
-    <Compile Include="Content\PngFileReader.cs" />
-    <Compile Include="Content\PngFile.cs" />
+    <Compile Include="Formats\ParsedPathWriter.cs" />
+    <Compile Include="Formats\PinboardDataWriter.cs" />
+    <Compile Include="Formats\PinboardFileReaderV1.cs" />
+    <Compile Include="Formats\PinboardFileV1.cs" />
+    <Compile Include="Formats\StringsFileReaderV1.cs" />
+    <Compile Include="Formats\StringsFileV1.cs" />
+    <Compile Include="Formats\XnbFileWriterV5.cs" />
+    <Compile Include="Formats\ContentFileReaderV2.cs" />
+    <Compile Include="Formats\ContentFileV2.cs" />
+    <Compile Include="Formats\SpriteFontFile.cs" />
+    <Compile Include="Formats\SpriteFontFileReader.cs" />
+    <Compile Include="Formats\WavFile.cs" />
+    <Compile Include="Formats\WavFileReader.cs" />
+    <Compile Include="Formats\PngFileReader.cs" />
+    <Compile Include="Formats\PngFile.cs" />
+    <Compile Include="Compilers\PdfContent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PlayroomResources.resx" />
