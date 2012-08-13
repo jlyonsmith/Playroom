@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Build Content")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("BuildContent")]
+[assembly: AssemblyDescription("Build Content Tool")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Playroom XNA Tools")]

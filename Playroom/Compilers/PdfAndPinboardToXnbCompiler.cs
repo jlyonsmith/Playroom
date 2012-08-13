@@ -15,7 +15,6 @@ namespace Playroom
         {
             get { return new string[] { ".pdf", ".pinboard" }; }
         }
-
         public string[] OutputExtensions
         {
             get { return new string[] { ".xnb" }; }
@@ -33,15 +32,14 @@ namespace Playroom
 
 			if (!this.Context.Properties.TryGetValue("Rectangle", out rectangleName))
 			{
-				throw new ContentFileException("Rectangle property not present");
+				throw new ContentFileException("'Rectangle' property not present");
 			}
 
 			PinboardFileV1 pinboardFile = PinboardFileReaderV1.ReadFile(pinboardFileName);
 
 			if (pinboardFile.GetRectangleInfoByName(rectangleName) == null)
 				throw new ContentFileException("Rectangle '{0}' not present in pinboard file '{1}'".CultureFormat(
-					rectangleName, pinboardFileName)
-				);
+					rectangleName, pinboardFileName));
 
 			List<byte[]> files = new List<byte[]>();
 

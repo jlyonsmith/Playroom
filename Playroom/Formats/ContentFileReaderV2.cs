@@ -49,9 +49,12 @@ namespace Playroom
 
 			string version = reader.GetAttribute("Version");
 
-			if (String.IsNullOrEmpty(version) || version != "2")
+			if (String.IsNullOrEmpty(version))
+				throw new XmlException("Version attribute not present");
+			
+			if (version != "2")
 				throw new XmlException("Version attribute must be 2");
-
+			
 			reader.ReadStartElement(contentAtom);
 			reader.MoveToContent();
 
@@ -153,6 +156,10 @@ namespace Playroom
 
 			target.LineNumber = ((IXmlLineInfo)reader).LineNumber;
 			target.Name = reader.GetAttribute("Name");
+
+			if (String.IsNullOrWhiteSpace(target.Name))
+				throw new XmlException("Target Name attribute must be set");
+
 			target.Inputs = reader.GetAttribute("Inputs");
 			target.Outputs = reader.GetAttribute("Outputs");
             

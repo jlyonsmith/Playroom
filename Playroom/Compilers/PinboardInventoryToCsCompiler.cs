@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace Playroom
 {
-    public class PinboardToCsCompiler : IContentCompiler
+    public class PinboardInventoryToCsCompiler : IContentCompiler
     {
         #region Classes
         private class RectanglesContent

@@ -5,8 +5,10 @@ namespace Playroom
 {
 	public class PdfContent
 	{
-		public PdfContent(IList<byte[]> files, string rectangleName)
+		public PdfContent(List<byte[]> files, string rectangleName)
 		{
+			this.Files = files;
+			this.RectangleName = rectangleName;
 		}
 
 		public string RectangleName { get; private set; }

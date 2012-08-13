@@ -15,12 +15,11 @@ namespace BuildContent
         {
             BuildContentTool tool = new BuildContentTool(new ConsoleOutputter());
 
-            if (!((IProcessCommandLine)tool).ProcessCommandLine(args))
-                return 1;
-
             try
             {
-                tool.Execute();
+				((IProcessCommandLine)tool).ProcessCommandLine(args);
+
+				tool.Execute();
             }
             catch (Exception e)
             {

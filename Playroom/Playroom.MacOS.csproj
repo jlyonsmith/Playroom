@@ -49,7 +49,6 @@
     <Folder Include="Formats\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compilers\PinboardToCsCompiler.cs" />
     <Compile Include="Compilers\PinboardToXnbCompiler.cs" />
     <Compile Include="Compilers\PngToXnbCompiler.cs" />
     <Compile Include="Compilers\ResxToStringsCompiler.cs" />
@@ -108,6 +107,7 @@
     <Compile Include="Formats\PngFileReader.cs" />
     <Compile Include="Formats\PngFile.cs" />
     <Compile Include="Compilers\PdfContent.cs" />
+    <Compile Include="Compilers\PinboardInventoryToCsCompiler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PlayroomResources.resx" />
