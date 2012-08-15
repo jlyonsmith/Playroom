@@ -32,6 +32,9 @@ namespace Playroom
 			WavFile wavFile = WavFileReader.ReadFile(wavFileName);
 			AudioContent ac = new AudioContent(wavFile);
 
+			if (!Directory.Exists(xnbFileName.VolumeAndDirectory))
+				Directory.CreateDirectory(xnbFileName.VolumeAndDirectory);
+
             XnbFileWriterV5.WriteFile(ac, xnbFileName);
         }
 

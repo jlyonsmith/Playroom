@@ -7,6 +7,14 @@ using System.IO;
 
 namespace Playroom
 {
+	/// <summary>
+	/// Strings to .xnb and .cs file compiler.
+	/// 
+	/// Supports the following properties:
+	/// 
+	/// Namespace - the namespace for the class.  Must be specified.
+	/// ClassName - the name of the class. Optional; defaults to the file name plus 'Strings'.
+	/// </summary>
     public class StringsToXnbAndCsCompiler : IContentCompiler
     {
         #region Classes
@@ -20,7 +28,7 @@ namespace Playroom
             }
 
             public string Namespace { get; set; }
-            public string ClassPrefix { get; set; }
+            public string ClassName { get; set; }
             public List<StringsContent.String> Strings { get; set; }
         }
 
@@ -43,17 +51,28 @@ namespace Playroom
 
         public void Compile()
         {
-            ParsedPath stringsFile = Target.InputFiles.Where(f => f.Extension == ".strings").First();
-            ParsedPath xnbFile = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
-            ParsedPath csFile = Target.OutputFiles.Where(f => f.Extension == ".cs").First();
+            ParsedPath stringsFileName = Target.InputFiles.Where(f => f.Extension == ".strings").First();
+            ParsedPath xnbFileName = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
+            ParsedPath csFileName = Target.OutputFiles.Where(f => f.Extension == ".cs").First();
 
-            StringsContent stringsData = CreateStringsData(stringsFile, StringsFileReaderV1.ReadFile(stringsFile));
+			string className;
+
+			if (!Target.Properties.TryGetValue("ClassName", out className))
+				className = stringsFileName.File + "Strings";
+
+            StringsContent stringsData = CreateStringsData(className, StringsFileReaderV1.ReadFile(stringsFileName));
 
             string[] strings = stringsData.Strings.Select(s => s.Value).ToArray();
 
-            XnbFileWriterV5.WriteFile(strings, xnbFile);
+			if (!Directory.Exists(xnbFileName.VolumeAndDirectory))
+				Directory.CreateDirectory(xnbFileName.VolumeAndDirectory);
 
-            using (TextWriter writer = new StreamWriter(csFile))
+            XnbFileWriterV5.WriteFile(strings, xnbFileName);
+
+			if (!Directory.Exists(csFileName.VolumeAndDirectory))
+				Directory.CreateDirectory(csFileName.VolumeAndDirectory);
+
+            using (TextWriter writer = new StreamWriter(csFileName))
             {
                 WriteCsOutput(writer, stringsData);
             }
@@ -61,17 +80,19 @@ namespace Playroom
 
         #endregion
 
-        private StringsContent CreateStringsData(ParsedPath stringsFilePath, StringsFileV1 stringsFile)
+        private StringsContent CreateStringsData(string className, StringsFileV1 stringsFile)
         {
             StringsContent stringsData = new StringsContent();
 
-            stringsData.ClassPrefix = stringsFilePath.File;
+            stringsData.ClassName = className;
             stringsData.Strings = new List<StringsContent.String>();
 
-            if (!Target.Properties.ContainsKey("Namespace"))
+			string namespaceName;
+
+            if (!Target.Properties.TryGetValue("Namespace", out namespaceName))
                 throw new ContentFileException("Item requires a Namespace property");
 
-            stringsData.Namespace = Target.Properties["Namespace"];
+            stringsData.Namespace = namespaceName;
 
             foreach (var s in stringsFile.Strings)
             {
@@ -109,10 +130,15 @@ namespace Playroom
             writer.WriteLine("");
             writer.WriteLine("namespace {0}", stringsData.Namespace);
             writer.WriteLine("{");
-            writer.WriteLine("\tpublic class {0}Strings", stringsData.ClassPrefix);
-            writer.WriteLine("\t{");
-            writer.WriteLine("\t\tprivate string[] Strings { get; set; }");
-            writer.WriteLine();
+			writer.WriteLine("\tpublic class {0}", stringsData.ClassName);
+			writer.WriteLine("\t{");
+			writer.WriteLine("\t\tprivate string[] strings;");
+			writer.WriteLine("");
+			writer.WriteLine("\t\tpublic {0}(string[] strings)", stringsData.ClassName);
+			writer.WriteLine("\t\t{");
+			writer.WriteLine("\t\t\tthis.strings = strings;");
+			writer.WriteLine("\t\t}");
+			writer.WriteLine();
 
             for (int i = 0; i < stringsData.Strings.Count; i++)
             {
@@ -120,7 +146,7 @@ namespace Playroom
 
                 if (s.ArgCount == 0)
                 {
-                    writer.WriteLine("\t\tpublic string {0} {{ get {{ return Strings[{1}]; }} }}",
+                    writer.WriteLine("\t\tpublic string {0} {{ get {{ return strings[{1}]; }} }}",
                         s.Name, i);
                 }
                 else

@@ -60,6 +60,8 @@ namespace Playroom
 			}
 		}
 
+		public DateTime NewestAssemblyWriteTime { get; set; }
+
 		public int ExitCode
 		{
 			get
@@ -82,13 +84,20 @@ namespace Playroom
 
 					Output.Error(contentEx.FileName, contentEx.LineNumber, 0, e.Message);
 
+					// Skip one inner exception as that is the one that wrapped in the content exception
 					e = e.InnerException;
-					
-					while (e != null)
-					{
-						Output.Error(contentEx.FileName, contentEx.LineNumber, 0, e.Message);
 
+					if (e != null)
+					{
 						e = e.InnerException;
+
+						// If there are any other inner exceptions, output them now
+						while (e != null)
+						{
+							Output.Error(contentEx.FileName, contentEx.LineNumber, 0, e.Message);
+
+							e = e.InnerException;
+						}
 					}
 				}
 				else
@@ -138,7 +147,7 @@ namespace Playroom
                 ContentFile.VolumeAndDirectory);
 			globalProps.AddFromPropertyString(this.Properties);
 
-			BuildContext buildContext = new BuildContext(this.Output, globalProps, this.ContentFile);
+			BuildContext buildContext = new BuildContext(this.Output, this.ContentFile);
 
 			ContentFileV2 contentFile = null;
 
@@ -158,6 +167,9 @@ namespace Playroom
 			globalItems.ExpandAndAdd(contentFile.Items, globalProps);
 
 			List<CompilerClass> compilerClasses = LoadCompilerClasses(globalItems, globalProps);
+
+			this.NewestAssemblyWriteTime = FindNewestAssemblyWriteTime(compilerClasses);
+
 			List<BuildTarget> BuildTargets = PrepareBuildTargets(contentFile.Targets, globalItems, globalProps);
 
 			foreach (var buildTarget in BuildTargets)
@@ -191,7 +203,7 @@ namespace Playroom
 							continue;
 
 						compilerClass.ContextProperty.SetValue(compilerClass.Instance, buildContext, null);
-						compilerClass.ItemProperty.SetValue(compilerClass.Instance, buildTarget, null);
+						compilerClass.TargetProperty.SetValue(compilerClass.Instance, buildTarget, null);
 
 						try
 						{
@@ -302,12 +314,27 @@ namespace Playroom
 			return buildTargets;
 		}
 
+		private DateTime FindNewestAssemblyWriteTime(List<CompilerClass> compilerClasses)
+		{
+			DateTime newestAssemblyWriteTime = DateTime.MinValue;
+
+			foreach (var compilerClass in compilerClasses)
+			{
+				DateTime dateTime = File.GetLastWriteTime(compilerClass.Assembly.Location);
+
+				if (dateTime > newestAssemblyWriteTime)
+					newestAssemblyWriteTime = dateTime;
+			}
+
+			return newestAssemblyWriteTime;
+		}
+
 		private bool IsCompileRequired(IList<ParsedPath> inputFiles, IList<ParsedPath> outputFiles)
 		{
 			if (Rebuild)
 				return true;
 
-			DateTime newestInputFile = DateTime.MinValue;
+			DateTime newestInputFile = NewestAssemblyWriteTime;
 
 			foreach (var inputFile in inputFiles)
 			{

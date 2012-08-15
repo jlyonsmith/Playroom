@@ -51,21 +51,24 @@ namespace Playroom
 
         public void Compile()
         {
-            IEnumerable<ParsedPath> pinboardFiles = Target.InputFiles.Where(f => f.Extension == ".pinboard");
-            IEnumerable<ParsedPath> distinctPinboardFiles = pinboardFiles.Distinct<ParsedPath>(new FileNameEqualityComparer());
+            IEnumerable<ParsedPath> pinboardFileNames = Target.InputFiles.Where(f => f.Extension == ".pinboard");
+            IEnumerable<ParsedPath> distinctPinboardFileNames = pinboardFileNames.Distinct<ParsedPath>(new FileNameEqualityComparer());
 
-            Dictionary<ParsedPath, PinboardFileV1> pinboards = ReadPinboardFiles(pinboardFiles);
+            Dictionary<ParsedPath, PinboardFileV1> pinboards = ReadPinboardFiles(pinboardFileNames);
 
-            ReconcilePinboards(pinboardFiles, distinctPinboardFiles, pinboards);
+            ReconcilePinboards(pinboardFileNames, distinctPinboardFileNames, pinboards);
 
             TextWriter writer;
-            ParsedPath csFile = Target.OutputFiles.Where(f => f.Extension == ".cs").First();
+            ParsedPath csFileName = Target.OutputFiles.Where(f => f.Extension == ".cs").First();
 
-            Context.Output.Message(MessageImportance.Normal, "Writing output file '{0}'", csFile);
+            Context.Output.Message(MessageImportance.Normal, "Writing output file '{0}'", csFileName);
 
-            using (writer = new StreamWriter(csFile, false, Encoding.UTF8))
+			if (!Directory.Exists(csFileName.VolumeAndDirectory))
+				Directory.CreateDirectory(csFileName.VolumeAndDirectory);
+
+            using (writer = new StreamWriter(csFileName, false, Encoding.UTF8))
             {
-                RectanglesContent rectangleData = CreateRectangleData(distinctPinboardFiles, pinboards);
+                RectanglesContent rectangleData = CreateRectangleData(distinctPinboardFileNames, pinboards);
 
                 WriteCsOutput(writer, rectangleData);
             }

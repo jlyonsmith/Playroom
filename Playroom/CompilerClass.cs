@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using ToolBelt;
 
 namespace Playroom
 {
@@ -18,16 +19,28 @@ namespace Playroom
             this.Instance = Activator.CreateInstance(this.Type);
             this.CompileMethod = this.Type.GetMethod(
                 "Compile", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance);
+
+			if (this.CompileMethod == null)
+				throw new ApplicationException("'Compile' method not found in class {0}".CultureFormat(this.Name));
+
             this.ContextProperty = this.Type.GetProperty("Context");
-            this.ItemProperty = this.Type.GetProperty("Item");
-        }
+
+			if (this.ContextProperty == null)
+				throw new ApplicationException("'Context' property not found in class {0}".CultureFormat(this.Name));
+			
+			this.TargetProperty = this.Type.GetProperty("Target");
+		
+			if (this.TargetProperty == null)
+				throw new ApplicationException("'Target' property not found in class {0}".CultureFormat(this.Name));
+			
+		}
 
         public Assembly Assembly { get; private set; }
         public Type Type { get; private set; }
         public Object Instance { get; private set; }
         public MethodInfo CompileMethod { get; private set; }
         public PropertyInfo ContextProperty { get; private set; }
-        public PropertyInfo ItemProperty { get; private set; }
+        public PropertyInfo TargetProperty { get; private set; }
         public string Name { get { return this.Type.FullName; } }
         public string[] InputExtensions 
         { 

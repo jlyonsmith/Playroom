@@ -52,15 +52,16 @@ namespace Playroom
 
 			while (true)
 			{
-				if (reader.NodeType != XmlNodeType.Element)
-					throw new XmlException("Expected an element");
-
-				if (String.ReferenceEquals(reader.Name, this.assetAtom))
+				if (reader.NodeType == XmlNodeType.EndElement &&
+					String.ReferenceEquals(reader.Name, this.assetAtom))
 				{
 					reader.ReadEndElement();
 					reader.MoveToContent();
 					break;
 				}
+
+				if (reader.NodeType != XmlNodeType.Element)
+					throw new XmlException("Expected an element");
 
 				switch (reader.Name)
 				{
@@ -124,7 +125,7 @@ namespace Playroom
 
 			while (true)
 			{
-				if (reader.NodeType == XmlNodeType.Element && 
+				if (reader.NodeType == XmlNodeType.EndElement && 
 				    String.ReferenceEquals(reader.Name, characterRegionsAtom))
 				{
 					reader.ReadEndElement();
@@ -146,7 +147,7 @@ namespace Playroom
 		private void ReadCharacterRegionElement(out char start, out char end)
 		{
 			reader.ReadStartElement("CharacterRegion");
-			reader.MoveToElement();
+			reader.MoveToContent();
 
 			string s;
 
@@ -158,7 +159,7 @@ namespace Playroom
 			else
 				throw new XmlException("Missing Start character");
 
-			reader.ReadElementContentAsString("End", "");
+			s = reader.ReadElementContentAsString("End", "");
 			reader.MoveToContent();
 
 			if (s.Length > 0)

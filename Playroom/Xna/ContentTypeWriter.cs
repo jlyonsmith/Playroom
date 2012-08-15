@@ -22,7 +22,7 @@ namespace Microsoft.Xna.Framework.Content
             
             if (type.ContainsGenericParameters)
             {
-                throw new ArgumentException("Target type cannot be generic");
+                throw new ArgumentException("Target type cannot have unassigned generic parameters");
             }
 
             this.TargetType = type;
@@ -46,17 +46,12 @@ namespace Microsoft.Xna.Framework.Content
 
         public abstract void Write(ContentWriter writer, object value);
 
-        public virtual string GetWriterTypeName()
-        {
-            return GetStrongTypeName(this.GetType());
-        }
-
         public virtual string GetReaderTypeName()
         {
-            return GetWriterTypeName().Replace("Writer", "Reader");
+			return GetStrongTypeName(this.GetType()).Replace("Writer", "Reader");
         }
 
-        public virtual string GetTargetTypeName()
+        public virtual string GetGenericArgumentTypeName()
         {
             return GetStrongTypeName(TargetType);
         }
@@ -91,7 +86,7 @@ namespace Microsoft.Xna.Framework.Content
             return assembly.GetName().FullName;
         }
 
-        protected string GetGenericArgumentRuntimeTypes()
+        protected string GetGenericArguments()
         {
             if (this.genericArgumentWriters == null)
             {
@@ -108,14 +103,14 @@ namespace Microsoft.Xna.Framework.Content
                 }
                 object obj2 = str;
                 
-                str = string.Concat(new object[] { obj2, '[', this.genericArgumentWriters[i].GetTargetTypeName(), ']' });
+                str = string.Concat(new object[] { obj2, '[', this.genericArgumentWriters[i].GetGenericArgumentTypeName(), ']' });
             }
             return ('[' + str + ']');
         }
 
         protected string GetStrongTypeName(Type type)
         {
-            return GetTypeName(type) + GetGenericArgumentRuntimeTypes() + ", " + GetAssemblyFullName(type.Assembly);
+            return GetTypeName(type) + GetGenericArguments() + ", " + GetAssemblyFullName(type.Assembly);
         }
     }
 

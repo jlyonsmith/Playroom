@@ -7,6 +7,7 @@ using ToolBelt;
 using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
+using Microsoft.Xna.Framework;
 
 namespace Playroom
 {
@@ -20,13 +21,20 @@ namespace Playroom
         // TODO: This list should come from reflection on the compiler assemblies
         private readonly ContentTypeWriter[] availableTypeWriters = new ContentTypeWriter[]
         {
-            new Int32Writer(),
-            new Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler.StringWriter(),
+			new CharWriter(),
+			new Int32Writer(),
+			new SingleWriter(),
+			new Vector3Writer(),
+			new Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler.StringWriter(),
             new RectangleWriter(),
             new ArrayWriter<Microsoft.Xna.Framework.Rectangle>(),
             new ArrayWriter<System.String>(),
-            new Texture2DWriter(),
+			new ListWriter<Rectangle>(),
+			new ListWriter<Vector3>(),
+			new ListWriter<char>(),
+			new Texture2DWriter(),
 			new SoundEffectWriter(),
+			new SpriteFontWriter()
         };
         
         private XnbFileWriterV5(FileStream fileStream)
@@ -180,7 +188,7 @@ namespace Playroom
             catch (Exception e)
             {
                 if (e is InvalidOperationException)
-                    throw new InvalidOperationException(String.Format("No type writer for type '{0}'", type.Name), e);
+                    throw new InvalidOperationException("No type writer for type '{0}'".CultureFormat(type.FullName));
                 else
                     throw;
             }

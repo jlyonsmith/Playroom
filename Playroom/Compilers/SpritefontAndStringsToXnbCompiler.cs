@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using Microsoft.Xna.Framework.Graphics;
 using Cairo;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
+using System.IO;
 
 namespace Playroom
 {
@@ -49,12 +50,12 @@ namespace Playroom
 
         public void Compile()
 		{
-			ParsedPath spriteFontFile = Target.InputFiles.Where(f => f.Extension == ".spritefont").First();
-			ParsedPath stringsFile = Target.InputFiles.Where(f => f.Extension == ".strings").First();
-			ParsedPath xnbFile = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
+			ParsedPath spriteFontFileName = Target.InputFiles.Where(f => f.Extension == ".spritefont").First();
+			ParsedPath stringsFileName = Target.InputFiles.Where(f => f.Extension == ".strings").First();
+			ParsedPath xnbFileName = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
         
-			SpriteFontFile sff = SpriteFontFileReader.ReadFile(spriteFontFile);
-			StringsFileV1 sf = StringsFileReaderV1.ReadFile(stringsFile);
+			SpriteFontFile sff = SpriteFontFileReader.ReadFile(spriteFontFileName);
+			StringsFileV1 sf = StringsFileReaderV1.ReadFile(stringsFileName);
 
 			HashSet<char> hs = new HashSet<char>();
 
@@ -81,9 +82,14 @@ namespace Playroom
 			SpriteFontContent sfc = CreateSpriteFontContent(
 				sff.FontName, sff.Size, fontSlant, fontWeight, sff.Spacing, sff.DefaultCharacter, fontChars);
 
-			XnbFileWriterV5.WriteFile(sfc, xnbFile);
+			if (!Directory.Exists(xnbFileName.VolumeAndDirectory))
+			{
+				Directory.CreateDirectory(xnbFileName.VolumeAndDirectory);
+			}
 
-			if (this.Context.Properties.ContainsKey("WritePngFile"))
+			XnbFileWriterV5.WriteFile(sfc, xnbFileName);
+
+			if (this.Target.Properties.ContainsKey("WritePngFile"))
 			{
 				;
 			}
@@ -196,7 +202,10 @@ namespace Playroom
 					(int)cd.Location.X, (int)cd.Location.Y, (int)cd.Location.Width, (int)cd.Location.Height));
 				croppings.Add(new Microsoft.Xna.Framework.Rectangle(
 					(int)cd.Cropping.X, (int)cd.Cropping.Y, (int)cd.Location.Width, (int)cd.Location.Height));
-				kernings.Add(cd.Kerning);
+				kernings.Add(new Vector3(
+					(float)Math.Round(cd.Kerning.X, MidpointRounding.AwayFromZero),
+					(float)Math.Round(cd.Kerning.Y, MidpointRounding.AwayFromZero),
+					(float)Math.Round(cd.Kerning.Z, MidpointRounding.AwayFromZero)));
 			}
 
 			int verticalSpacing = 0;

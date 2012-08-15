@@ -30,7 +30,7 @@ namespace Playroom.Compilers
 			SquishMethod? squishMethod = null;
 			SurfaceFormat surfaceFormat = SurfaceFormat.Color;
 
-			if (Context.Properties.TryGetValue("CompressionType", out compressionType))
+			if (Target.Properties.TryGetValue("CompressionType", out compressionType))
 			{
 				switch (compressionType.ToLower())
 				{

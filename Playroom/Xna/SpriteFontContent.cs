@@ -19,6 +19,14 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Processors
 			List<Vector3> kerning,
 			char? defaultCharacter)
 		{
+			this.Texture = texture;
+			this.Glyphs = glyphs;
+			this.CharacterMap = characterMap;
+			this.Cropping = cropping;
+			this.VerticalSpacing = verticalSpacing;
+			this.HorizontalSpacing = horizontalSpacing;
+			this.Kerning = kerning;
+			this.DefaultCharacter = defaultCharacter;
 		}
 
 		public Texture2DContent Texture { get; private set; }

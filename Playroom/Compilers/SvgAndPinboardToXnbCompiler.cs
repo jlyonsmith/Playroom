@@ -9,6 +9,16 @@ using Cairo;
 
 namespace Playroom
 {
+	/// <summary>
+	/// .svg and .pinboard to .xnb converter.  Generates a .xnb containing the SVG image(s)
+	/// scaled to the size of a given rectangle in the Pinboard file.  The resulting image
+	/// may contain multiple rows of images.
+	/// 
+	/// Properties:
+	/// 
+	/// Rectangle - the rectangle name in the pinboard to use for scaling each SVG image
+	/// Rows - number of rows in the resulting image
+	/// </summary>
     class SvgAndPinboardToXnbConverter : IContentCompiler
     {
 		#region Classes
@@ -51,7 +61,7 @@ namespace Playroom
 
 			string rectangleName;
 
-			if (this.Context.Properties.TryGetValue("Rectangle", out rectangleName))
+			if (this.Target.Properties.TryGetValue("Rectangle", out rectangleName))
 				throw new ContentFileException("Rectangle property must be present");
 
 			PinboardFileV1.RectangleInfo rectInfo = pinboardFile.GetRectangleInfoByName(rectangleName);
@@ -61,7 +71,7 @@ namespace Playroom
 
 			string converterName;
 
-			if (!this.Context.Properties.TryGetValue("Converter", out converterName))
+			if (!this.Target.Properties.TryGetValue("Converter", out converterName))
 			{
 				converterName = "Inkscape";
 			}
@@ -71,8 +81,8 @@ namespace Playroom
 			if (converterName != "inkscape" && converterName != "rsvg")
 				throw new ContentFileException("Unknown SVG converter '{0}'".CultureFormat(converterName));
 
-			ParsedPath outputRootDir = new ParsedPath(this.Context.Properties.ReplaceVariables(
-				this.Context.Properties["OutputRootDir"]), PathType.File);
+			ParsedPath outputRootDir = new ParsedPath(this.Target.Properties.ReplaceVariables(
+				this.Target.Properties["OutputRootDir"]), PathType.File);
 
             try
             {
