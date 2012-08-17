@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace Playroom
 {
-    public static class PinboardDataWriter
+    public static class PinboardFileWriter
     {
         public static void WriteXml(XmlWriter writer, PinboardFileV1 data)
         {

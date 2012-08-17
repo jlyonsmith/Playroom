@@ -84,20 +84,19 @@ namespace Playroom
 
 					Output.Error(contentEx.FileName, contentEx.LineNumber, 0, e.Message);
 
-					// Skip one inner exception as that is the one that wrapped in the content exception
-					e = e.InnerException;
-
-					if (e != null)
+					while ((e = e.InnerException) != null)
 					{
-						e = e.InnerException;
+						string message = e.Message;
 
-						// If there are any other inner exceptions, output them now
-						while (e != null)
+						if (e is XmlException)
 						{
-							Output.Error(contentEx.FileName, contentEx.LineNumber, 0, e.Message);
+							int n = message.IndexOf("file://");
 
-							e = e.InnerException;
+							if (n != -1)
+								message = message.Substring(0, n);
 						}
+
+						Output.Error(contentEx.FileName, contentEx.LineNumber, 0, message);
 					}
 				}
 				else
@@ -157,7 +156,7 @@ namespace Playroom
 			}
 			catch (Exception e)
 			{
-				throw new ContentFileException(this.ContentFile, (int)e.Data["LineNumber"], "Unable to read content file", e);
+				throw new ContentFileException(this.ContentFile, (int)e.Data["LineNumber"], "Problem reading content file", e);
 			}
             
 			Output.Message(MessageImportance.Low, "Read content file '{0}'", this.ContentFile);
@@ -220,7 +219,8 @@ namespace Playroom
 							}
 							else
 							{
-								throw new ContentFileException(this.ContentFile, buildTarget.LineNumber, e.InnerException);
+								throw new ContentFileException(
+									this.ContentFile, buildTarget.LineNumber, "Unable to compile target '{0}'".CultureFormat(buildTarget.Name), e.InnerException);
 							}
 						}
 					}
@@ -260,7 +260,7 @@ namespace Playroom
 
 				foreach (var rawInputFile in list)
 				{
-					ParsedPath pathSpec = new ParsedPath(targetProps.ReplaceVariables(rawInputFile), PathType.File).MakeFullPath(this.ContentFile);
+					ParsedPath pathSpec = new ParsedPath(targetProps.ReplaceVariables(rawInputFile), PathType.File).MakeFullPath();
 
 					if (pathSpec.HasWildcards)
 					{
@@ -295,7 +295,7 @@ namespace Playroom
 
 				foreach (var rawOutputFile in list)
 				{
-					ParsedPath outputFile = new ParsedPath(targetProps.ReplaceVariables(rawOutputFile), PathType.File).MakeFullPath(this.ContentFile);
+					ParsedPath outputFile = new ParsedPath(targetProps.ReplaceVariables(rawOutputFile), PathType.File).MakeFullPath();
 
 					outputFiles.Add(outputFile);
 				}

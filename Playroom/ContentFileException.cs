@@ -8,12 +8,17 @@ namespace Playroom
 {
     public class ContentFileException : Exception 
     {
-        public ContentFileException(string message)
-            : base(message)
-        {
-        }
-
-        public ContentFileException(ParsedPath fileName, int lineNumber) : base()
+		public ContentFileException(string message)
+			: base(message)
+		{
+		}
+		
+		public ContentFileException(string message, Exception innerException)
+			: base(message, innerException)
+		{
+		}
+		
+		public ContentFileException(ParsedPath fileName, int lineNumber) : base()
         {
             EnsureFileNameAndLineNumber(fileName, lineNumber);
         }

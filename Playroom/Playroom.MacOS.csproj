@@ -91,7 +91,6 @@
     <Compile Include="Xna\Vector3.cs" />
     <Compile Include="Xna\SpriteFontContent.cs" />
     <Compile Include="Formats\ParsedPathWriter.cs" />
-    <Compile Include="Formats\PinboardDataWriter.cs" />
     <Compile Include="Formats\PinboardFileReaderV1.cs" />
     <Compile Include="Formats\PinboardFileV1.cs" />
     <Compile Include="Formats\StringsFileReaderV1.cs" />
@@ -106,6 +105,11 @@
     <Compile Include="Formats\PngFileReader.cs" />
     <Compile Include="Formats\PngFile.cs" />
     <Compile Include="Compilers\PinboardInventoryToCsCompiler.cs" />
+    <Compile Include="Formats\PinboardFileWriter.cs" />
+    <Compile Include="Compilers\PinboardFileCache.cs" />
+    <Compile Include="Compilers\SvgToPngCompiler.cs" />
+    <Compile Include="Compilers\SvgAndPinboardToPngCompiler.cs" />
+    <Compile Include="Compilers\ImageTools.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PlayroomResources.resx" />

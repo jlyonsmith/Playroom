@@ -91,6 +91,50 @@ namespace Playroom
             }
         }
 
+		public string GetRequiredValue(string name)
+		{
+			return this[name];
+		}
+		
+		public string GetOptionalValue(string name, string defaultValue)
+		{
+			string value;
+
+			if (!this.TryGetValue(name, out value))
+				value = defaultValue;
+
+			return value;
+		}
+		
+		public void GetOptionalValue(string name, out int value, int defaultValue)
+		{
+			string s;
+			
+			if (!this.TryGetValue(name, out s) || !Int32.TryParse(s, out value))
+				value = defaultValue;
+		}
+		
+		public void GetRequiredValue(string name, out int value)
+		{
+			string s;
+			
+			if (!this.TryGetValue(name, out s))
+				throw new InvalidOperationException("Property '{0}' not present".CultureFormat(name));
+			
+			if (!Int32.TryParse(s, out value))
+				throw new InvalidOperationException("Property '{0}' value '{1}' is not a valid integer".CultureFormat(name, s));
+		}
+
+		public void GetRequiredValue(string name, out string[] value)
+		{
+			string s;
+			
+			if (!this.TryGetValue(name, out s))
+				throw new InvalidOperationException("Property '{0}' not present".CultureFormat(name));
+
+			value = s.Split(';');
+		}
+
 		#endregion
 
 		#region IEnumerable Implementation
@@ -105,7 +149,6 @@ namespace Playroom
 		}
 
 		#endregion
-
 
 		#region ICollection Implementation
 		public void Add(KeyValuePair<string, string> item)
