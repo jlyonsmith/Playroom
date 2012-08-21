@@ -22,7 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Commandlineparameters>~/Projects/Spider-XNA/Spider/RawContent/Spider.iOS.content -rebuild -p:OutputRootDir=~/Projects/Spider-XNA/Spider/Content</Commandlineparameters>
+    <Commandlineparameters>~/Projects/Spider-XNA/Spider/RawContent/Spider.iOS.Test.content -rebuild -p:OutputRootDir=~/Projects/Spider-XNA/Spider/Content\;ProjectDir=~/Projects/Spider-XNA/Spider</Commandlineparameters>
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeExecute" command="cp ${SolutionDir}/Squish2/Squish2/bin/Debug/libSquish2.so ${ProjectDir}/bin/Debug/" workingdir="${ProjectDir}" />

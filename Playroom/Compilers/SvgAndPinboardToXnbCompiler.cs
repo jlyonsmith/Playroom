@@ -54,8 +54,7 @@ namespace Playroom
 			if (converterName != "inkscape" && converterName != "rsvg")
 				throw new ContentFileException("Unknown SVG converter '{0}'".CultureFormat(converterName));
 
-			ParsedPath outputRootDir = new ParsedPath(this.Target.Properties.ReplaceVariables(
-				this.Target.Properties["OutputRootDir"]), PathType.File);
+			ParsedPath outputRootDir = new ParsedPath(this.Target.Properties.GetRequiredValue("OutputRootDir"), PathType.File);
 
             try
             {

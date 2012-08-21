@@ -60,7 +60,23 @@ namespace Playroom
 			int ret = Command.Run(command, out output);
 			
 			if (ret != 0)
-				throw new ContentFileException("Error running RSVG-Convert on '{0}'".CultureFormat(svgFile));
+				throw new InvalidOperationException("Error running RSVG-Convert on '{0}'".CultureFormat(svgFile));
+		}
+
+		public static void SvgToPdfWithInkscape(string svgFile, string pdfFile)
+		{
+			string output;
+			string command = string.Format("\"{0}\" --export-pdf=\"{2}\" --file=\"{1}\"",
+			                               ToolPaths.Inkscape, // 0
+			                               svgFile, // 1
+			                               pdfFile); // 2
+			
+			int ret = Command.Run(command, out output);
+			
+			if (ret != 0 || output.IndexOf("CRITICAL **") != -1)
+			{
+				throw new InvalidOperationException("Error running Inkscape on '{0}'".CultureFormat(svgFile));
+			}
 		}
 
 		public static void CombinePngs(List<ImagePlacement> placements, ParsedPath pngPath)

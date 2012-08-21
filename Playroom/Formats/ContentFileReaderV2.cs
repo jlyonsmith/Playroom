@@ -72,15 +72,15 @@ namespace Playroom
 
 				if (reader.NodeType == XmlNodeType.Element)
 				{
-					switch (reader.Name)
+					if (String.ReferenceEquals(reader.Name, itemGroupAtom))
 					{
-					case "ItemGroup":
 						List<ContentFileV2.Item> items = ReadItemGroupElement();
 
 						data.Items.AddRange(items);
 						continue;
-
-					case "Target":
+					}
+					else if (String.ReferenceEquals(reader.Name, targetAtom))
+					{
 						ContentFileV2.Target target = ReadTargetElement();
 
 						foreach (var otherTarget in data.Targets)
@@ -158,12 +158,23 @@ namespace Playroom
 			target.Name = reader.GetAttribute("Name");
 
 			if (String.IsNullOrWhiteSpace(target.Name))
-				throw new XmlException("Target Name attribute must be set");
+				throw new XmlException("Target 'Name' attribute must be set");
 
 			target.Inputs = reader.GetAttribute("Inputs");
+
+			if (target.Inputs == null)
+				target.Inputs = String.Empty;
+
+			target.Inputs = target.Inputs.Trim();
+
 			target.Outputs = reader.GetAttribute("Outputs");
+
+			if (String.IsNullOrWhiteSpace(target.Outputs))
+				throw new XmlException("'Outputs' attribute must be set");
+
+			target.Outputs = target.Outputs.Trim();
             
-			reader.ReadStartElement(targetAtom);
+			reader.ReadStartElement();
 			reader.MoveToContent();
 
 			// Is there a nested PropertyGroup?

@@ -28,7 +28,7 @@ namespace Playroom
 
 		[DefaultCommandLineArgument("default", Description = "Input .content data file", ValueHint = "<content-file>", 
             Initializer = typeof(BuildContentTool), MethodName="ParseCommandLineFilePath")]
-		public ParsedPath ContentFile { get; set; }
+		public ParsedPath ContentPath { get; set; }
 
 		[CommandLineArgument("properties", ShortName = "p", Description = "Additional properties to set", ValueHint = "<prop1=val1;prop2=val2>")]
 		public string Properties { get; set; }
@@ -61,6 +61,7 @@ namespace Playroom
 		}
 
 		public DateTime NewestAssemblyWriteTime { get; set; }
+		public DateTime ContentPathWriteTime { get; set; }
 
 		public int ExitCode
 		{
@@ -97,6 +98,10 @@ namespace Playroom
 						}
 
 						Output.Error(contentEx.FileName, contentEx.LineNumber, 0, message);
+
+#if DEBUG
+						Console.WriteLine(e.StackTrace);
+#endif
 					}
 				}
 				else
@@ -123,17 +128,17 @@ namespace Playroom
 				return;
 			}
 
-			if (String.IsNullOrEmpty(ContentFile))
+			if (String.IsNullOrEmpty(ContentPath))
 			{
 				Output.Error("A .content file must be specified");
 				return;
 			}
 
-			this.ContentFile = this.ContentFile.MakeFullPath();
+			this.ContentPath = this.ContentPath.MakeFullPath();
 
-			if (!File.Exists(this.ContentFile))
+			if (!File.Exists(this.ContentPath))
 			{
-				Output.Error("Content file '{0}' does not exist", this.ContentFile);
+				Output.Error("Content file '{0}' does not exist", this.ContentPath);
 				return;
 			}
 
@@ -143,31 +148,32 @@ namespace Playroom
 			globalProps.AddFromEnvironment();
 			globalProps.AddWellKnownProperties(
                 new ParsedPath(Assembly.GetExecutingAssembly().Location, PathType.File).VolumeAndDirectory,
-                ContentFile.VolumeAndDirectory);
+                ContentPath.VolumeAndDirectory);
 			globalProps.AddFromPropertyString(this.Properties);
 
-			BuildContext buildContext = new BuildContext(this.Output, this.ContentFile);
+			BuildContext buildContext = new BuildContext(this.Output, this.ContentPath);
 
 			ContentFileV2 contentFile = null;
 
 			try
 			{
-				contentFile = ContentFileReaderV2.ReadFile(this.ContentFile);
+				contentFile = ContentFileReaderV2.ReadFile(this.ContentPath);
 			}
 			catch (Exception e)
 			{
-				throw new ContentFileException(this.ContentFile, (int)e.Data["LineNumber"], "Problem reading content file", e);
+				throw new ContentFileException(this.ContentPath, (int)e.Data["LineNumber"], "Problem reading content file", e);
 			}
             
-			Output.Message(MessageImportance.Low, "Read content file '{0}'", this.ContentFile);
+			Output.Message(MessageImportance.Low, "Read content file '{0}'", this.ContentPath);
 
 			ItemGroup globalItems = new ItemGroup();
 
-			globalItems.ExpandAndAdd(contentFile.Items, globalProps);
+			globalItems.ExpandAndAddFromList(contentFile.Items, globalProps);
 
 			List<CompilerClass> compilerClasses = LoadCompilerClasses(globalItems, globalProps);
 
 			this.NewestAssemblyWriteTime = FindNewestAssemblyWriteTime(compilerClasses);
+			this.ContentPathWriteTime = File.GetLastWriteTime(this.ContentPath);
 
 			List<BuildTarget> BuildTargets = PrepareBuildTargets(contentFile.Targets, globalItems, globalProps);
 
@@ -220,7 +226,7 @@ namespace Playroom
 							else
 							{
 								throw new ContentFileException(
-									this.ContentFile, buildTarget.LineNumber, "Unable to compile target '{0}'".CultureFormat(buildTarget.Name), e.InnerException);
+									this.ContentPath, buildTarget.LineNumber, "Unable to compile target '{0}'".CultureFormat(buildTarget.Name), e.InnerException);
 							}
 						}
 					}
@@ -246,69 +252,76 @@ namespace Playroom
 
 			foreach (var rawTarget in rawTargets)
 			{
-				PropertyGroup targetProps = new PropertyGroup(globalProps);
-
-				if (rawTarget.Properties != null)
-					targetProps.ExpandAndAdd(rawTarget.Properties, globalProps);
-
-				targetProps.Add("TargetName", rawTarget.Name);
-
-				ItemGroup targetItems = new ItemGroup(globalItems);
-
-				List<ParsedPath> inputFiles = new List<ParsedPath>();
-				string[] list = rawTarget.Inputs.Split(';');
-
-				foreach (var rawInputFile in list)
+				try
 				{
-					ParsedPath pathSpec = new ParsedPath(targetProps.ReplaceVariables(rawInputFile), PathType.File).MakeFullPath();
+					PropertyGroup targetProps = new PropertyGroup(globalProps);
 
-					if (pathSpec.HasWildcards)
+					if (rawTarget.Properties != null)
+						targetProps.ExpandAndAddFromList(rawTarget.Properties, globalProps);
+
+					targetProps.Add("TargetName", rawTarget.Name);
+
+					ItemGroup targetItems = new ItemGroup(globalItems);
+
+					List<ParsedPath> inputFiles = new List<ParsedPath>();
+					string[] list = rawTarget.Inputs.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+					foreach (var rawInputFile in list)
 					{
-						if (!Directory.Exists(pathSpec.VolumeAndDirectory))
+						ParsedPath pathSpec = new ParsedPath(targetProps.ReplaceVariables(rawInputFile), PathType.File).MakeFullPath();
+
+						if (pathSpec.HasWildcards)
 						{
-							throw new ContentFileException(this.ContentFile, rawTarget.LineNumber, "Directory '{0}' does not exist".CultureFormat(pathSpec.VolumeAndDirectory));
+							if (!Directory.Exists(pathSpec.VolumeAndDirectory))
+							{
+								throw new ContentFileException("Directory '{0}' does not exist".CultureFormat(pathSpec.VolumeAndDirectory));
+							}
+
+							IList<ParsedPath> files = DirectoryUtility.GetFiles(pathSpec, SearchScope.DirectoryOnly);
+
+							if (files.Count == 0)
+							{
+								throw new ContentFileException("Wildcard input refers to no files after expansion");
+							}
+
+							inputFiles = inputFiles.Concat(files).ToList<ParsedPath>();
 						}
-
-						IList<ParsedPath> files = DirectoryUtility.GetFiles(pathSpec, SearchScope.DirectoryOnly);
-
-						if (files.Count == 0)
+						else
 						{
-							throw new ContentFileException(this.ContentFile, rawTarget.LineNumber, "Wildcard input refers to no files after expansion");
-						}
+							if (!File.Exists(pathSpec))
+							{
+								throw new ContentFileException("Input file '{0}' does not exist".CultureFormat(pathSpec));
+							}
 
-						inputFiles = inputFiles.Concat(files).ToList<ParsedPath>();
+							inputFiles.Add(pathSpec);
+						}
 					}
-					else
+
+					List<ParsedPath> outputFiles = new List<ParsedPath>();
+
+					list = rawTarget.Outputs.Split(';');
+
+					foreach (var rawOutputFile in list)
 					{
-						if (!File.Exists(pathSpec))
-						{
-							throw new ContentFileException(this.ContentFile, rawTarget.LineNumber, "Input file '{0}' does not exist".CultureFormat(pathSpec));
-						}
+						ParsedPath outputFile = new ParsedPath(targetProps.ReplaceVariables(rawOutputFile), PathType.File).MakeFullPath();
 
-						inputFiles.Add(pathSpec);
+						outputFiles.Add(outputFile);
 					}
+
+					targetItems["TargetInputs"] = inputFiles;
+					targetItems["TargetOutputs"] = outputFiles;
+
+					bool needsRebuild = IsCompileRequired(inputFiles, outputFiles);
+
+					if (!needsRebuild)
+						continue;
+
+					buildTargets.Add(new BuildTarget(rawTarget.LineNumber, targetProps, targetItems));
 				}
-
-				List<ParsedPath> outputFiles = new List<ParsedPath>();
-
-				list = rawTarget.Outputs.Split(';');
-
-				foreach (var rawOutputFile in list)
+				catch (Exception e)
 				{
-					ParsedPath outputFile = new ParsedPath(targetProps.ReplaceVariables(rawOutputFile), PathType.File).MakeFullPath();
-
-					outputFiles.Add(outputFile);
+					throw new ContentFileException(this.ContentPath, rawTarget.LineNumber, "Error preparing targets", e);
 				}
-
-				targetItems["TargetInputs"] = inputFiles;
-				targetItems["TargetOutputs"] = outputFiles;
-
-				bool needsRebuild = IsCompileRequired(inputFiles, outputFiles);
-
-				if (!needsRebuild)
-					continue;
-
-				buildTargets.Add(new BuildTarget(rawTarget.LineNumber, targetProps, targetItems));
 			}
 
 			return buildTargets;
@@ -334,7 +347,8 @@ namespace Playroom
 			if (Rebuild)
 				return true;
 
-			DateTime newestInputFile = NewestAssemblyWriteTime;
+			DateTime newestInputFile = ContentPathWriteTime > NewestAssemblyWriteTime ? 
+				ContentPathWriteTime : NewestAssemblyWriteTime;
 
 			foreach (var inputFile in inputFiles)
 			{

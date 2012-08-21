@@ -33,7 +33,7 @@ namespace Playroom
 		#endregion
 
 		#region Methods
-		public void ExpandAndAdd(List<ContentFileV2.Item> items, PropertyGroup propGroup)
+		public void ExpandAndAddFromList(List<ContentFileV2.Item> items, PropertyGroup propGroup)
 		{
 			foreach (var item in items)
 			{

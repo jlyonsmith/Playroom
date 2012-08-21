@@ -42,7 +42,7 @@ namespace Playroom
 		#region Methods
         public string ReplaceVariables(string s)
         {
-            return s.ReplaceTags("$(", ")", AsReadOnlyDictionary());
+            return s.ReplaceTags("$(", ")", AsReadOnlyDictionary(), TaggedStringOptions.ThrowOnUnknownTags);
         }
 
         public void AddWellKnownProperties(
@@ -54,7 +54,7 @@ namespace Playroom
             this["OutputRootDir"] = contentFileDir.ToString();
         }
 
-        public void ExpandAndAdd(List<Tuple<string, string>> pairs, PropertyGroup propGroup)
+        public void ExpandAndAddFromList(List<Tuple<string, string>> pairs, PropertyGroup propGroup)
         {
             foreach (var pair in pairs)
             {
