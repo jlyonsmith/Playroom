@@ -86,7 +86,7 @@ namespace Playroom
 
                 if (keyAndValue.Length == 2)
                 {
-                    this[keyAndValue[0]] = keyAndValue[1];
+                    this[keyAndValue[0]] = keyAndValue[1].Trim();
                 }
             }
         }

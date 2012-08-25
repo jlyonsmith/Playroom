@@ -18,7 +18,8 @@ namespace Playroom
         private List<ContentTypeWriter> usedTypeWriters;
         private List<object> sharedResources;
 
-        // TODO: This list should come from reflection on the compiler assemblies
+        // TODO: This list should come from reflection on the compiler assemblies and/or perhaps a callback
+		// in the compiler assembly.
         private readonly ContentTypeWriter[] availableTypeWriters = new ContentTypeWriter[]
         {
 			new CharWriter(),
@@ -31,6 +32,7 @@ namespace Playroom
             new ArrayWriter<System.String>(),
 			new ListWriter<Rectangle>(),
 			new ListWriter<Vector3>(),
+			new ListWriter<String>(),
 			new ListWriter<char>(),
 			new Texture2DWriter(),
 			new SoundEffectWriter(),

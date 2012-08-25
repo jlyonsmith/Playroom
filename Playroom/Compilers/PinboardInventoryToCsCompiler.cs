@@ -114,45 +114,54 @@ namespace Playroom
         }
 
         private void WriteCsOutput(TextWriter writer, RectanglesContent rectangleData)
-        {
-            writer.WriteLine("//");
-            writer.WriteLine("// This file was generated on {0}.", DateTime.Now);
-            writer.WriteLine("//");
-            writer.WriteLine();
-            writer.WriteLine("using System;");
-            writer.WriteLine("using Microsoft.Xna.Framework;");
-            writer.WriteLine("using Microsoft.Xna.Framework.Graphics;");
-            writer.WriteLine("using System.Text;");
-            writer.WriteLine("");
-            writer.WriteLine("namespace {0}", rectangleData.Namespace);
-            writer.WriteLine("{");
+		{
+			writer.WriteLine("//");
+			writer.WriteLine("// This file was generated on {0}.", DateTime.Now);
+			writer.WriteLine("//");
+			writer.WriteLine();
+			writer.WriteLine("using System;");
+			writer.WriteLine("using Microsoft.Xna.Framework;");
+			writer.WriteLine("using Microsoft.Xna.Framework.Graphics;");
+			writer.WriteLine("using System.Text;");
+			writer.WriteLine("");
+			writer.WriteLine("namespace {0}", rectangleData.Namespace);
+			writer.WriteLine("{");
 
-            for (int i = 0; i < rectangleData.Classes.Count; i++)
-            {
-                RectanglesContent.Class classData = rectangleData.Classes[i];
+			for (int i = 0; i < rectangleData.Classes.Count; i++)
+			{
+				RectanglesContent.Class classData = rectangleData.Classes[i];
 
-                writer.WriteLine("\tpublic class {0}Rectangles", classData.ClassNamePrefix);
-                writer.WriteLine("\t{");
+				writer.WriteLine("\tpublic class {0}Rectangles", classData.ClassNamePrefix);
+				writer.WriteLine("\t{");
 
-                writer.WriteLine("\t\tprivate Rectangle[] rectangles;");
-                writer.WriteLine();
-                writer.WriteLine("\t\tpublic {0}Rectangles(Rectangle[] rectangles)", classData.ClassNamePrefix);
-                writer.WriteLine("\t\t{");
-                writer.WriteLine("\t\t\tthis.rectangles = rectangles;");
-                writer.WriteLine("\t\t}");
-                writer.WriteLine();
+				writer.WriteLine("\t\tprivate Rectangle[] rectangles;");
+				writer.WriteLine();
+				writer.WriteLine("\t\tpublic {0}Rectangles(Rectangle[] rectangles)", classData.ClassNamePrefix);
+				writer.WriteLine("\t\t{");
+				writer.WriteLine("\t\t\tthis.rectangles = rectangles;");
+				writer.WriteLine("\t\t}");
+				writer.WriteLine();
 
-                for (int j = 0; j < classData.RectangleNames.Count; j++)
-                {
-                    writer.WriteLine("\t\tpublic Rectangle {0} {{ get {{ return rectangles[{1}]; }} }}",
+				for (int j = 0; j < classData.RectangleNames.Count; j++)
+				{
+					writer.WriteLine("\t\tpublic Rectangle {0} {{ get {{ return rectangles[{1}]; }} }}",
                         classData.RectangleNames[j],
                         j);
-                }
+				}
 
-                writer.WriteLine("\t}");
-                writer.WriteLine();
-            }
+				writer.WriteLine("\t}");
+				writer.WriteLine();
+			}
 
+			writer.WriteLine("\tpublic static class Rectangles");
+			writer.WriteLine("\t{");
+
+			for (int i = 0; i < rectangleData.Classes.Count; i++)
+			{
+				writer.WriteLine("\t\tpublic static {0}Rectangles {0} {{ get; set; }}", rectangleData.Classes[i].ClassNamePrefix);
+			}
+
+			writer.WriteLine("\t}");
             writer.WriteLine("}");
         }
 

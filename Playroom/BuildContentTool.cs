@@ -256,10 +256,10 @@ namespace Playroom
 				{
 					PropertyGroup targetProps = new PropertyGroup(globalProps);
 
-					if (rawTarget.Properties != null)
-						targetProps.ExpandAndAddFromList(rawTarget.Properties, globalProps);
-
 					targetProps.Add("TargetName", rawTarget.Name);
+					
+					if (rawTarget.Properties != null)
+						targetProps.ExpandAndAddFromList(rawTarget.Properties, targetProps);
 
 					ItemGroup targetItems = new ItemGroup(globalItems);
 
@@ -268,7 +268,17 @@ namespace Playroom
 
 					foreach (var rawInputFile in list)
 					{
-						ParsedPath pathSpec = new ParsedPath(targetProps.ReplaceVariables(rawInputFile), PathType.File).MakeFullPath();
+						ParsedPath pathSpec = null; 
+						string s = targetProps.ReplaceVariables(rawInputFile);
+
+						try
+						{
+							pathSpec = new ParsedPath(s, PathType.File).MakeFullPath();
+						}
+						catch (Exception e)
+						{
+							throw new ContentFileException("Bad path '{0}'".CultureFormat(s), e);
+						}
 
 						if (pathSpec.HasWildcards)
 						{
@@ -303,9 +313,18 @@ namespace Playroom
 
 					foreach (var rawOutputFile in list)
 					{
-						ParsedPath outputFile = new ParsedPath(targetProps.ReplaceVariables(rawOutputFile), PathType.File).MakeFullPath();
+						string s = targetProps.ReplaceVariables(rawOutputFile);
 
-						outputFiles.Add(outputFile);
+						try 
+						{
+							ParsedPath outputFile = new ParsedPath(s, PathType.File).MakeFullPath();
+
+							outputFiles.Add(outputFile);
+						}
+						catch (Exception e)
+						{
+							throw new ContentFileException("Bad path '{0}'".CultureFormat(s), e);
+						}
 					}
 
 					targetItems["TargetInputs"] = inputFiles;

@@ -42,7 +42,7 @@ namespace Playroom
 			
 			if (ret != 0 || output.IndexOf("CRITICAL **") != -1)
 			{
-				throw new ContentFileException("Error running Inkscape on '{0}'".CultureFormat(svgFile));
+				throw new ContentFileException("Error running Inkscape on '{0}': {1}".CultureFormat(svgFile, output));
 			}
 		}
 		
@@ -60,7 +60,7 @@ namespace Playroom
 			int ret = Command.Run(command, out output);
 			
 			if (ret != 0)
-				throw new InvalidOperationException("Error running RSVG-Convert on '{0}'".CultureFormat(svgFile));
+				throw new InvalidOperationException("Error running RSVG-Convert on '{0}': {1}".CultureFormat(svgFile, output));
 		}
 
 		public static void SvgToPdfWithInkscape(string svgFile, string pdfFile)
@@ -75,7 +75,7 @@ namespace Playroom
 			
 			if (ret != 0 || output.IndexOf("CRITICAL **") != -1)
 			{
-				throw new InvalidOperationException("Error running Inkscape on '{0}'".CultureFormat(svgFile));
+				throw new InvalidOperationException("Error running Inkscape on '{0}': {1}".CultureFormat(svgFile, output));
 			}
 		}
 

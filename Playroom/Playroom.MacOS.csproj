@@ -54,7 +54,6 @@
     <Compile Include="Compilers\ResxToStringsCompiler.cs" />
     <Compile Include="Compilers\StringsToXnbAndCsCompiler.cs" />
     <Compile Include="Compilers\SvgAndPinboardToXnbCompiler.cs" />
-    <Compile Include="Compilers\SvgToPdfCompiler.cs" />
     <Compile Include="Compilers\WavToXnbCompiler.cs" />
     <Compile Include="BuildContent.cs" />
     <Compile Include="BuildContentTool.cs" />
@@ -110,6 +109,7 @@
     <Compile Include="Compilers\SvgToPngCompiler.cs" />
     <Compile Include="Compilers\SvgAndPinboardToPngCompiler.cs" />
     <Compile Include="Compilers\ImageTools.cs" />
+    <Compile Include="Compilers\SvgToPdfAndXnbCompiler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PlayroomResources.resx" />
