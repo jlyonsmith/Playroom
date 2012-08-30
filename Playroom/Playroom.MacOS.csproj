@@ -21,6 +21,11 @@
     <PlatformTarget>x86</PlatformTarget>
     <Externalconsole>True</Externalconsole>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="BeforeBuild" command="/bin/bash BuildResx.iOS.sh" workingdir="${ProjectDir}" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
@@ -32,6 +37,11 @@
     <Externalconsole>True</Externalconsole>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DefineConstants>MACOS</DefineConstants>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="BeforeBuild" command="/bin/bash BuildResx.iOS.sh" workingdir="${ProjectDir}" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -110,14 +120,19 @@
     <Compile Include="Compilers\SvgAndPinboardToPngCompiler.cs" />
     <Compile Include="Compilers\ImageTools.cs" />
     <Compile Include="Compilers\SvgToPdfAndXnbCompiler.cs" />
+    <Compile Include="PlayroomResources.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PlayroomResources.resx" />
+    <None Include="BuildResx.iOS.sh" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToolBelt\ToolBelt\ToolBelt.MacOS.csproj">
       <Project>{2055D34D-3DF2-444B-937B-32CC1A6E11DF}</Project>
       <Name>ToolBelt.MacOS</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PlayroomResources.resources" />
   </ItemGroup>
 </Project>
