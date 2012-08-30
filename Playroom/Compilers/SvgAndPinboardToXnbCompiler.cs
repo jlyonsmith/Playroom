@@ -54,7 +54,7 @@ namespace Playroom
 			if (converterName != "inkscape" && converterName != "rsvg")
 				throw new ContentFileException("Unknown SVG converter '{0}'".CultureFormat(converterName));
 
-			ParsedPath outputRootDir = new ParsedPath(this.Target.Properties.GetRequiredValue("OutputRootDir"), PathType.File);
+			ParsedPath outputDir = new ParsedPath(this.Target.Properties.GetRequiredValue("OutputDir"), PathType.File);
 
             try
             {
@@ -68,7 +68,7 @@ namespace Playroom
                         throw new InvalidOperationException(
                             "Rectangle '{0}' not found in pinboard '{1}'".CultureFormat(rectangleName, pinboardFileName));
 
-                    ParsedPath pngFile = outputRootDir.SetFileAndExtension(String.Format("{0}_{1}_{2}.png", 
+                    ParsedPath pngFile = outputDir.SetFileAndExtension(String.Format("{0}_{1}_{2}.png", 
                   		svgFileName, row, col));
 
                     placements.Add(new ImagePlacement(pngFile,

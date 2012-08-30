@@ -8,8 +8,8 @@
 
 	<Target 
 		Name="ExampleRectangles"
-			Inputs="$(InputRootDir)\*.pinboard"
-			Outputs="$(OutputRootDir)\$(TargetName).cs">
+			Inputs="$(InputDir)\*.pinboard"
+			Outputs="$(OutputDir)\$(TargetName).cs">
 		<PropertyGroup>
 			<Namespace>Company.Product</Namespace>
 		</PropertyGroup>
@@ -19,25 +19,25 @@
 
 	<Target
 		Name="ExamplePinboard"
-		Inputs="$(InputRootDir)\Example.pinboard"
-		Outputs="$(OutputRootDir)\$(TargetName).xnb">
+		Inputs="$(InputDir)\Example.pinboard"
+		Outputs="$(OutputDir)\$(TargetName).xnb">
 	</Target>
 
 	<!-- ResxToStringsCompiler -->
 
 	<Target
 		Name="ExampleResx"
-		Inputs="$(InputRootDir)\Example.resx"
-			Outputs="$(OutputRootDir)\$(TargetName).strings">
+		Inputs="$(InputDir)\Example.resx"
+			Outputs="$(OutputDir)\$(TargetName).strings">
 	</Target>
 
 	<!-- StringsToXnbAndCsCompiler -->
 
 	<Target
 		Name="ExampleStrings2"
-		Inputs="$(InputRootDir)\Example.strings"
-		Outputs="$(OutputRootDir)\$(TargetName).cs;
-			$(OutputRootDir)\Platform1\Strings\$(TargetName).xnb">
+		Inputs="$(InputDir)\Example.strings"
+		Outputs="$(OutputDir)\$(TargetName).cs;
+			$(OutputDir)\Platform1\Strings\$(TargetName).xnb">
 		<PropertyGroup>
 			<Namespace>Company.Product</Namespace>
 		</PropertyGroup>
@@ -47,17 +47,17 @@
 	
 	<Target
 		Name="ExamplePng"
-		Inputs="$(InputRootDir)\Example.png"
-		Outputs="$(OutputRootDir)\$(TargetName).xnb">
+		Inputs="$(InputDir)\Example.png"
+		Outputs="$(OutputDir)\$(TargetName).xnb">
 	</Target>
 	
 	<!-- SpritefontAndStringsToXnbCompiler --> 
 
 	<Target
 		Name="ExampleSpritefontStringsXnb"
-		Inputs="$(InputRootDir)\Example.spritefont;
-			$(InputRootDir)\Example.strings"
-		Outputs="$(OutputRootDir)\$(TargetName).xnb">
+		Inputs="$(InputDir)\Example.spritefont;
+			$(InputDir)\Example.strings"
+		Outputs="$(OutputDir)\$(TargetName).xnb">
 	<!-- Leave this as having an end element -->
 	</Target>
 	
@@ -65,9 +65,9 @@
 
 	<Target
 		Name="ExampleSvgPinboardXnb"
-		Inputs="$(InputRootDir)\Example.svg;
-		$(InputRootDir)\Example.pinboard"
-		Outputs="$(OutputRootDir)\$(TargetName).xnb">
+		Inputs="$(InputDir)\Example.svg;
+		$(InputDir)\Example.pinboard"
+		Outputs="$(OutputDir)\$(TargetName).xnb">
 		<PropertyGroup>
 			<Rectangle>MainRectangle</Rectangle>
 		</PropertyGroup>
@@ -77,29 +77,29 @@
 
 	<Target
 		Name="ExampleSvgXnb"
-		Inputs="$(InputRootDir)\Example.svg"
-		Outputs="$(OutputRootDir)\$(TargetName).xnb"/>
+		Inputs="$(InputDir)\Example.svg"
+		Outputs="$(OutputDir)\$(TargetName).xnb"/>
 	
 	<!-- SvgToPdfCompiler -->
 
 	<Target
 		Name="ExampleSvgPdf"
-		Inputs="$(InputRootDir)\Example.svg"
-		Outputs="$(OutputRootDir)\$(TargetName).pdf"/>
+		Inputs="$(InputDir)\Example.svg"
+		Outputs="$(OutputDir)\$(TargetName).pdf"/>
 	
 	<!-- PdfAndPinboardToXnbCompiler -->
 
 	<Target
 		Name="ExamplePdfPinboardSvg"
-		Inputs="$(InputRootDir)\Example.pdf;
-			$(InputRootDir)\Example.pinboard"
-		Outputs="$(OutputRootDir)\$(TargetName).xnb"/>
+		Inputs="$(InputDir)\Example.pdf;
+			$(InputDir)\Example.pinboard"
+		Outputs="$(OutputDir)\$(TargetName).xnb"/>
 
 	<!-- WavToXnbCompiler -->
 
 	<Target
 		Name="ExampleWavXnb"
-		Inputs="$(InputRootDir)\Example.wav"
-		Outputs="$(OutputRootDir)\$(TargetName).xnb"/>
+		Inputs="$(InputDir)\Example.wav"
+		Outputs="$(OutputDir)\$(TargetName).xnb"/>
 	
 </Content>

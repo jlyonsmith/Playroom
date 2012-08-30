@@ -50,8 +50,8 @@ namespace Playroom
             ParsedPath contentFileDir)
         {
             this["BuildContentInstallDir"] = buildContentInstallDir.ToString();
-            this["InputRootDir"] = contentFileDir.ToString();
-            this["OutputRootDir"] = contentFileDir.ToString();
+            this["InputDir"] = contentFileDir.ToString();
+            this["OutputDir"] = contentFileDir.ToString();
         }
 
         public void ExpandAndAddFromList(List<Tuple<string, string>> pairs, PropertyGroup propGroup)
