@@ -64,13 +64,7 @@ namespace Playroom
 			{
 				for (int i = 0; i < item.Value.Length; i++)
 				{
-					char c = item.Value[i];
-
-					// Filter out the {} used for substitutions
-					if (c == '{' || c == '}')
-						continue;
-
-					hs.Add(c);
+					hs.Add(item.Value[i]);
 				}
 			}
 
