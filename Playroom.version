@@ -3,7 +3,7 @@
 	<Major>1</Major>
 	<Minor>0</Minor>
 	<Build>10829</Build>
-	<Revision>0</Revision>
+	<Revision>1</Revision>
 	<StartYear>2012</StartYear>
 	<Files>
 		<File>BuildContent/Properties/AssemblyInfo.cs</File>

@@ -64,7 +64,13 @@ namespace Playroom
 			{
 				for (int i = 0; i < item.Value.Length; i++)
 				{
-					hs.Add(item.Value[i]);
+					char c = item.Value[i];
+
+					// Filter out the {} used for substitutions
+					if (c == '{' || c == '}')
+						continue;
+
+					hs.Add(c);
 				}
 			}
 
@@ -79,12 +85,7 @@ namespace Playroom
 			List<char> fontChars = hs.OrderBy(c => c).ToList();
 			FontSlant fontSlant = (sff.Style == SpriteFontFile.FontStyle.Italic ? FontSlant.Italic : FontSlant.Normal);
 			FontWeight fontWeight = (sff.Style == SpriteFontFile.FontStyle.Bold ? FontWeight.Bold : FontWeight.Normal);
-			ParsedPath pngFile = null;
-
-#if DEBUG
-			pngFile = xnbFileName.SetExtension(".png");
-#endif
-
+			ParsedPath pngFile = xnbFileName.SetExtension(".png");
 			SpriteFontContent sfc = CreateSpriteFontContent(
 				sff.FontName, sff.Size, fontSlant, fontWeight, sff.Spacing, sff.DefaultCharacter, fontChars, pngFile);
 
