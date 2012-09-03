@@ -5,26 +5,26 @@ using ToolBelt;
 
 namespace Playroom
 {
-	public class ItemGroup : IDictionary<string, IList<ParsedPath>>
+	public class ItemGroup : IEnumerable<KeyValuePair<string, ParsedPathList>>
 	{
 		#region Fields
-		private Dictionary<string, IList<ParsedPath>> dictionary;
+		private Dictionary<string, ParsedPathList> dictionary;
 
 		#endregion
 
 		#region Construction
 		public ItemGroup()
 		{
-			dictionary = new Dictionary<string, IList<ParsedPath>>(StringComparer.OrdinalIgnoreCase);
+			dictionary = new Dictionary<string, ParsedPathList>(StringComparer.OrdinalIgnoreCase);
 		}
 
 		public ItemGroup(ItemGroup itemGroup) : this()
 		{
-			IEnumerator<KeyValuePair<string, IList<ParsedPath>>> e = ((IEnumerable<KeyValuePair<string, IList<ParsedPath>>>)itemGroup).GetEnumerator();
+			IEnumerator<KeyValuePair<string, ParsedPathList>> e = ((IEnumerable<KeyValuePair<string, ParsedPathList>>)itemGroup).GetEnumerator();
 
 			while (e.MoveNext())
 			{
-				KeyValuePair<string, IList<ParsedPath>> pair = e.Current;
+				KeyValuePair<string, ParsedPathList> pair = e.Current;
 
 				dictionary.Add(pair.Key, pair.Value);
 			}
@@ -37,11 +37,11 @@ namespace Playroom
 		{
 			foreach (var item in items)
 			{
-				IList<ParsedPath> pathList;
+				ParsedPathList pathList;
 
 				if (!dictionary.TryGetValue(item.Name, out pathList))
 				{
-					pathList = new List<ParsedPath>();
+					pathList = new ParsedPathList();
 					dictionary.Add(item.Name, pathList);
 				}
 
@@ -50,11 +50,11 @@ namespace Playroom
 				foreach (var part in parts)
 				{
 					ParsedPath pathSpec = new ParsedPath(propGroup.ReplaceVariables(part), PathType.File);
-					IList<ParsedPath> paths;
+					ParsedPathList paths;
 
 					if (pathSpec.HasWildcards)
 					{
-						paths = DirectoryUtility.GetFiles(pathSpec, SearchScope.DirectoryOnly);
+						paths = new ParsedPathList(DirectoryUtility.GetFiles(pathSpec, SearchScope.DirectoryOnly));
 
 						foreach (var path in paths)
 						{
@@ -89,17 +89,22 @@ namespace Playroom
 			return (IEnumerator)GetEnumerator();
 		}
 
-		IEnumerator<KeyValuePair<string, IList<ParsedPath>>> IEnumerable<KeyValuePair<string, IList<ParsedPath>>>.GetEnumerator()
+		IEnumerator<KeyValuePair<string, ParsedPathList>> IEnumerable<KeyValuePair<string, ParsedPathList>>.GetEnumerator()
 		{
 			return dictionary.GetEnumerator();
 		}
 
 		#endregion
 
-		#region ICollection Implementation
-		public void Add(KeyValuePair<string, IList<ParsedPath>> item)
+		#region Methods Implementation
+		public ParsedPathList GetRequiredValue(string name)
 		{
-			dictionary.Add(item.Key, item.Value);
+			ParsedPathList list;
+
+			if (!dictionary.TryGetValue(name, out list))
+				throw new InvalidOperationException("ItemGroup '{0}' not found".CultureFormat(name));
+
+			return list;
 		}
 
 		public void Clear()
@@ -107,17 +112,7 @@ namespace Playroom
 			dictionary.Clear();
 		}
 
-		public bool Contains(KeyValuePair<string, IList<ParsedPath>> item)
-		{
-			return dictionary.ContainsKey(item.Key);
-		}
-
-		public void CopyTo(KeyValuePair<string, IList<ParsedPath>>[] array, int arrayIndex)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public bool Remove(KeyValuePair<string, IList<ParsedPath>> item)
+		public bool Remove(KeyValuePair<string, ParsedPathList> item)
 		{
 			return dictionary.Remove(item.Key);
 		}
@@ -137,15 +132,13 @@ namespace Playroom
 				return false;
 			}
 		}
-		#endregion
 
-		#region IDictionary implementation
-		public void Add(string key, IList<ParsedPath> value)
+		public void Set(string key, ParsedPathList value)
 		{
 			dictionary.Add(key, value);
 		}
 
-		public bool ContainsKey(string key)
+		public bool Contains(string key)
 		{
 			return dictionary.ContainsKey(key);
 		}
@@ -154,41 +147,7 @@ namespace Playroom
 		{
 			return dictionary.Remove(key);
 		}
-
-		public bool TryGetValue(string key, out IList<ParsedPath> value)
-		{
-			return dictionary.TryGetValue(key, out value);
-		}
-
-		public IList<ParsedPath> this[string key]
-		{
-			get
-			{
-				return dictionary[key];
-			}
-			set
-			{
-				dictionary[key] = value;
-			}
-		}
-
-		public ICollection<string> Keys
-		{
-			get
-			{
-				return dictionary.Keys;
-			}
-		}
-
-		public ICollection<IList<ParsedPath>> Values
-		{
-			get
-			{
-				return dictionary.Values;
-			}
-		}
 		#endregion
-
 	}
 }
 

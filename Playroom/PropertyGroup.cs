@@ -5,7 +5,7 @@ using ToolBelt;
 
 namespace Playroom
 {
-	public class PropertyGroup : IDictionary<string, string>
+	public class PropertyGroup : IEnumerable<KeyValuePair<string, string>>
 	{
         #region Private Fields
         private Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -31,34 +31,26 @@ namespace Playroom
 
 		#endregion
 
-		#region Properties
-		public ReadOnlyDictionary<string, string> AsReadOnlyDictionary()
-		{
-			return new ReadOnlyDictionary<string, string>(this);
-		}
-
-		#endregion
-
 		#region Methods
         public string ReplaceVariables(string s)
         {
-            return s.ReplaceTags("$(", ")", AsReadOnlyDictionary(), TaggedStringOptions.ThrowOnUnknownTags);
+            return s.ReplaceTags("$(", ")", this.dictionary, TaggedStringOptions.ThrowOnUnknownTags);
         }
 
         public void AddWellKnownProperties(
             ParsedPath buildContentInstallDir,
             ParsedPath contentFileDir)
         {
-            this["BuildContentInstallDir"] = buildContentInstallDir.ToString();
-            this["InputDir"] = contentFileDir.ToString();
-            this["OutputDir"] = contentFileDir.ToString();
+            this.Set("BuildContentInstallDir", buildContentInstallDir.ToString());
+            this.Set("InputDir", contentFileDir.ToString());
+            this.Set("OutputDir", contentFileDir.ToString());
         }
 
         public void ExpandAndAddFromList(List<Tuple<string, string>> pairs, PropertyGroup propGroup)
         {
             foreach (var pair in pairs)
             {
-                this[pair.Item1] = propGroup.ReplaceVariables(pair.Item2);
+                dictionary[pair.Item1] = propGroup.ReplaceVariables(pair.Item2);
             }
         }
 
@@ -69,7 +61,7 @@ namespace Playroom
             foreach (DictionaryEntry entry in entries)
             {
                 if (!String.IsNullOrEmpty((string)entry.Key))
-                    this[(string)entry.Key] = (string)entry.Value;
+                    dictionary[(string)entry.Key] = (string)entry.Value;
             }
         }
 
@@ -86,31 +78,41 @@ namespace Playroom
 
                 if (keyAndValue.Length == 2)
                 {
-                    this[keyAndValue[0]] = keyAndValue[1].Trim();
+                    dictionary[keyAndValue[0]] = keyAndValue[1].Trim();
                 }
             }
         }
 
 		public string GetRequiredValue(string name)
 		{
-			return this[name];
+			string value = null;
+
+			if (!dictionary.TryGetValue(name, out value))
+				throw new InvalidOperationException("Required property '{0}' not found".CultureFormat(name));
+
+			return value;
+		}
+		
+		public void GetOptionalValue(string name, out string value, string defaultValue)
+		{
+			if (!dictionary.TryGetValue(name, out value))
+				value = defaultValue;
 		}
 		
 		public string GetOptionalValue(string name, string defaultValue)
 		{
 			string value;
 
-			if (!this.TryGetValue(name, out value))
-				value = defaultValue;
+			GetOptionalValue(name, out value, defaultValue);
 
 			return value;
 		}
-		
+
 		public void GetOptionalValue(string name, out int value, int defaultValue)
 		{
 			string s;
 			
-			if (!this.TryGetValue(name, out s) || !Int32.TryParse(s, out value))
+			if (!dictionary.TryGetValue(name, out s) || !Int32.TryParse(s, out value))
 				value = defaultValue;
 		}
 		
@@ -118,20 +120,26 @@ namespace Playroom
 		{
 			string s;
 			
-			if (!this.TryGetValue(name, out s))
+			if (!dictionary.TryGetValue(name, out s))
 				throw new InvalidOperationException("Property '{0}' not present".CultureFormat(name));
 			
 			if (!Int32.TryParse(s, out value))
 				throw new InvalidOperationException("Property '{0}' value '{1}' is not a valid integer".CultureFormat(name, s));
 		}
 
+		public void GetRequiredValue(string name, out string value)
+		{
+			if (!dictionary.TryGetValue(name, out value))
+				throw new InvalidOperationException("Property '{0}' not present".CultureFormat(name));
+		}
+		
 		public void GetRequiredValue(string name, out string[] value)
 		{
 			string s;
 			
-			if (!this.TryGetValue(name, out s))
+			if (!dictionary.TryGetValue(name, out s))
 				throw new InvalidOperationException("Property '{0}' not present".CultureFormat(name));
-
+			
 			value = s.Split(';');
 		}
 
@@ -150,30 +158,15 @@ namespace Playroom
 
 		#endregion
 
-		#region ICollection Implementation
-		public void Add(KeyValuePair<string, string> item)
-		{
-			dictionary.Add(item.Key, item.Value);
-		}
-
+		#region Methods
 		public void Clear()
 		{
 			dictionary.Clear();
 		}
 
-		public bool Contains(KeyValuePair<string, string> item)
+		public bool Contains(string name)
 		{
-			return dictionary.ContainsKey(item.Key);
-		}
-
-		public void CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public bool Remove(KeyValuePair<string, string> item)
-		{
-			return dictionary.Remove(item.Key);
+			return dictionary.ContainsKey(name);
 		}
 
 		public int Count
@@ -184,24 +177,9 @@ namespace Playroom
 			}
 		}
 
-		public bool IsReadOnly
-		{
-			get
-			{
-				return false;
-			}
-		}
-		#endregion
-
-		#region IDictionary Implementation
-		public void Add(string key, string value)
+		public void Set(string key, string value)
 		{
 			dictionary.Add(key, value);
-		}
-
-		public bool ContainsKey(string key)
-		{
-			return dictionary.ContainsKey(key);
 		}
 
 		public bool Remove(string key)
@@ -209,38 +187,6 @@ namespace Playroom
 			return dictionary.Remove(key);
 		}
 
-		public bool TryGetValue(string key, out string value)
-		{
-			return dictionary.TryGetValue(key, out value);
-		}
-
-		public string this[string key]
-		{
-			get
-			{
-				return dictionary[key];
-			}
-			set
-			{
-				dictionary[key] = value;
-			}
-		}
-
-		public ICollection<string> Keys
-		{
-			get
-			{
-				return dictionary.Keys;
-			}
-		}
-
-		public ICollection<string> Values
-		{
-			get
-			{
-				return dictionary.Values;
-			}
-		}
 		#endregion
 	}
 }

@@ -15,6 +15,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RawContent", "RawContent", 
 	ProjectSection(SolutionItems) = preProject
 		Test\RawContent\TestContent.content = Test\RawContent\TestContent.content
 		Test\RawContent\TestSpriteFont.content = Test\RawContent\TestSpriteFont.content
+		Test\RawContent\Example.pdf = Test\RawContent\Example.pdf
+		Test\RawContent\Example.pinboard = Test\RawContent\Example.pinboard
+		Test\RawContent\Example.png = Test\RawContent\Example.png
+		Test\RawContent\Example.resx = Test\RawContent\Example.resx
+		Test\RawContent\Example.spritefont = Test\RawContent\Example.spritefont
+		Test\RawContent\Example.strings = Test\RawContent\Example.strings
+		Test\RawContent\Example.svg = Test\RawContent\Example.svg
+		Test\RawContent\Example.wav = Test\RawContent\Example.wav
+		Test\RawContent\WeeBairn-Regular.ttf = Test\RawContent\WeeBairn-Regular.ttf
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E1FA1B02-BCCA-4265-8B68-7246E5F3FEAA}"

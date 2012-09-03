@@ -22,10 +22,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Commandlineparameters>~/Projects/Spider-XNA/Spider/RawContent/Spider.iOS.content -rebuild -p:OutputDir=~/Projects/Spider-XNA/Spider/Content\;ProjectDir=~/Projects/Spider-XNA/Spider</Commandlineparameters>
+    <Commandlineparameters>~/Projects/Playroom/Test/RawContent/TestContent.content -rebuild -p:OutputDir=~/Projects/Playroom/Test/Content</Commandlineparameters>
     <CustomCommands>
       <CustomCommands>
-        <Command type="BeforeExecute" command="cp ${SolutionDir}/Squish2/Squish2/bin/Debug/libSquish2.so ${ProjectDir}/bin/Debug/" workingdir="${ProjectDir}" />
+        <Command type="BeforeExecute" command="/bin/bash CopySquish2.MacOS.sh" workingdir="${ProjectDir}" />
+        <Command type="AfterBuild" command="/bin/bash CopySquish2.MacOS.sh" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -38,7 +39,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Commandlineparameters>~/Projects/Spider-XNA/Spider/RawContent/Spider.iOS.Test.content -rebuild -p:OutputRootDir=~/Projects/Spider-XNA/Spider/Content\;ProjectDir=~/Projects/Spider-XNA/Spider</Commandlineparameters>
+    <Commandlineparameters>~/Projects/Playroom/Test/RawContent/TestContent.content -rebuild -p:OutputDir=~/Projects/Playroom/Test/Content</Commandlineparameters>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="BeforeExecute" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -52,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="CopySquish2.MacOS.sh" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

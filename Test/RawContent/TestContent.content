@@ -36,8 +36,7 @@
 	<Target
 		Name="ExampleStrings2"
 		Inputs="$(InputDir)\Example.strings"
-		Outputs="$(OutputDir)\$(TargetName).cs;
-			$(OutputDir)\Platform1\Strings\$(TargetName).xnb">
+		Outputs="$(OutputDir)\$(TargetName).cs;$(OutputDir)\$(TargetName).xnb">
 		<PropertyGroup>
 			<Namespace>Company.Product</Namespace>
 		</PropertyGroup>
@@ -49,6 +48,9 @@
 		Name="ExamplePng"
 		Inputs="$(InputDir)\Example.png"
 		Outputs="$(OutputDir)\$(TargetName).xnb">
+	<PropertyGroup>
+		<CompressionType>Dxt5</CompressionType>
+	</PropertyGroup>
 	</Target>
 	
 	<!-- SpritefontAndStringsToXnbCompiler --> 
@@ -65,36 +67,48 @@
 
 	<Target
 		Name="ExampleSvgPinboardXnb"
-		Inputs="$(InputDir)\Example.svg;
-		$(InputDir)\Example.pinboard"
+		Inputs="$(InputDir)\Example.svg;$(InputDir)\Example.pinboard"
 		Outputs="$(OutputDir)\$(TargetName).xnb">
 		<PropertyGroup>
-			<Rectangle>MainRectangle</Rectangle>
+			<Rectangle>Thing</Rectangle>
 		</PropertyGroup>
 	</Target>
 	
-	<!-- SvgToXnbCompiler -->
+	<!-- SvgToPngCompiler -->
 
 	<Target
-		Name="ExampleSvgXnb"
+		Name="ExampleSvgPng"
 		Inputs="$(InputDir)\Example.svg"
-		Outputs="$(OutputDir)\$(TargetName).xnb"/>
+		Outputs="$(OutputDir)\$(TargetName).png">
+		<PropertyGroup>
+			<Width>100</Width>
+			<Height>100</Height>
+		</PropertyGroup>
+	</Target>
 	
-	<!-- SvgToPdfCompiler -->
+	<!-- SvgAndPinboardToPngCompiler -->
 
 	<Target
-		Name="ExampleSvgPdf"
+		Name="ExampleSvgPinboardPng"
+		Inputs="$(InputDir)\Example.svg;$(InputDir)\Example.pinboard"
+		Outputs="$(OutputDir)\$(TargetName).png">
+		<PropertyGroup>
+			<Rectangles>Thing</Rectangles>
+		</PropertyGroup>
+	</Target>
+	
+	<!-- SvgToPdfAndXnbCompiler -->
+
+	<Target
+		Name="ExampleSvgPdfXnb"
 		Inputs="$(InputDir)\Example.svg"
-		Outputs="$(OutputDir)\$(TargetName).pdf"/>
+		Outputs="$(OutputDir)\$(TargetName).pdf;$(OutputDir)\$(TargetName).xnb">
+		<PropertyGroup>
+			<Pinboard>Example</Pinboard>
+			<Rectangle>Screen</Rectangle>
+		</PropertyGroup>
+	</Target>
 	
-	<!-- PdfAndPinboardToXnbCompiler -->
-
-	<Target
-		Name="ExamplePdfPinboardSvg"
-		Inputs="$(InputDir)\Example.pdf;
-			$(InputDir)\Example.pinboard"
-		Outputs="$(OutputDir)\$(TargetName).xnb"/>
-
 	<!-- WavToXnbCompiler -->
 
 	<Target

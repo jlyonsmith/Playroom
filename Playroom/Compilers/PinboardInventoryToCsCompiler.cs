@@ -61,7 +61,7 @@ namespace Playroom
             TextWriter writer;
             ParsedPath csFileName = Target.OutputFiles.Where(f => f.Extension == ".cs").First();
 
-            Context.Output.Message(MessageImportance.Normal, "Writing output file '{0}'", csFileName);
+            Context.Output.Message(MessageImportance.Low, "Writing output file '{0}'", csFileName);
 
 			if (!Directory.Exists(csFileName.VolumeAndDirectory))
 				Directory.CreateDirectory(csFileName.VolumeAndDirectory);
@@ -82,10 +82,7 @@ namespace Playroom
         {
             RectanglesContent rectData = new RectanglesContent();
 
-            if (!Target.Properties.ContainsKey("Namespace"))
-                throw new ContentFileException(Context.ContentFile, Target.LineNumber, "Item does not contain Namespace property");
-
-            rectData.Namespace = Target.Properties["Namespace"];
+			rectData.Namespace = Target.Properties.GetRequiredValue("Namespace");
             rectData.Classes = new List<RectanglesContent.Class>();
 
             foreach (var pinboardFile in distinctPinboardFiles)

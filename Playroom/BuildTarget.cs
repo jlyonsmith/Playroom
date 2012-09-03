@@ -13,9 +13,9 @@ namespace Playroom
 			LineNumber = lineNumber;
 			Properties = targetProps;
 			Items = targetItems;
-			Name = targetProps["TargetName"];
-			InputFiles = targetItems["TargetInputs"];
-			OutputFiles = targetItems["TargetOutputs"];
+			Name = targetProps.GetRequiredValue("TargetName");
+			InputFiles = targetItems.GetRequiredValue("TargetInputs");
+			OutputFiles = targetItems.GetRequiredValue("TargetOutputs");
 
             Func<IList<ParsedPath>, IEnumerable<string>> extractAndSortExtensions = (files) =>
             {

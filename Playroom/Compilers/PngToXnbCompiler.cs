@@ -30,31 +30,31 @@ namespace Playroom.Compilers
 			SquishMethod? squishMethod = null;
 			SurfaceFormat surfaceFormat = SurfaceFormat.Color;
 
-			if (Target.Properties.TryGetValue("CompressionType", out compressionType))
+			Target.Properties.GetOptionalValue("CompressionType", out compressionType, "None");
+
+			switch (compressionType.ToLower())
 			{
-				switch (compressionType.ToLower())
-				{
-				case "dxt1":
-					squishMethod = SquishMethod.Dxt1;
-					surfaceFormat = SurfaceFormat.Dxt1;
-					break;
-				case "dxt3":
-					squishMethod = SquishMethod.Dxt3;
-					surfaceFormat = SurfaceFormat.Dxt3;
-					break;
-				case "dxt5":
-					squishMethod = SquishMethod.Dxt5;
-					surfaceFormat = SurfaceFormat.Dxt5;
-					break;
-				case "none":
-					surfaceFormat = SurfaceFormat.Color;
-					break;
-				}
+			case "dxt1":
+				squishMethod = SquishMethod.Dxt1;
+				surfaceFormat = SurfaceFormat.Dxt1;
+				break;
+			case "dxt3":
+				squishMethod = SquishMethod.Dxt3;
+				surfaceFormat = SurfaceFormat.Dxt3;
+				break;
+			case "dxt5":
+				squishMethod = SquishMethod.Dxt5;
+				surfaceFormat = SurfaceFormat.Dxt5;
+				break;
+			default:
+			case "none":
+				surfaceFormat = SurfaceFormat.Color;
+				break;
 			}
 
 			BitmapContent bitmapContent;
 
-			if (squishMethod.HasValue)
+			if (surfaceFormat != SurfaceFormat.Color)
 			{
 				byte[] rgbaData = Squish.CompressImage(
 	                pngFile.RgbaData, pngFile.Width, pngFile.Height, 

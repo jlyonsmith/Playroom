@@ -19,7 +19,7 @@ namespace Playroom
 	/// Rectangle - the rectangle name in the pinboard to use for scaling each SVG image
 	/// Rows - number of rows in the resulting image
 	/// </summary>
-    class SvgAndPinboardToXnbConverter : IContentCompiler
+    class SvgAndPinboardToXnbCompiler : IContentCompiler
     {
         #region IContentCompiler Members
 
@@ -54,8 +54,6 @@ namespace Playroom
 			if (converterName != "inkscape" && converterName != "rsvg")
 				throw new ContentFileException("Unknown SVG converter '{0}'".CultureFormat(converterName));
 
-			ParsedPath outputDir = new ParsedPath(this.Target.Properties.GetRequiredValue("OutputDir"), PathType.File);
-
             try
             {
 				int row = 0;
@@ -68,8 +66,9 @@ namespace Playroom
                         throw new InvalidOperationException(
                             "Rectangle '{0}' not found in pinboard '{1}'".CultureFormat(rectangleName, pinboardFileName));
 
-                    ParsedPath pngFile = outputDir.SetFileAndExtension(String.Format("{0}_{1}_{2}.png", 
-                  		svgFileName, row, col));
+					// TODO-johnls: This should probably go in an intermediate file directory
+                    ParsedPath pngFile = xnbFileName.SetFileAndExtension(String.Format("{0}_{1}_{2}.png", 
+                  		svgFileName.File, row, col));
 
                     placements.Add(new ImagePlacement(pngFile,
                         new Rectangle(col * rectInfo.Width, row * rectInfo.Height, rectInfo.Width, rectInfo.Height)));

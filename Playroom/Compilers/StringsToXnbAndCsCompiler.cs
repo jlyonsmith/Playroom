@@ -57,8 +57,7 @@ namespace Playroom
 
 			string className;
 
-			if (!Target.Properties.TryGetValue("ClassName", out className))
-				className = stringsFileName.File + "Strings";
+			Target.Properties.GetOptionalValue("ClassName", out className, stringsFileName.File + "Strings");
 
             StringsContent stringsData = CreateStringsData(className, StringsFileReaderV1.ReadFile(stringsFileName));
 
@@ -89,8 +88,7 @@ namespace Playroom
 
 			string namespaceName;
 
-            if (!Target.Properties.TryGetValue("Namespace", out namespaceName))
-                throw new ContentFileException("Item requires a Namespace property");
+			Target.Properties.GetRequiredValue("Namespace", out namespaceName);
 
             stringsData.Namespace = namespaceName;
 

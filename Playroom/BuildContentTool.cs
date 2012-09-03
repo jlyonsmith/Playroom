@@ -202,7 +202,7 @@ namespace Playroom
 							msg += Environment.NewLine + "\t" + output;
 						}
 
-						Output.Message(msg);
+						Output.Message(MessageImportance.Normal, msg);
 
 						if (TestMode)
 							continue;
@@ -238,6 +238,8 @@ namespace Playroom
 			            String.Join(Path.PathSeparator.ToString(), buildTarget.InputExtensions),
 		                String.Join(Path.PathSeparator.ToString(), buildTarget.OutputExtensions));
 			}
+
+			Output.Message(MessageImportance.Normal, "Done");
 		}
 
 		public static ParsedPath ParseCommandLineFilePath(string value)
@@ -256,14 +258,14 @@ namespace Playroom
 				{
 					PropertyGroup targetProps = new PropertyGroup(globalProps);
 
-					targetProps.Add("TargetName", rawTarget.Name);
+					targetProps.Set("TargetName", rawTarget.Name);
 					
 					if (rawTarget.Properties != null)
 						targetProps.ExpandAndAddFromList(rawTarget.Properties, targetProps);
 
 					ItemGroup targetItems = new ItemGroup(globalItems);
 
-					List<ParsedPath> inputFiles = new List<ParsedPath>();
+					ParsedPathList inputFiles = new ParsedPathList();
 					string[] list = rawTarget.Inputs.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 
 					foreach (var rawInputFile in list)
@@ -294,7 +296,7 @@ namespace Playroom
 								throw new ContentFileException("Wildcard input refers to no files after expansion");
 							}
 
-							inputFiles = inputFiles.Concat(files).ToList<ParsedPath>();
+							inputFiles = new ParsedPathList(inputFiles.Concat(files));
 						}
 						else
 						{
@@ -307,7 +309,7 @@ namespace Playroom
 						}
 					}
 
-					List<ParsedPath> outputFiles = new List<ParsedPath>();
+					ParsedPathList outputFiles = new ParsedPathList();
 
 					list = rawTarget.Outputs.Split(';');
 
@@ -327,8 +329,8 @@ namespace Playroom
 						}
 					}
 
-					targetItems["TargetInputs"] = inputFiles;
-					targetItems["TargetOutputs"] = outputFiles;
+					targetItems.Set("TargetInputs", inputFiles);
+					targetItems.Set("TargetOutputs", outputFiles);
 
 					bool needsRebuild = IsCompileRequired(inputFiles, outputFiles);
 
@@ -393,7 +395,7 @@ namespace Playroom
 		private List<CompilerClass> LoadCompilerClasses(ItemGroup itemGroup, PropertyGroup propGroup)
 		{
 			List<CompilerClass> compilerClasses = new List<CompilerClass>();
-			IList<ParsedPath> paths = itemGroup["CompilerAssembly"];
+			IList<ParsedPath> paths = itemGroup.GetRequiredValue("CompilerAssembly");
 
 			foreach (var path in paths)
 			{
