@@ -229,6 +229,16 @@ namespace Playroom
 									this.ContentPath, buildTarget.LineNumber, "Unable to compile target '{0}'".CultureFormat(buildTarget.Name), e.InnerException);
 							}
 						}
+
+						// Ensure that the output files were generated
+						foreach (var outputFile in buildTarget.OutputFiles)
+						{
+							if (!File.Exists(outputFile))
+							{
+								throw new ContentFileException(this.ContentPath, buildTarget.LineNumber, 
+									"Output file '{0}' was not generated".CultureFormat(outputFile));
+                           	}
+						}
 					}
 				}
 

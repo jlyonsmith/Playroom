@@ -2,6 +2,8 @@ using System;
 using ToolBelt;
 using System.Collections.Generic;
 using Cairo;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Playroom
 {
@@ -162,6 +164,54 @@ namespace Playroom
 					rotatedImage.WriteToPng(pngPath);
 				}
 			}
+		}
+
+		public static void CompressPngToTexture2DContent(
+			ParsedPath pngFileName, 
+			string compressionType, 
+			out Texture2DContent textureContent)
+		{
+			PngFile pngFile = PngFileReader.ReadFile(pngFileName);
+
+			SquishMethod? squishMethod = null;
+			SurfaceFormat surfaceFormat = SurfaceFormat.Color;
+			
+			switch (compressionType.ToLower())
+			{
+			case "dxt1":
+				squishMethod = SquishMethod.Dxt1;
+				surfaceFormat = SurfaceFormat.Dxt1;
+				break;
+			case "dxt3":
+				squishMethod = SquishMethod.Dxt3;
+				surfaceFormat = SurfaceFormat.Dxt3;
+				break;
+			case "dxt5":
+				squishMethod = SquishMethod.Dxt5;
+				surfaceFormat = SurfaceFormat.Dxt5;
+				break;
+			default:
+			case "none":
+				surfaceFormat = SurfaceFormat.Color;
+				break;
+			}
+			
+			BitmapContent bitmapContent;
+			
+			if (surfaceFormat != SurfaceFormat.Color)
+			{
+				byte[] rgbaData = Squish.CompressImage(
+					pngFile.RgbaData, pngFile.Width, pngFile.Height, 
+					squishMethod.Value, SquishFit.IterativeCluster, SquishMetric.Default, SquishExtra.None);
+				
+				bitmapContent = new BitmapContent(surfaceFormat, pngFile.Width, pngFile.Height, rgbaData);
+			} 
+			else
+			{
+				bitmapContent = new BitmapContent(SurfaceFormat.Color, pngFile.Width, pngFile.Height, pngFile.RgbaData);
+			}
+			
+			textureContent = new Texture2DContent(bitmapContent);
 		}
 	}
 }

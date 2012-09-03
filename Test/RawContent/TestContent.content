@@ -48,9 +48,9 @@
 		Name="ExamplePng"
 		Inputs="$(InputDir)\Example.png"
 		Outputs="$(OutputDir)\$(TargetName).xnb">
-	<PropertyGroup>
-		<CompressionType>Dxt5</CompressionType>
-	</PropertyGroup>
+		<PropertyGroup>
+			<CompressionType>Dxt5</CompressionType>
+		</PropertyGroup>
 	</Target>
 	
 	<!-- SpritefontAndStringsToXnbCompiler --> 

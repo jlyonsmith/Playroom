@@ -25,49 +25,12 @@ namespace Playroom.Compilers
 			ParsedPath pngFileName = Target.InputFiles.Where(f => f.Extension == ".png").First();
 			ParsedPath xnbFileName = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
 
-			PngFile pngFile = PngFileReader.ReadFile(pngFileName);
 			string compressionType;
-			SquishMethod? squishMethod = null;
-			SurfaceFormat surfaceFormat = SurfaceFormat.Color;
+			Texture2DContent textureContent;
 
 			Target.Properties.GetOptionalValue("CompressionType", out compressionType, "None");
 
-			switch (compressionType.ToLower())
-			{
-			case "dxt1":
-				squishMethod = SquishMethod.Dxt1;
-				surfaceFormat = SurfaceFormat.Dxt1;
-				break;
-			case "dxt3":
-				squishMethod = SquishMethod.Dxt3;
-				surfaceFormat = SurfaceFormat.Dxt3;
-				break;
-			case "dxt5":
-				squishMethod = SquishMethod.Dxt5;
-				surfaceFormat = SurfaceFormat.Dxt5;
-				break;
-			default:
-			case "none":
-				surfaceFormat = SurfaceFormat.Color;
-				break;
-			}
-
-			BitmapContent bitmapContent;
-
-			if (surfaceFormat != SurfaceFormat.Color)
-			{
-				byte[] rgbaData = Squish.CompressImage(
-	                pngFile.RgbaData, pngFile.Width, pngFile.Height, 
-	                squishMethod.Value, SquishFit.IterativeCluster, SquishMetric.Default, SquishExtra.None);
-
-				bitmapContent = new BitmapContent(surfaceFormat, pngFile.Width, pngFile.Height, rgbaData);
-			} 
-			else
-			{
-				bitmapContent = new BitmapContent(SurfaceFormat.Color, pngFile.Width, pngFile.Height, pngFile.RgbaData);
-			}
-
-            Texture2DContent textureContent = new Texture2DContent(bitmapContent);
+			ImageTools.CompressPngToTexture2DContent(pngFileName, compressionType, out textureContent);
 
             XnbFileWriterV5.WriteFile(textureContent, xnbFileName);
         }

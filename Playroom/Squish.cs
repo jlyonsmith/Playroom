@@ -52,6 +52,8 @@ namespace Playroom
 
     public static class Squish
     {
+#if WINDOWS
+		// TODO: Bet we can  use the simplified DllImports below on Windows too
         private class Native
         {
             [DllImport("Squish2", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, SetLastError = false, PreserveSig = true)]
@@ -59,6 +61,15 @@ namespace Playroom
             [DllImport("Squish2", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, SetLastError = false, PreserveSig = true)]
             public static extern void SquishDecompress(IntPtr rgba, IntPtr block, int flags);
         }
+#else
+		private class Native
+		{
+			[DllImport("Squish2")]
+			public static extern void SquishCompressMasked(IntPtr rgba, int mask, IntPtr block, int flags);
+			[DllImport("Squish2")]
+			public static extern void SquishDecompress(IntPtr rgba, IntPtr block, int flags);
+		}
+#endif
 
         public static byte[] CompressImage(byte[] rgba, int width, int height, SquishMethod method, SquishFit fit, SquishMetric metric, SquishExtra extra)
         {

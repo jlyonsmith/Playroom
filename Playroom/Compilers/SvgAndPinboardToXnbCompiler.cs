@@ -6,6 +6,7 @@ using ToolBelt;
 using System.IO;
 using System.Xml;
 using Cairo;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 
 namespace Playroom
 {
@@ -54,6 +55,8 @@ namespace Playroom
 			if (converterName != "inkscape" && converterName != "rsvg")
 				throw new ContentFileException("Unknown SVG converter '{0}'".CultureFormat(converterName));
 
+			ParsedPath combinedPngPathName = xnbFileName.SetExtension(".png");
+
             try
             {
 				int row = 0;
@@ -86,7 +89,16 @@ namespace Playroom
                     }
                 }
 
-				ImageTools.CombinePngs(placements, xnbFileName.SetExtension(".png"));
+				ImageTools.CombinePngs(placements, combinedPngPathName);
+
+				Texture2DContent textureContent;
+
+				ImageTools.CompressPngToTexture2DContent(
+					combinedPngPathName, 
+					this.Target.Properties.GetOptionalValue("CompressionType", "None"),
+					out textureContent);
+
+				XnbFileWriterV5.WriteFile(textureContent, xnbFileName);
             }
             finally
             {
@@ -95,6 +107,11 @@ namespace Playroom
                     if (File.Exists(placement.ImageFile))
                         File.Delete(placement.ImageFile);
                 }
+
+				if (File.Exists(combinedPngPathName))
+				{
+					File.Delete(combinedPngPathName);
+				}
             }
         }
 
