@@ -120,9 +120,16 @@ namespace Playroom
 				                }
 			                }
 			
-                            Native.SquishCompressMasked((IntPtr)pSourceRgba, mask, (IntPtr)pTargetBlock, 
-                                (int)method | (int)fit | (int)metric | (int)extra);
-			
+							try
+							{
+	                            Native.SquishCompressMasked((IntPtr)pSourceRgba, mask, (IntPtr)pTargetBlock, 
+	                                (int)method | (int)fit | (int)metric | (int)extra);
+							}
+							catch (DllNotFoundException)
+							{
+								throw new DllNotFoundException("Shared library Squish2 not found");
+							}
+
 			                // advance
 			                pTargetBlock += bytesPerBlock;
 		                }

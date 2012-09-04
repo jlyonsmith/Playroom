@@ -26,7 +26,7 @@
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeExecute" command="/bin/bash CopySquish2.MacOS.sh" workingdir="${ProjectDir}" />
-        <Command type="AfterBuild" command="/bin/bash CopySquish2.MacOS.sh" workingdir="${ProjectDir}" />
+        <Command type="AfterBuild" command="/bin/bash CopySquish2.MacOS.sh ${ProjectConfigName}" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -43,6 +43,7 @@
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeExecute" />
+        <Command type="AfterBuild" command="/bin/bash CopySquish2.MacOS.sh ${ProjectConfigName}" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
