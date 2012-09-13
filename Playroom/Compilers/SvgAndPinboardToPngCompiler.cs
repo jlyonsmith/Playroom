@@ -50,7 +50,7 @@ namespace Playroom
 				foreach (var svgPath in svgPaths)
 				{
 					PinboardFileV1.RectangleInfo rectInfo = pinboardFile.GetRectangleInfoByName(rectangleNames[i]);
-					ParsedPath tempPngPath = pngPath.SetFileAndExtension(String.Format("{0}_{1}.png", pngPath.File, i));
+					ParsedPath tempPngPath = pngPath.WithFileAndExtension(String.Format("{0}_{1}.png", pngPath.File, i));
 					
 					if (rectInfo == null)
 					{

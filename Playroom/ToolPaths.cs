@@ -31,7 +31,7 @@ namespace Playroom
                         if (s[0] == '"')
                             s = s.Substring(1, s.IndexOf('"', 1) - 1);
 
-                        ParsedPath path  = new ParsedPath(s, PathType.File).SetExtension(".com");
+                        ParsedPath path  = new ParsedPath(s, PathType.File).WithExtension(".com");
 
                         if (File.Exists(path))
                             Inkscape = path;
@@ -49,7 +49,7 @@ namespace Playroom
                         if (s[0] == '"')
                             s = s.Substring(1, s.IndexOf('"', 1) - 1);
 
-                        ParsedPath path = new ParsedPath(s, PathType.File).SetFileAndExtension("rsvg-convert.exe");
+                        ParsedPath path = new ParsedPath(s, PathType.File).WithFileAndExtension("rsvg-convert.exe");
 
                         if (File.Exists(path))
                             RSvgConvert = path;

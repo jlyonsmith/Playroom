@@ -29,6 +29,8 @@ namespace Playroom
 			ParsedPath pdfPath = Target.OutputFiles.Where(f => f.Extension == ".pdf").First();
 			ParsedPath xnbPath = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
 
+			// TODO: Ensure that pdf and xnb have the same root directories (and volumes)
+
 			int numRows;
 			int numCols;
 			
@@ -41,7 +43,7 @@ namespace Playroom
 			{
 				if (svgPaths.Count() > 1)
 				{
-					nUpSvgPath = pdfPath.SetFileAndExtension(
+					nUpSvgPath = pdfPath.WithFileAndExtension(
 						String.Format("{0}_{1}x{2}.svg", pdfPath.File, numRows, numCols));
 
 					CreateNupSvg(svgPaths, nUpSvgPath, numRows, numCols);
@@ -66,7 +68,6 @@ namespace Playroom
 			pdfInfo.Add(this.Target.Properties.GetRequiredValue("Rectangle"));
 			pdfInfo.Add(numRows.ToString());
 			pdfInfo.Add(numCols.ToString());
-			pdfInfo.Add(pdfPath.File);
 
 			if (!Directory.Exists(xnbPath.VolumeAndDirectory))
 			{

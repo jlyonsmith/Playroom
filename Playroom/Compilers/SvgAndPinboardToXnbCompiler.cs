@@ -55,7 +55,7 @@ namespace Playroom
 			if (converterName != "inkscape" && converterName != "rsvg")
 				throw new ContentFileException("Unknown SVG converter '{0}'".CultureFormat(converterName));
 
-			ParsedPath combinedPngPathName = xnbFileName.SetExtension(".png");
+			ParsedPath combinedPngPathName = xnbFileName.WithExtension(".png");
 
             try
             {
@@ -70,7 +70,7 @@ namespace Playroom
                             "Rectangle '{0}' not found in pinboard '{1}'".CultureFormat(rectangleName, pinboardFileName));
 
 					// TODO-johnls: This should probably go in an intermediate file directory
-                    ParsedPath pngFile = xnbFileName.SetFileAndExtension(String.Format("{0}_{1}_{2}.png", 
+                    ParsedPath pngFile = xnbFileName.WithFileAndExtension(String.Format("{0}_{1}_{2}.png", 
                   		svgFileName.File, row, col));
 
                     placements.Add(new ImagePlacement(pngFile,

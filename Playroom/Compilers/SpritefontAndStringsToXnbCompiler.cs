@@ -79,7 +79,7 @@ namespace Playroom
 			List<char> fontChars = hs.OrderBy(c => c).ToList();
 			FontSlant fontSlant = (sff.Style == SpriteFontFile.FontStyle.Italic ? FontSlant.Italic : FontSlant.Normal);
 			FontWeight fontWeight = (sff.Style == SpriteFontFile.FontStyle.Bold ? FontWeight.Bold : FontWeight.Normal);
-			ParsedPath pngFile = xnbFileName.SetExtension(".png");
+			ParsedPath pngFile = xnbFileName.WithExtension(".png");
 			SpriteFontContent sfc = CreateSpriteFontContent(
 				sff.FontName, sff.Size, fontSlant, fontWeight, sff.Spacing, sff.DefaultCharacter, fontChars, pngFile);
 

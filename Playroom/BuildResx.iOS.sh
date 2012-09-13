@@ -1,1 +1,1 @@
-~/bin/buckle PlayroomResources.resx -q -n:Playroom -w:ToolBelt.Message
+~/bin/buckle PlayroomResources.resx -q -i -n:Playroom -w:ToolBelt.Message
