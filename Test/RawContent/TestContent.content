@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Content Version = "2">
 	<ItemGroup>
-		<CompilerAssembly Include="$(BuildContentInstallDir)\Playroom.dll" />
+		<CompilerAssembly Include="$(BuildContentInstallDir)\Playroom.Compilers.dll" />
 	</ItemGroup>
 
 	<!-- PinboardToCsCompiler -->
