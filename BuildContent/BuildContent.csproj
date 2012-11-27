@@ -11,7 +11,6 @@
     <RootNamespace>BuildContent</RootNamespace>
     <AssemblyName>BuildContent</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <ReleaseVersion>1.0</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -67,17 +66,13 @@
     <PostBuildEvent>xcopy /d $(SolutionDir)\Squish2\$(Configuration)\Squish.dll $(ProjectDir)$(OutDir)</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Playroom\Compilers\Playroom.Compilers.MacOS.csproj">
-      <Project>{A1A3DD3F-2A9E-4753-B9A2-D53CD939F68E}</Project>
-      <Name>Playroom.Compilers.MacOS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Playroom\Framework\Playroom.Framework.MacOS.csproj">
-      <Project>{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}</Project>
-      <Name>Playroom.MacOS</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ToolBelt\ToolBelt\ToolBelt.MacOS.csproj">
       <Project>{2055D34D-3DF2-444B-937B-32CC1A6E11DF}</Project>
       <Name>ToolBelt.MacOS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Playroom\Playroom.MacOS.csproj">
+      <Project>{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}</Project>
+      <Name>Playroom.MacOS</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
