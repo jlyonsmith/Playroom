@@ -4,18 +4,11 @@ using System.Linq;
 using System.Text;
 using ToolBelt;
 using System.IO;
+using Playroom.Formats;
 
 namespace Playroom
 {
-	/// <summary>
-	/// Strings to .xnb and .cs file compiler.
-	/// 
-	/// Supports the following properties:
-	/// 
-	/// Namespace - the namespace for the class.  Must be specified.
-	/// ClassName - the name of the class. Optional; defaults to the file name plus 'Strings'.
-	/// </summary>
-    public class StringsToXnbAndCsCompiler : IContentCompiler
+    public class StringsToJsonAndCsCompiler : IContentCompiler
     {
         #region Classes
         class StringsContent
@@ -52,7 +45,7 @@ namespace Playroom
         public void Compile()
         {
             ParsedPath stringsFileName = Target.InputFiles.Where(f => f.Extension == ".strings").First();
-            ParsedPath xnbFileName = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
+            ParsedPath jsonFileName = Target.OutputFiles.Where(f => f.Extension == ".json").First();
             ParsedPath csFileName = Target.OutputFiles.Where(f => f.Extension == ".cs").First();
 
 			string className;
@@ -63,10 +56,10 @@ namespace Playroom
 
             string[] strings = stringsData.Strings.Select(s => s.Value).ToArray();
 
-			if (!Directory.Exists(xnbFileName.VolumeAndDirectory))
-				Directory.CreateDirectory(xnbFileName.VolumeAndDirectory);
+			if (!Directory.Exists(jsonFileName.VolumeAndDirectory))
+				Directory.CreateDirectory(jsonFileName.VolumeAndDirectory);
 
-            XnbFileWriterV5.WriteFile(strings, xnbFileName);
+			JsonFileWriter.WriteFile(jsonFileName, strings);
 
 			if (!Directory.Exists(csFileName.VolumeAndDirectory))
 				Directory.CreateDirectory(csFileName.VolumeAndDirectory);

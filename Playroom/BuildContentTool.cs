@@ -9,8 +9,8 @@ using System.IO;
 
 namespace Playroom
 {
-	[CommandLineDescription("XNA Content Builder")]
-	[CommandLineTitle("Build Content Tool")]
+	[CommandLineTitle("Playroom Content Builder")]
+	[CommandLineDescription("A tool for compiling game and application content from raw resources")]
 	public class BuildContentTool : ITool, IProcessCommandLine
 	{
         #region Fields

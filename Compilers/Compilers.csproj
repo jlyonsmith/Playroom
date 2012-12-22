@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1D531486-0385-4E9E-AB1B-755CEFF3A445}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Compilers</RootNamespace>
+    <AssemblyName>Compilers</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Json">
+      <HintPath>..\..\..\..\..\Developer\MonoTouch\usr\lib\mono\2.1\System.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="PinboardInventoryToCsCompiler.cs" />
+    <Compile Include="PinboardFileCache.cs" />
+    <Compile Include="ResxToStringsCompiler.cs" />
+    <Compile Include="SvgAndPinboardToPngCompiler.cs" />
+    <Compile Include="SvgToPngCompiler.cs" />
+    <Compile Include="PinboardToJsonCompiler.cs" />
+    <Compile Include="ToolPaths.cs" />
+    <Compile Include="StringsToJsonAndCsCompiler.cs" />
+    <Compile Include="SvgToPdfAndJsonCompiler.cs" />
+    <Compile Include="Formats\PinboardFileReaderV1.cs" />
+    <Compile Include="Formats\PinboardFileV1.cs" />
+    <Compile Include="Formats\PinboardFileWriter.cs" />
+    <Compile Include="Formats\PngFile.cs" />
+    <Compile Include="Formats\PngFileReader.cs" />
+    <Compile Include="Formats\StringsFileReaderV1.cs" />
+    <Compile Include="Formats\StringsFileV1.cs" />
+    <Compile Include="Formats\WavFile.cs" />
+    <Compile Include="Formats\WavFileReader.cs" />
+    <Compile Include="Squish.cs" />
+    <Compile Include="ImageTools.cs" />
+    <Compile Include="Formats\CsFileWriter.cs" />
+    <Compile Include="Formats\JsonFileWriter.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Playroom\Playroom.MacOS.csproj">
+      <Project>{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}</Project>
+      <Name>Playroom.MacOS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToolBelt\ToolBelt\ToolBelt.MacOS.csproj">
+      <Project>{2055D34D-3DF2-444B-937B-32CC1A6E11DF}</Project>
+      <Name>ToolBelt.MacOS</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Formats\" />
+  </ItemGroup>
+</Project>

@@ -2,8 +2,7 @@ using System;
 using ToolBelt;
 using System.Collections.Generic;
 using Cairo;
-using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
-using Microsoft.Xna.Framework.Graphics;
+using System.IO;
 
 namespace Playroom
 {
@@ -166,52 +165,45 @@ namespace Playroom
 			}
 		}
 
-		public static void CompressPngToTexture2DContent(
-			ParsedPath pngFileName, 
-			string compressionType, 
-			out Texture2DContent textureContent)
+		public static void ExportPngToDxt(ParsedPath pngFileName, ParsedPath dxtFileName)
 		{
 			PngFile pngFile = PngFileReader.ReadFile(pngFileName);
-
 			SquishMethod? squishMethod = null;
-			SurfaceFormat surfaceFormat = SurfaceFormat.Color;
-			
-			switch (compressionType.ToLower())
+
+			switch (dxtFileName.Extension)
 			{
-			case "dxt1":
+			case ".dxt1":
 				squishMethod = SquishMethod.Dxt1;
-				surfaceFormat = SurfaceFormat.Dxt1;
 				break;
-			case "dxt3":
+			case ".dxt3":
 				squishMethod = SquishMethod.Dxt3;
-				surfaceFormat = SurfaceFormat.Dxt3;
 				break;
-			case "dxt5":
+			case ".dxt5":
 				squishMethod = SquishMethod.Dxt5;
-				surfaceFormat = SurfaceFormat.Dxt5;
 				break;
 			default:
-			case "none":
-				surfaceFormat = SurfaceFormat.Color;
 				break;
 			}
-			
-			BitmapContent bitmapContent;
-			
-			if (surfaceFormat != SurfaceFormat.Color)
+
+			byte[] rgbaData;
+
+			if (squishMethod.HasValue)
 			{
-				byte[] rgbaData = Squish.CompressImage(
+				rgbaData = Squish.CompressImage(
 					pngFile.RgbaData, pngFile.Width, pngFile.Height, 
 					squishMethod.Value, SquishFit.IterativeCluster, SquishMetric.Default, SquishExtra.None);
-				
-				bitmapContent = new BitmapContent(surfaceFormat, pngFile.Width, pngFile.Height, rgbaData);
 			} 
 			else
 			{
-				bitmapContent = new BitmapContent(SurfaceFormat.Color, pngFile.Width, pngFile.Height, pngFile.RgbaData);
+				rgbaData = null;
 			}
 			
-			textureContent = new Texture2DContent(bitmapContent);
+			using (BinaryWriter writer = new BinaryWriter(new FileStream(dxtFileName, FileMode.Create)))
+			{
+				writer.Write(pngFile.Width);
+				writer.Write(pngFile.Height);
+				writer.Write(rgbaData);
+			}
 		}
 	}
 }

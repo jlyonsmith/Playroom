@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using ToolBelt;
-using Microsoft.Xna.Framework;
 using System.IO;
+using System.Drawing;
+using ToolBelt;
+using Playroom.Formats;
 
 namespace Playroom
 {
@@ -14,15 +15,15 @@ namespace Playroom
         #region IContentCompiler Members
 
         public string[] InputExtensions { get { return new string[] { ".pinboard" }; } }
-        public string[] OutputExtensions { get { return new string[] { ".xnb" }; } }
+        public string[] OutputExtensions { get { return new string[] { ".json" }; } }
         public BuildContext Context { get; set; }
         public BuildTarget Target { get; set; }
 
         public void Compile()
         {
-            ParsedPath pinboardFileName = Target.InputFiles.Where(f => f.Extension == ".pinboard").First();
-            ParsedPath xnbFileName = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
-            PinboardFileV1 pinboard = PinboardFileCache.Load(pinboardFileName);
+            ParsedPath pinboardPath = Target.InputFiles.Where(f => f.Extension == ".pinboard").First();
+            ParsedPath jsonPath = Target.OutputFiles.Where(f => f.Extension == ".json").First();
+            PinboardFileV1 pinboard = PinboardFileCache.Load(pinboardPath);
             Rectangle[] rectangles = new Rectangle[pinboard.RectInfos.Count + 1];
 
             rectangles[0] = new Rectangle(pinboard.ScreenRectInfo.X, pinboard.ScreenRectInfo.Y, pinboard.ScreenRectInfo.Width, pinboard.ScreenRectInfo.Height);
@@ -32,12 +33,12 @@ namespace Playroom
                 rectangles[i + 1] = new Rectangle(pinboard.RectInfos[i].X, pinboard.RectInfos[i].Y, pinboard.RectInfos[i].Width, pinboard.RectInfos[i].Height);
             }
 
-			if (!Directory.Exists(xnbFileName.VolumeAndDirectory))
+			if (!Directory.Exists(jsonPath.VolumeAndDirectory))
 			{
-				Directory.CreateDirectory(xnbFileName.VolumeAndDirectory);
+				Directory.CreateDirectory(jsonPath.VolumeAndDirectory);
 			}
 
-            XnbFileWriterV5.WriteFile(rectangles, xnbFileName);
+            JsonFileWriter.WriteFile(jsonPath, rectangles);
         }
 
         #endregion

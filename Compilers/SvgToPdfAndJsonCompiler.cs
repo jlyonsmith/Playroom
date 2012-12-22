@@ -5,10 +5,11 @@ using System.Text;
 using ToolBelt;
 using System.IO;
 using System.Xml;
+using Playroom.Formats;
 
 namespace Playroom
 {
-    public class SvgToPdfAndXnbCompiler : IContentCompiler
+    public class SvgToPdfAndJsonCompiler : IContentCompiler
     {
         #region IContentCompiler Members
 
@@ -18,7 +19,7 @@ namespace Playroom
         }
         public string[] OutputExtensions
         {
-            get { return new string[] { ".pdf", ".xnb" }; }
+            get { return new string[] { ".pdf", ".json" }; }
         }
         public BuildContext Context { get; set; }
         public BuildTarget Target { get; set; }
@@ -27,7 +28,7 @@ namespace Playroom
 		{
 			IEnumerable<ParsedPath> svgPaths = Target.InputFiles.Where(f => f.Extension == ".svg");
 			ParsedPath pdfPath = Target.OutputFiles.Where(f => f.Extension == ".pdf").First();
-			ParsedPath xnbPath = Target.OutputFiles.Where(f => f.Extension == ".xnb").First();
+			ParsedPath jsonPath = Target.OutputFiles.Where(f => f.Extension == ".json").First();
 
 			// TODO: Ensure that pdf and xnb have the same root directories (and volumes)
 
@@ -69,12 +70,12 @@ namespace Playroom
 			pdfInfo.Add(numRows.ToString());
 			pdfInfo.Add(numCols.ToString());
 
-			if (!Directory.Exists(xnbPath.VolumeAndDirectory))
+			if (!Directory.Exists(jsonPath.VolumeAndDirectory))
 			{
-				Directory.CreateDirectory(xnbPath.VolumeAndDirectory);
+				Directory.CreateDirectory(jsonPath.VolumeAndDirectory);
 			}
 
-			XnbFileWriterV5.WriteFile(pdfInfo, xnbPath);
+			JsonFileWriter.WriteFile(jsonPath, pdfInfo);
 		}
 
 		void CreateNupSvg(IEnumerable<ParsedPath> svgPaths, ParsedPath nUpSvgPath, int numRows, int numCols)
