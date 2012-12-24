@@ -7,7 +7,7 @@ using ToolBelt;
 
 namespace Playroom
 {
-    class CompilerClass
+    public class CompilerClass
     {
         private string[] inputExtensions;
         private string[] outputExtensions;
@@ -32,15 +32,10 @@ namespace Playroom
 		
 			if (this.TargetProperty == null)
 				throw new ApplicationException("'Target' property not found in class {0}".CultureFormat(this.Name));
-			
 		}
 
         public Assembly Assembly { get; private set; }
         public Type Type { get; private set; }
-        public Object Instance { get; private set; }
-        public MethodInfo CompileMethod { get; private set; }
-        public PropertyInfo ContextProperty { get; private set; }
-        public PropertyInfo TargetProperty { get; private set; }
         public string Name { get { return this.Type.FullName; } }
         public string[] InputExtensions 
         { 
@@ -88,5 +83,9 @@ namespace Playroom
                 return outputExtensions;
             }
         }
-    }
+		internal Object Instance { get; private set; }
+		internal MethodInfo CompileMethod { get; private set; }
+		internal PropertyInfo ContextProperty { get; private set; }
+		internal PropertyInfo TargetProperty { get; private set; }
+	}
 }

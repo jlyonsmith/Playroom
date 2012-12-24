@@ -5,7 +5,7 @@ using ToolBelt;
 
 namespace Playroom
 {
-	public class ItemGroup : IEnumerable<KeyValuePair<string, ParsedPathList>>
+	public class FilePathGroup : IEnumerable<KeyValuePair<string, ParsedPathList>>
 	{
 		#region Fields
 		private Dictionary<string, ParsedPathList> dictionary;
@@ -13,14 +13,14 @@ namespace Playroom
 		#endregion
 
 		#region Construction
-		public ItemGroup()
+		public FilePathGroup()
 		{
 			dictionary = new Dictionary<string, ParsedPathList>(StringComparer.OrdinalIgnoreCase);
 		}
 
-		public ItemGroup(ItemGroup itemGroup) : this()
+		public FilePathGroup(FilePathGroup pathGroup) : this()
 		{
-			IEnumerator<KeyValuePair<string, ParsedPathList>> e = ((IEnumerable<KeyValuePair<string, ParsedPathList>>)itemGroup).GetEnumerator();
+			IEnumerator<KeyValuePair<string, ParsedPathList>> e = ((IEnumerable<KeyValuePair<string, ParsedPathList>>)pathGroup).GetEnumerator();
 
 			while (e.MoveNext())
 			{
@@ -33,19 +33,19 @@ namespace Playroom
 		#endregion
 
 		#region Methods
-		public void ExpandAndAddFromList(List<ContentFileV2.Item> items, PropertyGroup propGroup)
+		public void ExpandAndAddFromList(List<ContentFileV3.FilePathGroup> pathGroups, PropertyGroup propGroup)
 		{
-			foreach (var item in items)
+			foreach (var pathGroup in pathGroups)
 			{
 				ParsedPathList pathList;
 
-				if (!dictionary.TryGetValue(item.Name, out pathList))
+				if (!dictionary.TryGetValue(pathGroup.Name, out pathList))
 				{
 					pathList = new ParsedPathList();
-					dictionary.Add(item.Name, pathList);
+					dictionary.Add(pathGroup.Name, pathList);
 				}
 
-				string[] parts = item.Include.Split(';');
+				string[] parts = pathGroup.Include.Split(';');
 
 				foreach (var part in parts)
 				{
@@ -67,9 +67,9 @@ namespace Playroom
 					}
 				}
 
-				if (!String.IsNullOrEmpty(item.Exclude))
+				if (!String.IsNullOrEmpty(pathGroup.Exclude))
 				{
-					parts = item.Exclude.Split(';');
+					parts = pathGroup.Exclude.Split(';');
 
 					foreach (var part in parts)
 					{
@@ -102,7 +102,7 @@ namespace Playroom
 			ParsedPathList list;
 
 			if (!dictionary.TryGetValue(name, out list))
-				throw new InvalidOperationException("ItemGroup '{0}' not found".CultureFormat(name));
+				throw new InvalidOperationException("FilePathGroup '{0}' not found".CultureFormat(name));
 
 			return list;
 		}

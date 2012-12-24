@@ -6,6 +6,8 @@ using ToolBelt;
 using System.Xml;
 using System.Reflection;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 
 namespace Playroom
 {
@@ -15,7 +17,13 @@ namespace Playroom
 	{
         #region Fields
 		private bool runningFromCommandLine = false;
-        
+		private HashSet<string> targetHashes;
+		// TODO: Set this after reading the content file
+		private string globalContentHash;
+		private ParsedPath targetHashesPath;
+		private DateTime contentFileWriteTime;
+		private DateTime newestAssemblyWriteTime;
+
         #endregion
 
         #region Construction
@@ -39,10 +47,13 @@ namespace Playroom
 		[CommandLineArgument("nologo", Description = "Suppress logo banner")]
 		public bool NoLogo { get; set; }
 
-		[CommandLineArgument("rebuild", Description = "Force a rebuild even if all files are up-to-date")]
-		public bool Rebuild { get; set; }
+		[CommandLineArgument("rebuild", Description = "Force a rebuild as if all files were out-of-date")]
+		public bool RebuildAll { get; set; }
+		
+		[CommandLineArgument("clean", Description = "Clean all outputs")]
+		public bool Clean { get; set; }
 
-		[CommandLineArgument("test", Description = "Test mode.  Indicates what would content will be compiled, but does not actually compile it")]
+		[CommandLineArgument("test", Description = "Test mode. Indicates what would be done but does not actually do it")]
 		public bool TestMode { get; set; }
 
 		public OutputHelper Output { get; set; }
@@ -59,9 +70,6 @@ namespace Playroom
 				return parser;
 			}
 		}
-
-		public DateTime NewestAssemblyWriteTime { get; set; }
-		public DateTime ContentPathWriteTime { get; set; }
 
 		public int ExitCode
 		{
@@ -143,6 +151,7 @@ namespace Playroom
 			}
 
 			// Initialize properties from the environment and command line
+			// TODO: This should be a field, and removed as a parameter from methods
 			PropertyGroup globalProps = new PropertyGroup();
 
 			globalProps.AddFromEnvironment();
@@ -153,101 +162,108 @@ namespace Playroom
 
 			BuildContext buildContext = new BuildContext(this.Output, this.ContentPath);
 
-			ContentFileV2 contentFile = null;
+			ContentFileV3 contentFile = null;
 
 			try
 			{
-				contentFile = ContentFileReaderV2.ReadFile(this.ContentPath);
+				contentFile = ContentFileReaderV3.ReadFile(this.ContentPath);
 			}
 			catch (Exception e)
 			{
 				throw new ContentFileException(this.ContentPath, (int)e.Data["LineNumber"], "Problem reading content file", e);
 			}
-            
+
 			Output.Message(MessageImportance.Low, "Read content file '{0}'", this.ContentPath);
 
-			ItemGroup globalItems = new ItemGroup();
+			targetHashesPath = new ParsedPath(
+				globalProps.GetOptionalValue("TargetHashesFile", globalProps.ReplaceVariables("$(OutputDir)" + ContentPath.FileAndExtension + ".hashes")), 
+				PathType.File);
 
-			globalItems.ExpandAndAddFromList(contentFile.Items, globalProps);
+			ReadContentFileHashes();
 
-			List<CompilerClass> compilerClasses = LoadCompilerClasses(globalItems, globalProps);
+			FilePathGroup globalFilePaths = new FilePathGroup();
 
-			this.NewestAssemblyWriteTime = FindNewestAssemblyWriteTime(compilerClasses);
-			this.ContentPathWriteTime = File.GetLastWriteTime(this.ContentPath);
+			globalFilePaths.ExpandAndAddFromList(contentFile.FilePaths, globalProps);
 
-			List<BuildTarget> BuildTargets = PrepareBuildTargets(contentFile.Targets, globalItems, globalProps);
+			List<CompilerClass> compilerClasses = LoadCompilerClasses(globalFilePaths, globalProps);
 
-			foreach (var buildTarget in BuildTargets)
+			SetNewestAssemblyWriteTime(compilerClasses);
+			contentFileWriteTime = File.GetLastWriteTime(this.ContentPath);
+
+			GenerateOutsideTargetsHash(globalProps, globalFilePaths);
+
+			List<BuildTarget> buildTargets = PrepareBuildTargets(
+				contentFile.Targets, globalFilePaths, globalProps, compilerClasses);
+
+			HashSet<string> newTargetHashes = new HashSet<string>();
+			string newGlobalContentHash;
+
+			// TODO: Set newGlobalContent hash from filepaths and props
+
+			foreach (var buildTarget in buildTargets)
 			{
-				bool compilerFound = false;
+				if (!IsCompileRequired(buildTarget))
+					continue;
 
-				foreach (var compilerClass in compilerClasses)
+				CompilerClass compilerClass = buildTarget.CompilerClass;
+
+				string msg = String.Format("Building target '{0}' with '{1}' compiler", buildTarget.Name, compilerClass.Name);
+
+				foreach (var input in buildTarget.InputPaths)
 				{
-					if (buildTarget.InputExtensions.SequenceEqual(compilerClass.InputExtensions) &&
-						buildTarget.OutputExtensions.SequenceEqual(compilerClass.OutputExtensions))
+					msg += Environment.NewLine + "\t" + input;
+				}
+
+				msg += Environment.NewLine + "\t->";
+
+				foreach (var output in buildTarget.OutputPaths)
+				{
+					msg += Environment.NewLine + "\t" + output;
+				}
+
+				Output.Message(MessageImportance.Normal, msg);
+
+				if (TestMode)
+					continue;
+
+				// Set the Context and Target properties on the Compiler class instance
+				compilerClass.ContextProperty.SetValue(compilerClass.Instance, buildContext, null);
+				compilerClass.TargetProperty.SetValue(compilerClass.Instance, buildTarget, null);
+
+				try
+				{
+					compilerClass.CompileMethod.Invoke(compilerClass.Instance, null);
+				}
+				catch (TargetInvocationException e)
+				{
+					ContentFileException contentEx = e.InnerException as ContentFileException;
+                    
+					if (contentEx != null)
 					{
-						compilerFound = true;
-
-						string msg = String.Format("Building target '{0}' with '{1}' compiler", buildTarget.Name, compilerClass.Name);
-
-						foreach (var input in buildTarget.InputFiles)
-						{
-							msg += Environment.NewLine + "\t" + input;
-						}
-
-						msg += Environment.NewLine + "\t->";
-
-						foreach (var output in buildTarget.OutputFiles)
-						{
-							msg += Environment.NewLine + "\t" + output;
-						}
-
-						Output.Message(MessageImportance.Normal, msg);
-
-						if (TestMode)
-							continue;
-
-						compilerClass.ContextProperty.SetValue(compilerClass.Instance, buildContext, null);
-						compilerClass.TargetProperty.SetValue(compilerClass.Instance, buildTarget, null);
-
-						try
-						{
-							compilerClass.CompileMethod.Invoke(compilerClass.Instance, null);
-						}
-						catch (TargetInvocationException e)
-						{
-							ContentFileException contentEx = e.InnerException as ContentFileException;
-                            
-							if (contentEx != null)
-							{
-								contentEx.EnsureFileNameAndLineNumber(buildContext.ContentFile, buildTarget.LineNumber);
-								throw contentEx;
-							}
-							else
-							{
-								throw new ContentFileException(
-									this.ContentPath, buildTarget.LineNumber, "Unable to compile target '{0}'".CultureFormat(buildTarget.Name), e.InnerException);
-							}
-						}
-
-						// Ensure that the output files were generated
-						foreach (var outputFile in buildTarget.OutputFiles)
-						{
-							if (!File.Exists(outputFile))
-							{
-								throw new ContentFileException(this.ContentPath, buildTarget.LineNumber, 
-									"Output file '{0}' was not generated".CultureFormat(outputFile));
-                           	}
-						}
+						contentEx.EnsureFileNameAndLineNumber(buildContext.ContentFilePath, buildTarget.LineNumber);
+						throw contentEx;
+					}
+					else
+					{
+						throw new ContentFileException(
+							this.ContentPath, buildTarget.LineNumber, "Unable to compile target '{0}'".CultureFormat(buildTarget.Name), e.InnerException);
 					}
 				}
 
-				if (!compilerFound)
-					Output.Warning("No compiler found for target '{0}' for extensions '{1}' -> '{2}'", 
-	               		buildTarget.Name, 
-			            String.Join(Path.PathSeparator.ToString(), buildTarget.InputExtensions),
-		                String.Join(Path.PathSeparator.ToString(), buildTarget.OutputExtensions));
+				// Ensure that the output files were generated
+				foreach (var outputFile in buildTarget.OutputPaths)
+				{
+					if (!File.Exists(outputFile))
+					{
+						throw new ContentFileException(this.ContentPath, buildTarget.LineNumber, 
+							"Output file '{0}' was not generated".CultureFormat(outputFile));
+                   	}
+				}
+
+				newTargetHashes.Add(buildTarget.Hash);
 			}
+
+			WriteContentFileHashes(newGlobalContentHash, newTargetHashes);
 
 			Output.Message(MessageImportance.Normal, "Done");
 		}
@@ -258,7 +274,11 @@ namespace Playroom
 		}
 
         #region Private Methods
-		private List<BuildTarget> PrepareBuildTargets(List<ContentFileV2.Target> rawTargets, ItemGroup globalItems, PropertyGroup globalProps)
+		private List<BuildTarget> PrepareBuildTargets(
+			List<ContentFileV3.Target> rawTargets, 
+			FilePathGroup globalItems, 
+			PropertyGroup globalProps,
+			IList<CompilerClass> compilerClasses)
 		{
 			List<BuildTarget> buildTargets = new List<BuildTarget>();
 
@@ -266,88 +286,7 @@ namespace Playroom
 			{
 				try
 				{
-					PropertyGroup targetProps = new PropertyGroup(globalProps);
-
-					targetProps.Set("TargetName", rawTarget.Name);
-					
-					if (rawTarget.Properties != null)
-						targetProps.ExpandAndAddFromList(rawTarget.Properties, targetProps);
-
-					ItemGroup targetItems = new ItemGroup(globalItems);
-
-					ParsedPathList inputFiles = new ParsedPathList();
-					string[] list = rawTarget.Inputs.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-
-					foreach (var rawInputFile in list)
-					{
-						ParsedPath pathSpec = null; 
-						string s = targetProps.ReplaceVariables(rawInputFile);
-
-						try
-						{
-							pathSpec = new ParsedPath(s, PathType.File).MakeFullPath();
-						}
-						catch (Exception e)
-						{
-							throw new ContentFileException("Bad path '{0}'".CultureFormat(s), e);
-						}
-
-						if (pathSpec.HasWildcards)
-						{
-							if (!Directory.Exists(pathSpec.VolumeAndDirectory))
-							{
-								throw new ContentFileException("Directory '{0}' does not exist".CultureFormat(pathSpec.VolumeAndDirectory));
-							}
-
-							IList<ParsedPath> files = DirectoryUtility.GetFiles(pathSpec, SearchScope.DirectoryOnly);
-
-							if (files.Count == 0)
-							{
-								throw new ContentFileException("Wildcard input refers to no files after expansion");
-							}
-
-							inputFiles = new ParsedPathList(inputFiles.Concat(files));
-						}
-						else
-						{
-							if (!File.Exists(pathSpec))
-							{
-								throw new ContentFileException("Input file '{0}' does not exist".CultureFormat(pathSpec));
-							}
-
-							inputFiles.Add(pathSpec);
-						}
-					}
-
-					ParsedPathList outputFiles = new ParsedPathList();
-
-					list = rawTarget.Outputs.Split(';');
-
-					foreach (var rawOutputFile in list)
-					{
-						string s = targetProps.ReplaceVariables(rawOutputFile);
-
-						try 
-						{
-							ParsedPath outputFile = new ParsedPath(s, PathType.File).MakeFullPath();
-
-							outputFiles.Add(outputFile);
-						}
-						catch (Exception e)
-						{
-							throw new ContentFileException("Bad path '{0}'".CultureFormat(s), e);
-						}
-					}
-
-					targetItems.Set("TargetInputs", inputFiles);
-					targetItems.Set("TargetOutputs", outputFiles);
-
-					bool needsRebuild = IsCompileRequired(inputFiles, outputFiles);
-
-					if (!needsRebuild)
-						continue;
-
-					buildTargets.Add(new BuildTarget(rawTarget.LineNumber, targetProps, targetItems));
+					buildTargets.Add(new BuildTarget(rawTarget, globalItems, globalProps, compilerClasses));
 				}
 				catch (Exception e)
 				{
@@ -355,12 +294,156 @@ namespace Playroom
 				}
 			}
 
-			return buildTargets;
+			return TopologicallySortBuildTargets(buildTargets);
 		}
 
-		private DateTime FindNewestAssemblyWriteTime(List<CompilerClass> compilerClasses)
+		private List<BuildTarget> TopologicallySortBuildTargets(List<BuildTarget> targets)
 		{
-			DateTime newestAssemblyWriteTime = DateTime.MinValue;
+			// Create a dictionary of paths -> targets for which they are an input to speed up building the graph
+			Dictionary<ParsedPath, List<BuildTarget>> inputPaths = new Dictionary<ParsedPath, List<BuildTarget>>();
+
+			foreach (var buildTarget in targets)
+			{
+				foreach (var path in buildTarget.InputPaths)
+				{
+					List<BuildTarget> inputTargets;
+
+					if (!inputPaths.TryGetValue(path, out inputTargets))
+					{
+						inputTargets = new List<BuildTarget>();
+						inputPaths.Add(path, targets);
+					}
+
+					targets.Add(buildTarget);
+				}
+			}
+
+			// Create an adjacency list to represent the graph of from -> to targets
+			Dictionary<BuildTarget, HashSet<BuildTarget>> graph = new Dictionary<BuildTarget, HashSet<BuildTarget>>();
+			Dictionary<BuildTarget, int> inputEdgeCounts = new Dictionary<BuildTarget, int>();
+
+			targets.ForEach(item => graph.Add(item, new HashSet<BuildTarget>()));
+			targets.ForEach(item => inputEdgeCounts[item] = 0);
+
+			foreach (var fromTarget in targets)
+			{
+				foreach (var outputPath in fromTarget.OutputPaths)
+				{
+					List<BuildTarget> outputTargets;
+
+					if (inputPaths.TryGetValue(outputPath, out outputTargets))
+				    {
+						// The from target has an output path which is an input path to other target(s),
+						// so add edges from the from target to each of those other targets
+						foreach (var outputTarget in outputTargets)
+						{
+							HashSet<BuildTarget> toTargets = graph[fromTarget];
+							toTargets.Add(outputTarget);
+							inputEdgeCounts[outputTarget]++;
+						}
+					}
+				}
+			}
+
+			Queue<BuildTarget> rootTargets = new Queue<BuildTarget>();
+			List<BuildTarget> orderedTargets = new List<BuildTarget>();
+
+			foreach (var buildTarget in targets)
+			{
+				if (inputEdgeCounts[buildTarget] == 0)
+					rootTargets.Enqueue(buildTarget);
+			}
+
+			// Do the sort
+			while (rootTargets.Count != 0)
+			{
+				BuildTarget fromTarget = rootTargets.Dequeue();
+
+				orderedTargets.Add(fromTarget);
+
+				HashSet<BuildTarget> toTargets = graph[fromTarget];
+
+				graph.Remove(fromTarget);
+
+				foreach (var toTarget in toTargets)
+				{
+					inputEdgeCounts[toTarget]--;
+
+					if (inputEdgeCounts[toTarget] == 0)
+					{
+						rootTargets.Enqueue(toTarget);
+					}
+				}
+			}
+
+			if (graph.Count != 0)
+			{
+				throw new ArgumentException("A circular target dependency exists starting at target '{0}'", graph.First().Key.Name);
+			}
+
+			return orderedTargets;
+		}
+
+		private void GenerateOutsideTargetsHash(PropertyGroup globalProps, FilePathGroup globalFilePaths)
+		{
+			SHA1 sha1 = new SHA1();
+			StringBuilder sb = new StringBuilder();
+
+			foreach (var property in globalProps)
+			{
+				// TODO: Finish this off - see BuildTarget constructor
+			}
+
+			return sha1.ComputeHash(Encoding.UTF8.GetBytes(sb.ToString()));
+		}
+
+		private void ReadContentFileHashes()
+		{
+			if (File.Exists(targetHashesPath))
+			{
+				try
+				{
+					BinaryFormatter formatter = new BinaryFormatter();
+					using (Stream stream = new FileStream(targetHashesPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+					{
+						// TODO: Read globalContent hash here too
+						targetHashes = (HashSet<string>)formatter.Deserialize(stream);
+					}
+				}
+				catch
+				{
+					// Bad file, don't use it again
+					File.Delete(targetHashesPath);
+				}
+			}
+
+			if (targetHashes == null)
+			{
+				targetHashes = new HashSet<string>();
+			}
+		}
+
+		private void WriteContentFileHashes(string globalContentHash, HashSet<string> targetHashes)
+		{
+			BinaryFormatter formatter = new BinaryFormatter();
+
+			try
+			{
+				using (Stream stream = new FileStream(targetHashesPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+				{
+					// TODO: Write globalContentHash too
+					formatter.Serialize(stream, targetHashes);
+				}
+			}
+			catch (Exception ex)
+			{
+				Output.Warning("Unable to write content hash file '{0}'".CultureFormat(targetHashesPath));
+			}
+		}
+
+		private void SetNewestAssemblyWriteTime(List<CompilerClass> compilerClasses)
+		{
+			newestAssemblyWriteTime = DateTime.MinValue;
 
 			foreach (var compilerClass in compilerClasses)
 			{
@@ -369,21 +452,19 @@ namespace Playroom
 				if (dateTime > newestAssemblyWriteTime)
 					newestAssemblyWriteTime = dateTime;
 			}
-
-			return newestAssemblyWriteTime;
 		}
 
-		private bool IsCompileRequired(IList<ParsedPath> inputFiles, IList<ParsedPath> outputFiles)
+		private bool IsCompileRequired(BuildTarget buildTarget)
 		{
-			if (Rebuild)
+			if (RebuildAll)
 				return true;
 
-			DateTime newestInputFile = ContentPathWriteTime > NewestAssemblyWriteTime ? 
-				ContentPathWriteTime : NewestAssemblyWriteTime;
+			DateTime lastWriteTime;
+			DateTime newestInputFile = newestAssemblyWriteTime;
 
-			foreach (var inputFile in inputFiles)
+			foreach (var inputPath in buildTarget.InputPaths)
 			{
-				DateTime lastWriteTime = File.GetLastWriteTime(inputFile);
+				lastWriteTime = File.GetLastWriteTime(inputPath);
 
 				if (lastWriteTime > newestInputFile)
 					newestInputFile = lastWriteTime;
@@ -391,21 +472,26 @@ namespace Playroom
 
 			DateTime oldestOutputFile = DateTime.MaxValue;
 
-			foreach (var outputFile in outputFiles)
+			foreach (var outputPath in buildTarget.OutputPaths)
 			{
-				DateTime lastWriteTime = File.GetLastWriteTime(outputFile);
+				lastWriteTime = File.GetLastWriteTime(outputPath);
 
 				if (lastWriteTime < oldestOutputFile)
 					oldestOutputFile = lastWriteTime;
 			}
 
+			// If the content file is newer than all inputs but it's hash is not present in the hash file
+			// then this targets definition changed or was added so consider the content file write time too.
+			if (contentFileWriteTime > newestInputFile && !targetHashes.Contains(buildTarget.Hash))
+				newestInputFile = contentFileWriteTime;
+
 			return newestInputFile > oldestOutputFile;
 		}
 
-		private List<CompilerClass> LoadCompilerClasses(ItemGroup itemGroup, PropertyGroup propGroup)
+		private List<CompilerClass> LoadCompilerClasses(FilePathGroup pathGroup, PropertyGroup propGroup)
 		{
 			List<CompilerClass> compilerClasses = new List<CompilerClass>();
-			IList<ParsedPath> paths = itemGroup.GetRequiredValue("CompilerAssembly");
+			IList<ParsedPath> paths = pathGroup.GetRequiredValue("CompilerAssembly");
 
 			foreach (var path in paths)
 			{

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -51,7 +51,7 @@ namespace Playroom
 
         public void Compile()
         {
-            IEnumerable<ParsedPath> pinboardFileNames = Target.InputFiles.Where(f => f.Extension == ".pinboard");
+            IEnumerable<ParsedPath> pinboardFileNames = Target.InputPaths.Where(f => f.Extension == ".pinboard");
             IEnumerable<ParsedPath> distinctPinboardFileNames = pinboardFileNames.Distinct<ParsedPath>(new FileNameEqualityComparer());
 
             Dictionary<ParsedPath, PinboardFileV1> pinboards = ReadPinboardFiles(pinboardFileNames);
@@ -59,7 +59,7 @@ namespace Playroom
             ReconcilePinboards(pinboardFileNames, distinctPinboardFileNames, pinboards);
 
             TextWriter writer;
-            ParsedPath csFileName = Target.OutputFiles.Where(f => f.Extension == ".cs").First();
+            ParsedPath csFileName = Target.OutputPaths.Where(f => f.Extension == ".cs").First();
 
             Context.Output.Message(MessageImportance.Low, "Writing output file '{0}'", csFileName);
 
@@ -178,7 +178,7 @@ namespace Playroom
                 }
                 catch (Exception e)
                 {
-                    throw new ContentFileException(Context.ContentFile, Target.LineNumber, String.Format("Unable to read pinboard file '{0}'", pinboardFile), e);
+                    throw new ContentFileException(Context.ContentFilePath, Target.LineNumber, String.Format("Unable to read pinboard file '{0}'", pinboardFile), e);
                 }
 
                 pinboards.Add(pinboardFile, pinboard);
@@ -210,7 +210,7 @@ namespace Playroom
 
                         if (goldPinboard.RectInfos.Count != pinboard.RectInfos.Count)
                         {
-                            throw new ContentFileException(Context.ContentFile, Target.LineNumber, string.Format("Pinboard '{0}' and '{1}' have a different number of rectangles",
+                            throw new ContentFileException(Context.ContentFilePath, Target.LineNumber, string.Format("Pinboard '{0}' and '{1}' have a different number of rectangles",
                                 goldPinboardFile, pinboardFile));
                         }
 
@@ -218,7 +218,7 @@ namespace Playroom
                         {
                             if (goldPinboard.RectInfos[i].Name != pinboard.RectInfos[i].Name)
                             {
-                                throw new ContentFileException(Context.ContentFile, Target.LineNumber, string.Format("RectangleInfo named {0} at depth {1} in pinboard '{2}' is different from pinboard '{3}'",
+                                throw new ContentFileException(Context.ContentFilePath, Target.LineNumber, string.Format("RectangleInfo named {0} at depth {1} in pinboard '{2}' is different from pinboard '{3}'",
                                     goldPinboard.RectInfos[i].Name, i, goldPinboardFile, pinboardFile));
                             }
                         }

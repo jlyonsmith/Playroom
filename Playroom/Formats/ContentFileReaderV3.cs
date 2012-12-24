@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,17 +8,17 @@ using System.IO;
 
 namespace Playroom
 {
-    public class ContentFileReaderV2
+    public class ContentFileReaderV3
     {
-		private string itemGroupAtom;
+		private string filePathGroupAtom;
 		private string propertyGroupAtom;
 		private string targetAtom;
 		private string contentAtom;
         private XmlReader reader;
 
-        private ContentFileReaderV2(XmlReader reader)
+        private ContentFileReaderV3(XmlReader reader)
         {
-            itemGroupAtom = reader.NameTable.Add("ItemGroup");
+            filePathGroupAtom = reader.NameTable.Add("FilePathGroup");
             propertyGroupAtom = reader.NameTable.Add("PropertyGroup");
             targetAtom = reader.NameTable.Add("Target");
             contentAtom = reader.NameTable.Add("Content");
@@ -27,13 +27,13 @@ namespace Playroom
             this.reader.MoveToContent();
         }
 
-        public static ContentFileV2 ReadFile(ParsedPath contentFile)
+        public static ContentFileV3 ReadFile(ParsedPath contentFile)
         {
             using (XmlReader reader = XmlReader.Create(contentFile))
             {
                 try
                 {
-                    return new ContentFileReaderV2(reader).ReadContentElement();
+                    return new ContentFileReaderV3(reader).ReadContentElement();
                 }
                 catch (Exception e)
                 {
@@ -43,9 +43,9 @@ namespace Playroom
             }
         }
 
-        private ContentFileV2 ReadContentElement()
+        private ContentFileV3 ReadContentElement()
 		{
-			ContentFileV2 data = new ContentFileV2();
+			ContentFileV3 data = new ContentFileV3();
 
 			string version = reader.GetAttribute("Version");
 
@@ -58,8 +58,8 @@ namespace Playroom
 			reader.ReadStartElement(contentAtom);
 			reader.MoveToContent();
 
-			data.Items = new List<ContentFileV2.Item>();
-			data.Targets = new List<ContentFileV2.Target>();
+			data.FilePaths = new List<ContentFileV3.FilePathGroup>();
+			data.Targets = new List<ContentFileV3.Target>();
 
 			while (true)
 			{
@@ -70,18 +70,20 @@ namespace Playroom
 					break;
 				}
 
+				// TODO: Add a global property group too
+
 				if (reader.NodeType == XmlNodeType.Element)
 				{
-					if (String.ReferenceEquals(reader.Name, itemGroupAtom))
+					if (String.ReferenceEquals(reader.Name, filePathGroupAtom))
 					{
-						List<ContentFileV2.Item> items = ReadItemGroupElement();
+						List<ContentFileV3.FilePathGroup> pathGroup = ReadFilePathGroupElement();
 
-						data.Items.AddRange(items);
+						data.FilePaths.AddRange(pathGroup);
 						continue;
 					}
 					else if (String.ReferenceEquals(reader.Name, targetAtom))
 					{
-						ContentFileV2.Target target = ReadTargetElement();
+						ContentFileV3.Target target = ReadTargetElement();
 
 						foreach (var otherTarget in data.Targets)
 						{
@@ -94,71 +96,76 @@ namespace Playroom
 					}
 				}
 
-				throw new XmlException("Expected ItemGroup, PropertyGroup or Target element");
+				throw new XmlException("Expected FilePathGroup, PropertyGroup or Target element");
 			}
 
             return data;
         }
 
-        private List<ContentFileV2.Item> ReadItemGroupElement()
+        private List<ContentFileV3.FilePathGroup> ReadFilePathGroupElement()
         {
-			List<ContentFileV2.Item> itemGroup = new List<ContentFileV2.Item>();
+			List<ContentFileV3.FilePathGroup> pathGroups = new List<ContentFileV3.FilePathGroup>();
 
             // Read outer collection element
-            reader.ReadStartElement(itemGroupAtom);
+            reader.ReadStartElement(filePathGroupAtom);
             reader.MoveToContent();
 
             while (true)
             {
-                if (String.ReferenceEquals(reader.Name, itemGroupAtom))
+                if (String.ReferenceEquals(reader.Name, filePathGroupAtom))
                 {
                     reader.ReadEndElement();
                     reader.MoveToContent();
                     break;
                 }
 
-				ContentFileV2.Item item = ReadItemElement();
+				ContentFileV3.FilePathGroup pathGroup = ReadItemElement();
 
-				itemGroup.Add(item);
+				pathGroups.Add(pathGroup);
 
-				// Deal with an item that has and end element
-				if (reader.NodeType == XmlNodeType.EndElement && reader.Name == item.Name)
+				// Deal with an item that has an end element
+				if (reader.NodeType == XmlNodeType.EndElement && reader.Name == pathGroup.Name)
 				{
 					reader.ReadEndElement();
 					reader.MoveToContent();
 				}
             }
 
-            return itemGroup;
+            return pathGroups;
         }
 
-        private ContentFileV2.Item ReadItemElement()
+        private ContentFileV3.FilePathGroup ReadItemElement()
         {
-			ContentFileV2.Item item = new ContentFileV2.Item();
+			ContentFileV3.FilePathGroup pathGroup = new ContentFileV3.FilePathGroup();
 			
-			item.Name = reader.Name;
-            item.Include = reader.GetAttribute("Include");
+			pathGroup.Name = reader.Name;
+            pathGroup.Include = reader.GetAttribute("Include");
 
-			if (String.IsNullOrEmpty(item.Include))
+			if (String.IsNullOrEmpty(pathGroup.Include))
 				throw new XmlException("Include attribute must be specified");
 
-            item.Exclude = reader.GetAttribute("Exclude");
+            pathGroup.Exclude = reader.GetAttribute("Exclude");
 
 			reader.Skip();
             reader.MoveToContent();
 
-			return item;
+			return pathGroup;
         }
 
-		private ContentFileV2.Target ReadTargetElement()
+		private ContentFileV3.Target ReadTargetElement()
 		{
-			ContentFileV2.Target target = new ContentFileV2.Target();
+			ContentFileV3.Target target = new ContentFileV3.Target();
 
 			target.LineNumber = ((IXmlLineInfo)reader).LineNumber;
 			target.Name = reader.GetAttribute("Name");
 
 			if (String.IsNullOrWhiteSpace(target.Name))
 				throw new XmlException("Target 'Name' attribute must be set");
+			
+			target.Compiler = reader.GetAttribute("Compiler");
+
+			if (String.IsNullOrWhiteSpace(target.Compiler))
+				target.Compiler = String.Empty;
 
 			target.Inputs = reader.GetAttribute("Inputs");
 

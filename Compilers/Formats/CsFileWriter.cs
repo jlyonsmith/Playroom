@@ -1,6 +1,6 @@
 using System;
 
-namespace Playroom.Formats
+namespace Playroom
 {
 	public class CsFileWriter
 	{

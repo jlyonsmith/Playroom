@@ -9,14 +9,13 @@ namespace Playroom
 {
     public class BuildContext
     {
-        public BuildContext(OutputHelper output, ParsedPath contentFile)
+        public BuildContext(OutputHelper output, ParsedPath contentFilePath)
         {
             this.Output = output;
-            this.ContentFile = contentFile;
+            this.ContentFilePath = contentFilePath;
         }
 
-        public ParsedPath ContentFile { get; set; }
+        public ParsedPath ContentFilePath { get; private set; }
         public OutputHelper Output { get; private set; }
-		public ItemGroup Items { get; private set; }
     }
 }

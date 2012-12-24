@@ -23,8 +23,8 @@ namespace Playroom
 
 		public void Compile()
 		{
-			ParsedPath svgFileName = Target.InputFiles.Where(f => f.Extension == ".svg").First();
-			ParsedPath pngFileName = Target.OutputFiles.Where(f => f.Extension == ".png").First();
+			ParsedPath svgFileName = Target.InputPaths.Where(f => f.Extension == ".svg").First();
+			ParsedPath pngFileName = Target.OutputPaths.Where(f => f.Extension == ".png").First();
 
 			int width, height;
 

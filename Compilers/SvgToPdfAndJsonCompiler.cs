@@ -1,11 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ToolBelt;
 using System.IO;
 using System.Xml;
-using Playroom.Formats;
 
 namespace Playroom
 {
@@ -26,9 +25,9 @@ namespace Playroom
 
         public void Compile()
 		{
-			IEnumerable<ParsedPath> svgPaths = Target.InputFiles.Where(f => f.Extension == ".svg");
-			ParsedPath pdfPath = Target.OutputFiles.Where(f => f.Extension == ".pdf").First();
-			ParsedPath jsonPath = Target.OutputFiles.Where(f => f.Extension == ".json").First();
+			IEnumerable<ParsedPath> svgPaths = Target.InputPaths.Where(f => f.Extension == ".svg");
+			ParsedPath pdfPath = Target.OutputPaths.Where(f => f.Extension == ".pdf").First();
+			ParsedPath jsonPath = Target.OutputPaths.Where(f => f.Extension == ".json").First();
 
 			// TODO: Ensure that pdf and xnb have the same root directories (and volumes)
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -83,15 +83,15 @@ namespace Playroom
 
         public void Compile()
         {
-            ParsedPath resxFile = Target.InputFiles.Where(f => f.Extension == ".resx").First();
-            ParsedPath stringsFile = Target.OutputFiles.Where(f => f.Extension == ".strings").First();
-			List<ResourceItem> resources = ReadResources(resxFile);
+            ParsedPath resxPath = Target.InputPaths.Where(f => f.Extension == ".resx").First();
+            ParsedPath stringsPath = Target.OutputPaths.Where(f => f.Extension == ".strings").First();
+			List<ResourceItem> resources = ReadResources(resxPath);
             XmlWriterSettings xmlSettings = new XmlWriterSettings();
 
             xmlSettings.Indent = true;
             xmlSettings.IndentChars = "\t";
 
-            using (XmlWriter xmlWriter = XmlWriter.Create(stringsFile, xmlSettings))
+            using (XmlWriter xmlWriter = XmlWriter.Create(stringsPath, xmlSettings))
             {
                 xmlWriter.WriteStartDocument();
                 xmlWriter.WriteStartElement("Strings");

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playroom.MacOS", "Playroom\Playroom.MacOS.csproj", "{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playroom", "Playroom\Playroom.csproj", "{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildContent", "BuildContent\BuildContent.csproj", "{95B09EAB-7C4F-409C-B099-328C0DA3AF80}"
 EndProject
@@ -14,12 +14,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RawContent", "RawContent", "{FEB7E5A8-73FC-4112-AFBD-D72CD03060B4}"
 	ProjectSection(SolutionItems) = preProject
 		Test\RawContent\TestContent.content = Test\RawContent\TestContent.content
-		Test\RawContent\TestSpriteFont.content = Test\RawContent\TestSpriteFont.content
 		Test\RawContent\Example.pdf = Test\RawContent\Example.pdf
 		Test\RawContent\Example.pinboard = Test\RawContent\Example.pinboard
 		Test\RawContent\Example.png = Test\RawContent\Example.png
 		Test\RawContent\Example.resx = Test\RawContent\Example.resx
-		Test\RawContent\Example.spritefont = Test\RawContent\Example.spritefont
 		Test\RawContent\Example.strings = Test\RawContent\Example.strings
 		Test\RawContent\Example.svg = Test\RawContent\Example.svg
 		Test\RawContent\Example.wav = Test\RawContent\Example.wav
@@ -31,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE = LICENSE
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compilers", "Compilers\Compilers.csproj", "{1D531486-0385-4E9E-AB1B-755CEFF3A445}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playroom.Compilers", "Compilers\Playroom.Compilers.csproj", "{1D531486-0385-4E9E-AB1B-755CEFF3A445}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

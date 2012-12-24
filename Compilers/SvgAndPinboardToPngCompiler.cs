@@ -18,9 +18,9 @@ namespace Playroom
 
 		public void Compile()
 		{
-			IEnumerable<ParsedPath> svgPaths = Target.InputFiles.Where(f => f.Extension == ".svg");
-			ParsedPath pinboardPath = Target.InputFiles.Where(f => f.Extension == ".pinboard").First();
-			ParsedPath pngPath = Target.OutputFiles.Where(f => f.Extension == ".png").First();
+			IEnumerable<ParsedPath> svgPaths = Target.InputPaths.Where(f => f.Extension == ".svg");
+			ParsedPath pinboardPath = Target.InputPaths.Where(f => f.Extension == ".pinboard").First();
+			ParsedPath pngPath = Target.OutputPaths.Where(f => f.Extension == ".png").First();
 			PinboardFileV1 pinboardFile = PinboardFileCache.Load(pinboardPath);
 			List<ImagePlacement> placements = new List<ImagePlacement>();
 			string[] rectangleNames;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +6,8 @@ using System.Xml;
 using System.IO;
 using System.Drawing;
 using ToolBelt;
-using Playroom.Formats;
 
-namespace Playroom
+namespace Playroom.Compilers
 {
     public class PinboardToXnbCompiler : IContentCompiler
     {
@@ -21,8 +20,8 @@ namespace Playroom
 
         public void Compile()
         {
-            ParsedPath pinboardPath = Target.InputFiles.Where(f => f.Extension == ".pinboard").First();
-            ParsedPath jsonPath = Target.OutputFiles.Where(f => f.Extension == ".json").First();
+            ParsedPath pinboardPath = Target.InputPaths.Where(f => f.Extension == ".pinboard").First();
+            ParsedPath jsonPath = Target.OutputPaths.Where(f => f.Extension == ".json").First();
             PinboardFileV1 pinboard = PinboardFileCache.Load(pinboardPath);
             Rectangle[] rectangles = new Rectangle[pinboard.RectInfos.Count + 1];
 

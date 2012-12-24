@@ -3,7 +3,7 @@ using System.IO;
 using System.Json;
 using ToolBelt;
 
-namespace Playroom.Formats
+namespace Playroom
 {
 	public class JsonFileWriter
 	{

@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ToolBelt;
 using System.IO;
-using Playroom.Formats;
 
 namespace Playroom
 {
@@ -44,9 +43,9 @@ namespace Playroom
 
         public void Compile()
         {
-            ParsedPath stringsFileName = Target.InputFiles.Where(f => f.Extension == ".strings").First();
-            ParsedPath jsonFileName = Target.OutputFiles.Where(f => f.Extension == ".json").First();
-            ParsedPath csFileName = Target.OutputFiles.Where(f => f.Extension == ".cs").First();
+            ParsedPath stringsFileName = Target.InputPaths.Where(f => f.Extension == ".strings").First();
+            ParsedPath jsonFileName = Target.OutputPaths.Where(f => f.Extension == ".json").First();
+            ParsedPath csFileName = Target.OutputPaths.Where(f => f.Extension == ".cs").First();
 
 			string className;
 

@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Content Version = "2">
-	<ItemGroup>
+<Content Version = "3">
+	<FilePathGroup>
 		<CompilerAssembly Include="$(BuildContentInstallDir)\Playroom.Compilers.dll" />
-	</ItemGroup>
+	</FilePathGroup>
 
 	<!-- PinboardToCsCompiler -->
 
@@ -15,12 +15,12 @@
 		</PropertyGroup>
 	</Target>
 
-	<!-- PinboardToXnbCompiler -->
+	<!-- PinboardToJsonCompiler -->
 
 	<Target
-		Name="ExamplePinboard"
+		Name="ExamplePinboardJson"
 		Inputs="$(InputDir)\Example.pinboard"
-		Outputs="$(OutputDir)\$(TargetName).xnb">
+		Outputs="$(OutputDir)\$(TargetName).json">
 	</Target>
 
 	<!-- ResxToStringsCompiler -->
@@ -31,44 +31,31 @@
 			Outputs="$(OutputDir)\$(TargetName).strings">
 	</Target>
 
-	<!-- StringsToXnbAndCsCompiler -->
+	<!-- StringsToJsonAndCsCompiler -->
 
 	<Target
 		Name="ExampleStrings2"
 		Inputs="$(InputDir)\Example.strings"
-		Outputs="$(OutputDir)\$(TargetName).cs;$(OutputDir)\$(TargetName).xnb">
+		Outputs="$(OutputDir)\$(TargetName).cs;$(OutputDir)\$(TargetName).json">
 		<PropertyGroup>
 			<Namespace>Company.Product</Namespace>
 		</PropertyGroup>
 	</Target>
 	
-	<!-- PngToXnbCompiler -->
+	<!-- PngToPngCompiler -->
 	
 	<Target
 		Name="ExamplePng"
 		Inputs="$(InputDir)\Example.png"
-		Outputs="$(OutputDir)\$(TargetName).xnb">
-		<PropertyGroup>
-			<CompressionType>Dxt5</CompressionType>
-		</PropertyGroup>
+		Outputs="$(OutputDir)\$(TargetName).png">
 	</Target>
 	
-	<!-- SpritefontAndStringsToXnbCompiler --> 
+	<!-- SvgAndPinboardToPngCompiler -->
 
 	<Target
-		Name="ExampleSpritefontStringsXnb"
-		Inputs="$(InputDir)\Example.spritefont;
-			$(InputDir)\Example.strings"
-		Outputs="$(OutputDir)\$(TargetName).xnb">
-	<!-- Leave this as having an end element -->
-	</Target>
-	
-	<!-- SvgAndPinboardToXnbCompiler -->
-
-	<Target
-		Name="ExampleSvgPinboardXnb"
+		Name="ExampleSvgPinboardPng"
 		Inputs="$(InputDir)\Example.svg;$(InputDir)\Example.pinboard"
-		Outputs="$(OutputDir)\$(TargetName).xnb">
+		Outputs="$(OutputDir)\$(TargetName).png">
 		<PropertyGroup>
 			<Rectangle>Thing</Rectangle>
 		</PropertyGroup>
@@ -100,20 +87,20 @@
 	<!-- SvgToPdfAndXnbCompiler -->
 
 	<Target
-		Name="ExampleSvgPdfXnb"
+		Name="ExampleSvgPdfPng"
 		Inputs="$(InputDir)\Example.svg"
-		Outputs="$(OutputDir)\$(TargetName).pdf;$(OutputDir)\$(TargetName).xnb">
+		Outputs="$(OutputDir)\$(TargetName).pdf;$(OutputDir)\$(TargetName).png">
 		<PropertyGroup>
 			<Pinboard>Example</Pinboard>
 			<Rectangle>Screen</Rectangle>
 		</PropertyGroup>
 	</Target>
 	
-	<!-- WavToXnbCompiler -->
+	<!-- WavToWavCompiler -->
 
 	<Target
-		Name="ExampleWavXnb"
+		Name="ExampleWavWav"
 		Inputs="$(InputDir)\Example.wav"
-		Outputs="$(OutputDir)\$(TargetName).xnb"/>
+		Outputs="$(OutputDir)\$(TargetName).wav"/>
 	
 </Content>
