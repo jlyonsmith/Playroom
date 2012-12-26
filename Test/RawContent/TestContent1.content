@@ -1,4 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Straightforward test of all the built-in compilers -->
+
 <Content Version = "3">
 	<FilePathGroup>
 		<CompilerAssembly Include="$(BuildContentInstallDir)\Playroom.Compilers.dll" />

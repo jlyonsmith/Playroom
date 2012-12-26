@@ -8,7 +8,7 @@
     <ProjectGuid>{1D531486-0385-4E9E-AB1B-755CEFF3A445}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Playroom.Compilers</RootNamespace>
-    <AssemblyName>Compilers</AssemblyName>
+    <AssemblyName>Playroom.Compilers</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -63,8 +63,6 @@
     <Compile Include="ImageTools.cs" />
     <Compile Include="Formats\CsFileWriter.cs" />
     <Compile Include="Formats\JsonFileWriter.cs" />
-    <Compile Include="PngToPngCompiler.cs" />
-    <Compile Include="WavToWavCompiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

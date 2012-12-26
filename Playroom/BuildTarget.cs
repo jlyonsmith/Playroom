@@ -11,21 +11,21 @@ namespace Playroom
     public class BuildTarget
     {
 		public BuildTarget(
-			ContentFileV3.Target rawTarget, 
+			ContentFileV3.Target contentFileTarget, 
 			FilePathGroup globalItems, 
 			PropertyGroup globalProps, 
 			IList<CompilerClass> compilerClasses)
 		{
-			this.Name = rawTarget.Name;
+			this.Name = contentFileTarget.Name;
 			this.Properties = new PropertyGroup(globalProps);
 			this.Properties.Set("TargetName", this.Name);
 			
-			if (rawTarget.Properties != null)
-				this.Properties.ExpandAndAddFromList(rawTarget.Properties, this.Properties);
+			if (contentFileTarget.Properties != null)
+				this.Properties.ExpandAndAddFromList(contentFileTarget.Properties, this.Properties);
 			
 			this.InputPaths = new ParsedPathList();
 
-			string[] list = rawTarget.Inputs.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+			string[] list = contentFileTarget.Inputs.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
 			
 			foreach (var rawInputFile in list)
 			{
@@ -70,7 +70,7 @@ namespace Playroom
 			
 			this.OutputPaths = new ParsedPathList();
 			
-			list = rawTarget.Outputs.Split(';');
+			list = contentFileTarget.Outputs.Split(';');
 			
 			foreach (var rawOutputFile in list)
 			{
@@ -98,7 +98,7 @@ namespace Playroom
 			
 			CompilerClass compilerClass = null;
 			
-			if (String.IsNullOrEmpty(rawTarget.Compiler))
+			if (String.IsNullOrEmpty(contentFileTarget.Compiler))
 			{
 				IEnumerator<CompilerClass> e = compilerClasses.GetEnumerator();
 				
@@ -125,26 +125,21 @@ namespace Playroom
 			else
 			{
 				// TODO: Search for the compiler based on the supplied name and validate it handles the extensions
-				throw new ArgumentException("Supplied compiler '{0}' was not found".CultureFormat(rawTarget.Compiler));
+				throw new ArgumentException("Supplied compiler '{0}' was not found".CultureFormat(contentFileTarget.Compiler));
 			}
 				
 			SHA1 sha1 = SHA1.Create();
 			StringBuilder sb = new StringBuilder();
 
-			foreach (KeyValuePair<string, string> pair in Properties)
+			foreach (var property in contentFileTarget.Properties)
 			{
-				sb.Append(pair.Key);
-				sb.Append(pair.Value);
+				sb.Append(property.Item1);
+				sb.Append(property.Item2);
 			}
 
-			sb.Append(CompilerClass.Name);
-
-			foreach (KeyValuePair<string, ParsedPathList> pair in InputPaths)
-			{
-				// TODO: Finish this off...
-			}
-
-			// TODO: Do the output files too...
+			sb.Append(contentFileTarget.Compiler);
+			sb.Append(contentFileTarget.Inputs);
+			sb.Append(contentFileTarget.Outputs);
 
 			sha1.ComputeHash(Encoding.UTF8.GetBytes(sb.ToString()));
 			Hash = BitConverter.ToString(sha1.Hash);

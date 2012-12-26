@@ -1,8 +1,6 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-// TODO: Add a compiler which generates a list of all the textures
-
 [assembly: AssemblyTitle("Playroom")]
 [assembly: AssemblyDescription("Playroom Standard Content Compilers")]
 [assembly: AssemblyConfiguration("")]

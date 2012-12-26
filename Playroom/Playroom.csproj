@@ -69,7 +69,7 @@
     <Compile Include="FilePathGroup.cs" />
     <Compile Include="Formats\ContentFileReaderV3.cs" />
     <Compile Include="Formats\ContentFileV3.cs" />
-    <Compile Include="ForEach.cs" />
+    <Compile Include="DefaultCompiler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PlayroomResources.resx" />

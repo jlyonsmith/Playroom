@@ -13,6 +13,7 @@ namespace Playroom
 
 		public static void WriteFile(ParsedPath fileName, object rootObject)
 		{
+			// TODO: Write out simple objects as .json
 		}
 	}
 }

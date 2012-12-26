@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Create some chained dependencies to test topological sorting of targets -->
+
+<Content Version = "3">
+
+	<!-- Use this target to create a circular dependency -->
+<!--
+	<Target 
+		Name="T5"
+		Inputs="$(InputDir)\F5.txt"
+		Outputs="$(OutputDir)\F3.txt">
+	</Target>
+-->
+
+	<Target 
+		Name="T4"
+		Inputs="$(InputDir)\F2.txt"
+		Outputs="$(OutputDir)\F5.txt">
+	</Target>
+
+	<Target
+		Name="T3"
+		Inputs="$(OutputDir)\F3.txt"
+		Outputs="$(OutputDir)\F4.txt">
+	</Target>
+
+	<Target
+		Name="T2"
+		Inputs="$(OutputDir)\F2.txt"
+		Outputs="$(OutputDir)\F3.txt">
+	</Target>
+
+	<Target 
+		Name="T1"
+		Inputs="$(InputDir)\F1.txt"
+		Outputs="$(OutputDir)\F2.txt">
+	</Target>
+
+</Content>

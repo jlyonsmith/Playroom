@@ -8,6 +8,8 @@ using System.Xml;
 
 namespace Playroom
 {
+	// TODO: Change the extension of this .json file to .pngdef
+
     public class SvgToPdfAndJsonCompiler : IContentCompiler
     {
         #region IContentCompiler Members

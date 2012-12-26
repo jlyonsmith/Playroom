@@ -11,16 +11,21 @@ using System.Security.Cryptography;
 
 namespace Playroom
 {
+	// TODO: Add property to control if default compiler is used or not
+
 	[CommandLineTitle("Playroom Content Builder")]
 	[CommandLineDescription("A tool for compiling game and application content from raw resources")]
 	public class BuildContentTool : ITool, IProcessCommandLine
 	{
         #region Fields
 		private bool runningFromCommandLine = false;
-		private HashSet<string> targetHashes;
-		// TODO: Set this after reading the content file
-		private string globalContentHash;
-		private ParsedPath targetHashesPath;
+		private PropertyGroup globalProps;
+		private FilePathGroup globalFilePaths;
+		private List<CompilerClass> compilerClasses;
+		private ContentFileV3 contentFile;
+		private HashSet<string> contentTargetHashes;
+		private string contentGlobalHash;
+		private ParsedPath contentFileHashesPath;
 		private DateTime contentFileWriteTime;
 		private DateTime newestAssemblyWriteTime;
 
@@ -151,8 +156,7 @@ namespace Playroom
 			}
 
 			// Initialize properties from the environment and command line
-			// TODO: This should be a field, and removed as a parameter from methods
-			PropertyGroup globalProps = new PropertyGroup();
+			globalProps = new PropertyGroup();
 
 			globalProps.AddFromEnvironment();
 			globalProps.AddWellKnownProperties(
@@ -162,107 +166,24 @@ namespace Playroom
 
 			BuildContext buildContext = new BuildContext(this.Output, this.ContentPath);
 
-			ContentFileV3 contentFile = null;
-
-			try
-			{
-				contentFile = ContentFileReaderV3.ReadFile(this.ContentPath);
-			}
-			catch (Exception e)
-			{
-				throw new ContentFileException(this.ContentPath, (int)e.Data["LineNumber"], "Problem reading content file", e);
-			}
-
-			Output.Message(MessageImportance.Low, "Read content file '{0}'", this.ContentPath);
-
-			targetHashesPath = new ParsedPath(
-				globalProps.GetOptionalValue("TargetHashesFile", globalProps.ReplaceVariables("$(OutputDir)" + ContentPath.FileAndExtension + ".hashes")), 
-				PathType.File);
-
+			ReadContentFile();
+			SetContentFileHashesPath();
 			ReadContentFileHashes();
 
-			FilePathGroup globalFilePaths = new FilePathGroup();
-
+			globalFilePaths = new FilePathGroup();
 			globalFilePaths.ExpandAndAddFromList(contentFile.FilePaths, globalProps);
 
-			List<CompilerClass> compilerClasses = LoadCompilerClasses(globalFilePaths, globalProps);
+			LoadCompilerClasses();
+			SetNewestAssemblyWriteTime();
 
-			SetNewestAssemblyWriteTime(compilerClasses);
 			contentFileWriteTime = File.GetLastWriteTime(this.ContentPath);
 
-			GenerateOutsideTargetsHash(globalProps, globalFilePaths);
-
-			List<BuildTarget> buildTargets = PrepareBuildTargets(
-				contentFile.Targets, globalFilePaths, globalProps, compilerClasses);
-
-			HashSet<string> newTargetHashes = new HashSet<string>();
+			List<BuildTarget> buildTargets;
 			string newGlobalContentHash;
+			HashSet<string> newTargetHashes;
 
-			// TODO: Set newGlobalContent hash from filepaths and props
-
-			foreach (var buildTarget in buildTargets)
-			{
-				if (!IsCompileRequired(buildTarget))
-					continue;
-
-				CompilerClass compilerClass = buildTarget.CompilerClass;
-
-				string msg = String.Format("Building target '{0}' with '{1}' compiler", buildTarget.Name, compilerClass.Name);
-
-				foreach (var input in buildTarget.InputPaths)
-				{
-					msg += Environment.NewLine + "\t" + input;
-				}
-
-				msg += Environment.NewLine + "\t->";
-
-				foreach (var output in buildTarget.OutputPaths)
-				{
-					msg += Environment.NewLine + "\t" + output;
-				}
-
-				Output.Message(MessageImportance.Normal, msg);
-
-				if (TestMode)
-					continue;
-
-				// Set the Context and Target properties on the Compiler class instance
-				compilerClass.ContextProperty.SetValue(compilerClass.Instance, buildContext, null);
-				compilerClass.TargetProperty.SetValue(compilerClass.Instance, buildTarget, null);
-
-				try
-				{
-					compilerClass.CompileMethod.Invoke(compilerClass.Instance, null);
-				}
-				catch (TargetInvocationException e)
-				{
-					ContentFileException contentEx = e.InnerException as ContentFileException;
-                    
-					if (contentEx != null)
-					{
-						contentEx.EnsureFileNameAndLineNumber(buildContext.ContentFilePath, buildTarget.LineNumber);
-						throw contentEx;
-					}
-					else
-					{
-						throw new ContentFileException(
-							this.ContentPath, buildTarget.LineNumber, "Unable to compile target '{0}'".CultureFormat(buildTarget.Name), e.InnerException);
-					}
-				}
-
-				// Ensure that the output files were generated
-				foreach (var outputFile in buildTarget.OutputPaths)
-				{
-					if (!File.Exists(outputFile))
-					{
-						throw new ContentFileException(this.ContentPath, buildTarget.LineNumber, 
-							"Output file '{0}' was not generated".CultureFormat(outputFile));
-                   	}
-				}
-
-				newTargetHashes.Add(buildTarget.Hash);
-			}
-
+			PrepareBuildTargets(out buildTargets);
+			BuildTargets(buildContext, buildTargets, out newGlobalContentHash, out newTargetHashes);
 			WriteContentFileHashes(newGlobalContentHash, newTargetHashes);
 
 			Output.Message(MessageImportance.Normal, "Done");
@@ -274,19 +195,85 @@ namespace Playroom
 		}
 
         #region Private Methods
-		private List<BuildTarget> PrepareBuildTargets(
-			List<ContentFileV3.Target> rawTargets, 
-			FilePathGroup globalItems, 
-			PropertyGroup globalProps,
-			IList<CompilerClass> compilerClasses)
-		{
-			List<BuildTarget> buildTargets = new List<BuildTarget>();
 
-			foreach (var rawTarget in rawTargets)
+		private void ReadContentFile()
+		{
+			try
+			{
+				contentFile = ContentFileReaderV3.ReadFile(this.ContentPath);
+			}
+			catch (Exception e)
+			{
+				throw new ContentFileException(this.ContentPath, (int)e.Data["LineNumber"], "Problem reading content file", e);
+			}
+
+			Output.Message(MessageImportance.Low, "Read content file '{0}'", this.ContentPath);
+		}
+
+		void BuildTargets(BuildContext buildContext, List<BuildTarget> buildTargets, out string newGlobalContentHash, out HashSet<string> newTargetHashes)
+		{
+			newGlobalContentHash = GenerateGlobalContentHash();
+			newTargetHashes = new HashSet<string>();
+
+			foreach (var buildTarget in buildTargets)
+			{
+				if (!IsCompileRequired(buildTarget, newGlobalContentHash))
+					continue;
+				CompilerClass compilerClass = buildTarget.CompilerClass;
+				string msg = String.Format("Building target '{0}' with '{1}' compiler", buildTarget.Name, compilerClass.Name);
+				foreach (var input in buildTarget.InputPaths)
+				{
+					msg += Environment.NewLine + "\t" + input;
+				}
+				msg += Environment.NewLine + "\t->";
+				foreach (var output in buildTarget.OutputPaths)
+				{
+					msg += Environment.NewLine + "\t" + output;
+				}
+				Output.Message(MessageImportance.Normal, msg);
+				if (TestMode)
+					continue;
+				// Set the Context and Target properties on the Compiler class instance
+				compilerClass.ContextProperty.SetValue(compilerClass.Instance, buildContext, null);
+				compilerClass.TargetProperty.SetValue(compilerClass.Instance, buildTarget, null);
+				try
+				{
+					compilerClass.CompileMethod.Invoke(compilerClass.Instance, null);
+				}
+				catch (TargetInvocationException e)
+				{
+					ContentFileException contentEx = e.InnerException as ContentFileException;
+					if (contentEx != null)
+					{
+						contentEx.EnsureFileNameAndLineNumber(buildContext.ContentFilePath, buildTarget.LineNumber);
+						throw contentEx;
+					}
+					else
+					{
+						throw new ContentFileException(this.ContentPath, buildTarget.LineNumber, "Unable to compile target '{0}'".CultureFormat(buildTarget.Name), e.InnerException);
+					}
+				}
+				// Ensure that the output files were generated
+				foreach (var outputFile in buildTarget.OutputPaths)
+				{
+					if (!File.Exists(outputFile))
+					{
+						throw new ContentFileException(this.ContentPath, buildTarget.LineNumber, "Output file '{0}' was not generated".CultureFormat(outputFile));
+					}
+				}
+				newTargetHashes.Add(buildTarget.Hash);
+			}
+		}
+
+		private void PrepareBuildTargets(out List<BuildTarget> buildTargets)
+		{
+			buildTargets = new List<BuildTarget>();
+
+			foreach (var rawTarget in contentFile.Targets)
 			{
 				try
 				{
-					buildTargets.Add(new BuildTarget(rawTarget, globalItems, globalProps, compilerClasses));
+					buildTargets.Add(new BuildTarget(rawTarget, globalFilePaths, globalProps, compilerClasses));
 				}
 				catch (Exception e)
 				{
@@ -294,7 +281,7 @@ namespace Playroom
 				}
 			}
 
-			return TopologicallySortBuildTargets(buildTargets);
+			buildTargets = TopologicallySortBuildTargets(buildTargets);
 		}
 
 		private List<BuildTarget> TopologicallySortBuildTargets(List<BuildTarget> targets)
@@ -384,42 +371,40 @@ namespace Playroom
 			return orderedTargets;
 		}
 
-		private void GenerateOutsideTargetsHash(PropertyGroup globalProps, FilePathGroup globalFilePaths)
+		private string GenerateGlobalContentHash()
 		{
-			SHA1 sha1 = new SHA1();
+			SHA1 sha1 = SHA1.Create();
 			StringBuilder sb = new StringBuilder();
 
-			foreach (var property in globalProps)
-			{
-				// TODO: Finish this off - see BuildTarget constructor
-			}
+			sb.Append(contentFile.Properties);
+			sb.Append(contentFile.FilePaths);
 
-			return sha1.ComputeHash(Encoding.UTF8.GetBytes(sb.ToString()));
+			return BitConverter.ToString(sha1.ComputeHash(Encoding.UTF8.GetBytes(sb.ToString())));
 		}
 
 		private void ReadContentFileHashes()
 		{
-			if (File.Exists(targetHashesPath))
+			if (File.Exists(contentFileHashesPath))
 			{
 				try
 				{
 					BinaryFormatter formatter = new BinaryFormatter();
-					using (Stream stream = new FileStream(targetHashesPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+					using (Stream stream = new FileStream(contentFileHashesPath, FileMode.Open, FileAccess.Read, FileShare.Read))
 					{
-						// TODO: Read globalContent hash here too
-						targetHashes = (HashSet<string>)formatter.Deserialize(stream);
+						contentGlobalHash = (string)formatter.Deserialize(stream);
+						contentTargetHashes = (HashSet<string>)formatter.Deserialize(stream);
 					}
 				}
 				catch
 				{
 					// Bad file, don't use it again
-					File.Delete(targetHashesPath);
+					File.Delete(contentFileHashesPath);
 				}
 			}
 
-			if (targetHashes == null)
+			if (contentTargetHashes == null)
 			{
-				targetHashes = new HashSet<string>();
+				contentTargetHashes = new HashSet<string>();
 			}
 		}
 
@@ -429,19 +414,19 @@ namespace Playroom
 
 			try
 			{
-				using (Stream stream = new FileStream(targetHashesPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+				using (Stream stream = new FileStream(contentFileHashesPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
 				{
-					// TODO: Write globalContentHash too
+					formatter.Serialize(stream, globalContentHash);
 					formatter.Serialize(stream, targetHashes);
 				}
 			}
-			catch (Exception ex)
+			catch
 			{
-				Output.Warning("Unable to write content hash file '{0}'".CultureFormat(targetHashesPath));
+				Output.Warning("Unable to write content hash file '{0}'".CultureFormat(contentFileHashesPath));
 			}
 		}
 
-		private void SetNewestAssemblyWriteTime(List<CompilerClass> compilerClasses)
+		private void SetNewestAssemblyWriteTime()
 		{
 			newestAssemblyWriteTime = DateTime.MinValue;
 
@@ -454,7 +439,7 @@ namespace Playroom
 			}
 		}
 
-		private bool IsCompileRequired(BuildTarget buildTarget)
+		private bool IsCompileRequired(BuildTarget buildTarget, string newContentGlobalHash)
 		{
 			if (RebuildAll)
 				return true;
@@ -480,18 +465,23 @@ namespace Playroom
 					oldestOutputFile = lastWriteTime;
 			}
 
-			// If the content file is newer than all inputs but it's hash is not present in the hash file
-			// then this targets definition changed or was added so consider the content file write time too.
-			if (contentFileWriteTime > newestInputFile && !targetHashes.Contains(buildTarget.Hash))
+			// If the content file is newer than all inputs and it's hash is not present in the hash file
+			// then this targets definition changed or was added OR if the global hash has changed then 
+			// consider the content file write time.
+			if (contentFileWriteTime > newestInputFile && 
+				(!contentTargetHashes.Contains(buildTarget.Hash) || contentGlobalHash != newContentGlobalHash))
+			{
 				newestInputFile = contentFileWriteTime;
+			}
 
 			return newestInputFile > oldestOutputFile;
 		}
 
-		private List<CompilerClass> LoadCompilerClasses(FilePathGroup pathGroup, PropertyGroup propGroup)
+		private List<CompilerClass> LoadCompilerClasses()
 		{
-			List<CompilerClass> compilerClasses = new List<CompilerClass>();
-			IList<ParsedPath> paths = pathGroup.GetRequiredValue("CompilerAssembly");
+			compilerClasses = new List<CompilerClass>();
+
+			IList<ParsedPath> paths = globalFilePaths.GetRequiredValue("CompilerAssembly");
 
 			foreach (var path in paths)
 			{
@@ -546,6 +536,13 @@ namespace Playroom
 			}
 
 			return compilerClasses;
+		}
+
+		private void SetContentFileHashesPath()
+		{
+			contentFileHashesPath = new ParsedPath(
+				globalProps.GetOptionalValue("TargetHashesFile", globalProps.ReplaceVariables("$(OutputDir)" + ContentPath.FileAndExtension + ".hashes")), 
+				PathType.File);
 		}
 
         #endregion
