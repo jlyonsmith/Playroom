@@ -22,11 +22,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Commandlineparameters>~/Projects/Playroom/Test/RawContent/TestContent.content -rebuild -p:OutputDir=~/Projects/Playroom/Test/Content</Commandlineparameters>
+    <Commandlineparameters>~/Projects/Playroom/Test/RawContent/TestContent2.content -p:OutputDir=~/Projects/Playroom/Test/Content</Commandlineparameters>
     <CustomCommands>
       <CustomCommands>
-        <Command type="BeforeExecute" command="/bin/bash CopySquish2.MacOS.sh" workingdir="${ProjectDir}" />
-        <Command type="AfterBuild" command="/bin/bash CopySquish2.MacOS.sh ${ProjectConfigName}" workingdir="${ProjectDir}" />
+        <Command type="BeforeExecute" command="/bin/bash CopyExtraFiles.sh" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -43,7 +42,6 @@
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeExecute" />
-        <Command type="AfterBuild" command="/bin/bash CopySquish2.MacOS.sh ${ProjectConfigName}" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -59,7 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="CopySquish2.MacOS.sh" />
+    <None Include="CopyExtraFiles.sh" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

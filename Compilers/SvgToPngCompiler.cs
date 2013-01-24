@@ -3,24 +3,28 @@ using System.Collections.Generic;
 using ToolBelt;
 using System.Linq;
 using System.IO;
+using YamlDotNet.RepresentationModel;
 
 namespace Playroom
 {
 	public class SvgToPngCompiler : IContentCompiler
 	{
-		#region Construction
-		public SvgToPngCompiler()
+		#region Fields
+		private CompilerExtension[] extensions = new CompilerExtension[]
 		{
-		}
-		#endregion
-
-		#region IContentCompiler implementation
-
-		public string[] InputExtensions	{ get { return new string[] { ".svg" }; } }
-		public string[] OutputExtensions { get { return new string[] { ".png" }; } }
+			new CompilerExtension(".svg", ".png")
+		};
+		#endregion 
+		
+		#region IContentCompiler
+		public CompilerExtension[] Extensions { get { return extensions; } }
 		public BuildContext Context { get; set; }
 		public BuildTarget Target { get; set; }
 
+		public void Setup(YamlMappingNode settings)
+		{
+		}
+		
 		public void Compile()
 		{
 			ParsedPath svgFileName = Target.InputPaths.Where(f => f.Extension == ".svg").First();

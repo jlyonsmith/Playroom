@@ -5,7 +5,7 @@ using ToolBelt;
 
 namespace Playroom
 {
-	public class PropertyGroup : IEnumerable<KeyValuePair<string, string>>
+	public class PropertyCollection : IEnumerable<KeyValuePair<string, string>>
 	{
         #region Private Fields
         private Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -13,11 +13,11 @@ namespace Playroom
         #endregion
 
 		#region Construction
-		public PropertyGroup()
+		public PropertyCollection()
 		{
 		}
 
-		public PropertyGroup(PropertyGroup other)
+		public PropertyCollection(PropertyCollection other)
 		{
 			IEnumerator<KeyValuePair<string, string>> e = ((IEnumerable<KeyValuePair<string, string>>)other).GetEnumerator();
 
@@ -45,25 +45,25 @@ namespace Playroom
 		#endregion
 
 		#region Methods
-		public string ReplaceVariables(string s)
+		public string ExpandVariables(string s)
 		{
 			return s.ReplaceTags("$(", ")", this.dictionary, TaggedStringOptions.ThrowOnUnknownTags);
 		}
 		
-		public void AddWellKnownProperties(
-			ParsedPath buildContentInstallDir,
+		public void AddWellKnown(
+			ParsedPath buildContentDir,
 			ParsedPath contentFileDir)
 		{
-			this.Set("BuildContentInstallDir", buildContentInstallDir.ToString());
+			this.Set("BuildContentDir", buildContentDir.ToString());
 			this.Set("InputDir", contentFileDir.ToString());
 			this.Set("OutputDir", contentFileDir.ToString());
 		}
 		
-		public void ExpandAndAddFromList(List<Tuple<string, string>> pairs, PropertyGroup propGroup)
+		public void AddFromList(IEnumerable<KeyValuePair<string, string>> pairs)
 		{
 			foreach (var pair in pairs)
 			{
-				dictionary[pair.Item1] = propGroup.ReplaceVariables(pair.Item2);
+				dictionary[pair.Key] = this.ExpandVariables(pair.Value);
 			}
 		}
 		
@@ -74,11 +74,13 @@ namespace Playroom
 			foreach (DictionaryEntry entry in entries)
 			{
 				if (!String.IsNullOrEmpty((string)entry.Key))
+				{
 					dictionary[(string)entry.Key] = (string)entry.Value;
+				}
 			}
 		}
 		
-		public void AddFromPropertyString(string keyValuePairString)
+		public void AddFromString(string keyValuePairString)
 		{
 			if (String.IsNullOrEmpty(keyValuePairString))
 				return;
@@ -91,7 +93,7 @@ namespace Playroom
 				
 				if (keyAndValue.Length == 2)
 				{
-					dictionary[keyAndValue[0]] = keyAndValue[1].Trim();
+					dictionary[keyAndValue[0]] = this.ExpandVariables(keyAndValue[1].Trim());
 				}
 			}
 		}

@@ -55,11 +55,13 @@ namespace Playroom
                             RSvgConvert = path;
                     }
                 }
-#elif MACOS
+#elif OSX
 				ParsedPath path = new ParsedPath("/Applications/Inkscape.app/Contents/Resources/bin/inkscape", PathType.File);
 
 				if (File.Exists(path))
 					Inkscape = path;
+#else
+				throw new NotImplementedException();
 #endif
             }
             catch

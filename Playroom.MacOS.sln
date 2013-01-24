@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RawContent", "RawContent", 
 		Test\RawContent\WeeBairn-Regular.ttf = Test\RawContent\WeeBairn-Regular.ttf
 		Test\RawContent\TestContent2.content = Test\RawContent\TestContent2.content
 		Test\RawContent\TestContent1.content = Test\RawContent\TestContent1.content
+		Test\TestContent.Save.content = Test\TestContent.Save.content
+		Test\RawContent\F1.txt = Test\RawContent\F1.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E1FA1B02-BCCA-4265-8B68-7246E5F3FEAA}"
@@ -31,6 +33,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playroom.Compilers", "Compilers\Playroom.Compilers.csproj", "{1D531486-0385-4E9E-AB1B-755CEFF3A445}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YamlDotNet.Core", "..\YamlDotNet\YamlDotNet.Core\YamlDotNet.Core.csproj", "{BF32DE1B-6276-4341-B212-F8862ADBBA7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YamlDotNet.RepresentationModel", "..\YamlDotNet\YamlDotNet.RepresentationModel\YamlDotNet.RepresentationModel.csproj", "{21CA0077-E15C-446D-9C43-F6D3F9D09687}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +52,10 @@ Global
 		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|x86.Build.0 = Debug|x86
 		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.ActiveCfg = Release|x86
 		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.Build.0 = Release|x86
+		{21CA0077-E15C-446D-9C43-F6D3F9D09687}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{21CA0077-E15C-446D-9C43-F6D3F9D09687}.Debug|x86.Build.0 = Debug|Any CPU
+		{21CA0077-E15C-446D-9C43-F6D3F9D09687}.Release|x86.ActiveCfg = Release|Any CPU
+		{21CA0077-E15C-446D-9C43-F6D3F9D09687}.Release|x86.Build.0 = Release|Any CPU
 		{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}.Debug|x86.ActiveCfg = Debug|x86
 		{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}.Debug|x86.Build.0 = Debug|x86
 		{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}.Release|x86.ActiveCfg = Release|x86
@@ -58,6 +68,10 @@ Global
 		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Debug|x86.Build.0 = Debug|x86
 		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Release|x86.ActiveCfg = Release|x86
 		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Release|x86.Build.0 = Release|x86
+		{BF32DE1B-6276-4341-B212-F8862ADBBA7A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BF32DE1B-6276-4341-B212-F8862ADBBA7A}.Debug|x86.Build.0 = Debug|Any CPU
+		{BF32DE1B-6276-4341-B212-F8862ADBBA7A}.Release|x86.ActiveCfg = Release|Any CPU
+		{BF32DE1B-6276-4341-B212-F8862ADBBA7A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FEB7E5A8-73FC-4112-AFBD-D72CD03060B4} = {6BE02424-B483-44A3-8C1A-9819FC704D0B}

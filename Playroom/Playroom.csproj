@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;MACOS</DefineConstants>
+    <DefineConstants>DEBUG;OSX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -36,7 +36,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <Externalconsole>True</Externalconsole>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DefineConstants>MACOS</DefineConstants>
+    <DefineConstants>OSX</DefineConstants>
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeBuild" command="/bin/bash BuildResx.iOS.sh" workingdir="${ProjectDir}" />
@@ -63,13 +63,13 @@
     <Compile Include="IContentCompiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BuildTarget.cs" />
-    <Compile Include="PropertyGroup.cs" />
-    <Compile Include="ContentFileException.cs" />
     <Compile Include="PlayroomResources.cs" />
-    <Compile Include="FilePathGroup.cs" />
-    <Compile Include="Formats\ContentFileReaderV3.cs" />
-    <Compile Include="Formats\ContentFileV3.cs" />
-    <Compile Include="DefaultCompiler.cs" />
+    <Compile Include="PropertyCollection.cs" />
+    <Compile Include="CompilerExtension.cs" />
+    <Compile Include="Formats\ContentFileV4.cs" />
+    <Compile Include="Formats\ContentFileException.cs" />
+    <Compile Include="YamlNodeHelper.cs" />
+    <Compile Include="Formats\ContentFileHashesFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PlayroomResources.resx" />
@@ -79,6 +79,14 @@
     <ProjectReference Include="..\ToolBelt\ToolBelt\ToolBelt.MacOS.csproj">
       <Project>{2055D34D-3DF2-444B-937B-32CC1A6E11DF}</Project>
       <Name>ToolBelt.MacOS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\YamlDotNet\YamlDotNet.Core\YamlDotNet.Core.csproj">
+      <Project>{BF32DE1B-6276-4341-B212-F8862ADBBA7A}</Project>
+      <Name>YamlDotNet.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\YamlDotNet\YamlDotNet.RepresentationModel\YamlDotNet.RepresentationModel.csproj">
+      <Project>{21CA0077-E15C-446D-9C43-F6D3F9D09687}</Project>
+      <Name>YamlDotNet.RepresentationModel</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

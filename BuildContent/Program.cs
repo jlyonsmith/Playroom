@@ -23,8 +23,12 @@ namespace BuildContent
             }
             catch (Exception e)
             {
-                tool.Output.Error(e.Message);
-            }
+#if DEBUG
+				tool.Output.Error(e.ToString());
+#else
+				tool.Output.Error(e.Message);
+#endif
+			}
 
             return tool.ExitCode;
         }

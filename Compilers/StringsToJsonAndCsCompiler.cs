@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using ToolBelt;
 using System.IO;
+using YamlDotNet.RepresentationModel;
+using YamlDotNet.RepresentationModel.Serialization;
 
 namespace Playroom
 {
@@ -25,45 +27,52 @@ namespace Playroom
         }
 
         #endregion
-        
-        #region IContentCompiler Members
 
-        public string[] InputExtensions
-        {
-            get { return new string[] { ".strings" }; }
-        }
-
-        public string[] OutputExtensions
-        {
-            get { return new string[] { ".xnb", ".cs" }; }
-        }
-
-        public BuildContext Context { get; set; }
+		#region Fields
+		private CompilerExtension[] extensions = new CompilerExtension[]
+		{
+			new CompilerExtension(".strings", ".json:.cs")
+		};
+		#endregion 
+		
+		#region IContentCompiler
+		public CompilerExtension[] Extensions { get { return extensions; } }
+		public BuildContext Context { get; set; }
         public BuildTarget Target { get; set; }
 
-        public void Compile()
-        {
-            ParsedPath stringsFileName = Target.InputPaths.Where(f => f.Extension == ".strings").First();
-            ParsedPath jsonFileName = Target.OutputPaths.Where(f => f.Extension == ".json").First();
-            ParsedPath csFileName = Target.OutputPaths.Where(f => f.Extension == ".cs").First();
+		public void Setup(YamlMappingNode settings)
+		{
+		}
+		
+		public void Compile()
+		{
+			if (Target.InputPaths.Count != 1)
+				throw new ContentFileException("Only one input file expected");
+			
+			if (Target.OutputPaths.Count != 2)
+				throw new ContentFileException("Only two output files expected");
+			
+			ParsedPath stringsFilePath = Target.InputPaths[0];
+			ParsedPath csFilePath = Target.OutputPaths[0];
+			ParsedPath jsonFilePath = Target.OutputPaths[1];
 
 			string className;
 
-			Target.Properties.GetOptionalValue("ClassName", out className, stringsFileName.File + "Strings");
+			Target.Properties.GetOptionalValue("ClassName", out className, stringsFilePath.File + "Strings");
 
-            StringsContent stringsData = CreateStringsData(className, StringsFileReaderV1.ReadFile(stringsFileName));
+            StringsContent stringsData = CreateStringsData(className, ReadStringsFile(stringsFilePath));
 
             string[] strings = stringsData.Strings.Select(s => s.Value).ToArray();
 
-			if (!Directory.Exists(jsonFileName.VolumeAndDirectory))
-				Directory.CreateDirectory(jsonFileName.VolumeAndDirectory);
+			if (!Directory.Exists(jsonFilePath.VolumeAndDirectory))
+				Directory.CreateDirectory(jsonFilePath.VolumeAndDirectory);
 
-			JsonFileWriter.WriteFile(jsonFileName, strings);
+			WriteJsonFile(jsonFilePath, strings);
 
-			if (!Directory.Exists(csFileName.VolumeAndDirectory))
-				Directory.CreateDirectory(csFileName.VolumeAndDirectory);
+			if (!Directory.Exists(csFilePath.VolumeAndDirectory))
+				Directory.CreateDirectory(csFilePath.VolumeAndDirectory);
 
-            using (TextWriter writer = new StreamWriter(csFileName))
+            using (TextWriter writer = new StreamWriter(csFilePath))
             {
                 WriteCsOutput(writer, stringsData);
             }
@@ -71,7 +80,30 @@ namespace Playroom
 
         #endregion
 
-        private StringsContent CreateStringsData(string className, StringsFileV1 stringsFile)
+		private void WriteJsonFile(ParsedPath jsonFilePath, object data)
+		{
+			var serializer = new Serializer();
+
+			using (StreamWriter writer = new StreamWriter(jsonFilePath))
+			{
+				serializer.Serialize(writer, data, SerializationOptions.JsonCompatible | SerializationOptions.Roundtrip);
+			}
+		}
+
+		private Dictionary<string, string> ReadStringsFile(ParsedPath stringsFilePath)
+		{
+			var serializer = new YamlSerializer<Dictionary<string, string>>();
+			Dictionary<string, string> stringDict;
+			
+			using (StreamReader reader = new StreamReader(stringsFilePath))
+			{
+				stringDict = serializer.Deserialize(reader);
+			}
+
+			return stringDict;
+		}
+
+        private StringsContent CreateStringsData(string className, Dictionary<string, string> stringDict)
         {
             StringsContent stringsData = new StringsContent();
 
@@ -84,12 +116,12 @@ namespace Playroom
 
             stringsData.Namespace = namespaceName;
 
-            foreach (var s in stringsFile.Strings)
+            foreach (var pair in stringDict)
             {
                 StringsContent.String d = new StringsContent.String();
 
-                d.Name = s.Name;
-                d.Value = s.Value;
+                d.Name = pair.Key;
+                d.Value = pair.Value;
 
                 // Count the args in the string
                 int n = 0;

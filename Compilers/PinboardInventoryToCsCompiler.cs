@@ -5,6 +5,7 @@ using System.Text;
 using ToolBelt;
 using System.IO;
 using System.Xml;
+using YamlDotNet.RepresentationModel;
 
 namespace Playroom
 {
@@ -41,13 +42,23 @@ namespace Playroom
         }
 
         #endregion
+
+		#region Fields
+		private CompilerExtension[] extensions = new CompilerExtension[]
+		{
+			new CompilerExtension(".pinboard", ".cs")
+		};
+		#endregion
         
         #region IContentCompiler Members
 
-        public string[] InputExtensions { get { return new string[] { ".pinboard" }; } }
-        public string[] OutputExtensions { get { return new string[] { ".cs" }; } }
+        public CompilerExtension[] Extensions { get { return extensions; } }
         public BuildContext Context { get; set; }
         public BuildTarget Target { get; set; }
+
+		public void Setup(YamlMappingNode settings)
+		{
+		}
 
         public void Compile()
         {
@@ -178,7 +189,7 @@ namespace Playroom
                 }
                 catch (Exception e)
                 {
-                    throw new ContentFileException(Context.ContentFilePath, Target.LineNumber, String.Format("Unable to read pinboard file '{0}'", pinboardFile), e);
+                    throw new ContentFileException("Unable to read pinboard file '{0}'".CultureFormat(pinboardFile), e);
                 }
 
                 pinboards.Add(pinboardFile, pinboard);
@@ -210,7 +221,7 @@ namespace Playroom
 
                         if (goldPinboard.RectInfos.Count != pinboard.RectInfos.Count)
                         {
-                            throw new ContentFileException(Context.ContentFilePath, Target.LineNumber, string.Format("Pinboard '{0}' and '{1}' have a different number of rectangles",
+                            throw new ContentFileException("Pinboard '{0}' and '{1}' have a different number of rectangles".CultureFormat(
                                 goldPinboardFile, pinboardFile));
                         }
 
@@ -218,7 +229,7 @@ namespace Playroom
                         {
                             if (goldPinboard.RectInfos[i].Name != pinboard.RectInfos[i].Name)
                             {
-                                throw new ContentFileException(Context.ContentFilePath, Target.LineNumber, string.Format("RectangleInfo named {0} at depth {1} in pinboard '{2}' is different from pinboard '{3}'",
+                                throw new ContentFileException("RectangleInfo named {0} at depth {1} in pinboard '{2}' is different from pinboard '{3}'".CultureFormat(
                                     goldPinboard.RectInfos[i].Name, i, goldPinboardFile, pinboardFile));
                             }
                         }

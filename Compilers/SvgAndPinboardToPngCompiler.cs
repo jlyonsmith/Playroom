@@ -4,18 +4,29 @@ using System.Collections.Generic;
 using System.Linq;
 using Cairo;
 using System.IO;
+using YamlDotNet.RepresentationModel;
 
 namespace Playroom
 {
 	public class SvgAndPinboardToPngCompiler : IContentCompiler
 	{
-		#region IContentCompiler implementation
+		#region Fields
+		private CompilerExtension[] extensions = new CompilerExtension[]
+		{
+			new CompilerExtension(".svg:.pinboard", ".png")
+		};
+		#endregion 
 
-		public string[] InputExtensions { get { return new string[] { ".svg", ".pinboard" }; } }
-		public string[] OutputExtensions { get { return new string[] { ".png" }; } }
+		#region IContentCompiler
+
+		public CompilerExtension[] Extensions { get { return extensions; } }
 		public BuildContext Context { get; set; }
 		public BuildTarget Target { get; set; }
 
+		public void Setup(YamlMappingNode settings)
+		{
+		}
+		
 		public void Compile()
 		{
 			IEnumerable<ParsedPath> svgPaths = Target.InputPaths.Where(f => f.Extension == ".svg");

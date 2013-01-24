@@ -1,109 +1,72 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿%YAML 1.1
+---
+version: 4
 
-<!-- Straightforward test of all the built-in compilers -->
+compiler-assemblies:
+  - $(BuildContentDir)/Playroom.Compilers.dll
 
-<Content Version = "3">
-	<FilePathGroup>
-		<CompilerAssembly Include="$(BuildContentInstallDir)\Playroom.Compilers.dll" />
-	</FilePathGroup>
+compiler-settings:
+  - name: CopyCompiler
+    settings:
+      extensions:
+        - inputs:  .png
+          outputs: .png
+        - inputs:  .wav
+          outputs: .wav
 
-	<!-- PinboardToCsCompiler -->
+properties:
+  property1: abc
+  property2: 1234 
 
-	<Target 
-		Name="ExampleRectangles"
-			Inputs="$(InputDir)\*.pinboard"
-			Outputs="$(OutputDir)\$(TargetName).cs">
-		<PropertyGroup>
-			<Namespace>Company.Product</Namespace>
-		</PropertyGroup>
-	</Target>
+targets:
+  - name:     ExamplePinboardJson
+    inputs:   [$(InputDir)/Example.pinboard]
+    outputs:  [$(OutputDir)/$(TargetName).json]
+    properties:
+      test: 1234
 
-	<!-- PinboardToJsonCompiler -->
+  - name:     ExampleRectangles
+    inputs:   [$(InputDir)/*.pinboard]
+    outputs:  [$(OutputDir)/$(TargetName).cs]
+    compiler: PinboardInventoryToCsCompiler
+    properties:
+      namespace: Company.Products
 
-	<Target
-		Name="ExamplePinboardJson"
-		Inputs="$(InputDir)\Example.pinboard"
-		Outputs="$(OutputDir)\$(TargetName).json">
-	</Target>
+  - name:     ExampleResx
+    inputs:   [$(InputDir)/Example.resx]
+    outputs:  [$(OutputDir)/$(TargetName).strings]
 
-	<!-- ResxToStringsCompiler -->
+  - name:     ExampleStrings2
+    inputs:   [$(InputDir)/Example.strings]
+    outputs:  [$(OutputDir)/$(TargetName).cs, $(OutputDir)/$(TargetName).json]
+    properties:
+      namespace: Company.Product
 
-	<Target
-		Name="ExampleResx"
-		Inputs="$(InputDir)\Example.resx"
-			Outputs="$(OutputDir)\$(TargetName).strings">
-	</Target>
+  - name:     ExamplePngPng
+    inputs:   [$(InputDir)/Example.png]
+    outputs:  [$(OutputDir)/$(TargetName).png]
 
-	<!-- StringsToJsonAndCsCompiler -->
+  - name:     ExampleSvgPng
+    inputs:   [$(InputDir)/Example.svg]
+    outputs:  [$(OutputDir)/$(TargetName).png]
+    properties:
+      width:  100
+      height: 100
 
-	<Target
-		Name="ExampleStrings2"
-		Inputs="$(InputDir)\Example.strings"
-		Outputs="$(OutputDir)\$(TargetName).cs;$(OutputDir)\$(TargetName).json">
-		<PropertyGroup>
-			<Namespace>Company.Product</Namespace>
-		</PropertyGroup>
-	</Target>
-	
-	<!-- PngToPngCompiler -->
-	
-	<Target
-		Name="ExamplePng"
-		Inputs="$(InputDir)\Example.png"
-		Outputs="$(OutputDir)\$(TargetName).png">
-	</Target>
-	
-	<!-- SvgAndPinboardToPngCompiler -->
+  - name:     ExampleSvgPinboardPng
+    inputs:   [$(InputDir)/Example.svg, $(InputDir)/Example.pinboard]
+    outputs:  [$(OutputDir)/$(TargetName).png]
+    properties:
+      rectangles: Thing
 
-	<Target
-		Name="ExampleSvgPinboardPng"
-		Inputs="$(InputDir)\Example.svg;$(InputDir)\Example.pinboard"
-		Outputs="$(OutputDir)\$(TargetName).png">
-		<PropertyGroup>
-			<Rectangle>Thing</Rectangle>
-		</PropertyGroup>
-	</Target>
-	
-	<!-- SvgToPngCompiler -->
+  - name:     ExampleSvgPdfPngdef
+    inputs:   [$(InputDir)/Example.svg]
+    outputs:  [$(OutputDir)/$(TargetName).pdf, $(OutputDir)/$(TargetName).pngdef]
+    properties: 
+      pinboard: Example
+      rectangle: Screen
 
-	<Target
-		Name="ExampleSvgPng"
-		Inputs="$(InputDir)\Example.svg"
-		Outputs="$(OutputDir)\$(TargetName).png">
-		<PropertyGroup>
-			<Width>100</Width>
-			<Height>100</Height>
-		</PropertyGroup>
-	</Target>
-	
-	<!-- SvgAndPinboardToPngCompiler -->
+  - name:     ExampleWavWav
+    inputs:   [$(InputDir)/Example.wav]
+    outputs:  [$(OutputDir)/$(TargetName).wav]
 
-	<Target
-		Name="ExampleSvgPinboardPng"
-		Inputs="$(InputDir)\Example.svg;$(InputDir)\Example.pinboard"
-		Outputs="$(OutputDir)\$(TargetName).png">
-		<PropertyGroup>
-			<Rectangles>Thing</Rectangles>
-		</PropertyGroup>
-	</Target>
-	
-	<!-- SvgToPdfAndXnbCompiler -->
-
-	<Target
-		Name="ExampleSvgPdfPng"
-		Inputs="$(InputDir)\Example.svg"
-		Outputs="$(OutputDir)\$(TargetName).pdf;$(OutputDir)\$(TargetName).png">
-		<PropertyGroup>
-			<Pinboard>Example</Pinboard>
-			<Rectangle>Screen</Rectangle>
-		</PropertyGroup>
-	</Target>
-	
-	<!-- WavToWavCompiler -->
-
-	<Target
-		Name="ExampleWavWav"
-		Inputs="$(InputDir)\Example.wav"
-		Outputs="$(OutputDir)\$(TargetName).wav"/>
-	
-</Content>

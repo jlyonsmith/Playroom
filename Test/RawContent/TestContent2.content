@@ -1,40 +1,36 @@
-<?xml version="1.0" encoding="utf-8"?>
+%YAML 1.1
+---
+version: 4
 
-<!-- Create some chained dependencies to test topological sorting of targets -->
+compiler-assemblies:
+  - $(BuildContentDir)\Playroom.Compilers.dll
 
-<Content Version = "3">
+compiler-settings:
+  - name:  Playroom.CopyCompiler
+    settings:
+      extensions:
+        - { inputs: .txt, outputs: .txt }
 
-	<!-- Use this target to create a circular dependency -->
-<!--
-	<Target 
-		Name="T5"
-		Inputs="$(InputDir)\F5.txt"
-		Outputs="$(OutputDir)\F3.txt">
-	</Target>
--->
+properties:
+  test: 123
 
-	<Target 
-		Name="T4"
-		Inputs="$(InputDir)\F2.txt"
-		Outputs="$(OutputDir)\F5.txt">
-	</Target>
+targets:
+#  - name:    T5
+#    inputs:  [$(OutputDir)\F5.txt]
+#    outputs: [$(InputDir)\F1.txt]
 
-	<Target
-		Name="T3"
-		Inputs="$(OutputDir)\F3.txt"
-		Outputs="$(OutputDir)\F4.txt">
-	</Target>
+  - name:    T4
+    inputs:  [$(OutputDir)\F2.txt]
+    outputs: [$(OutputDir)\F5.txt]
 
-	<Target
-		Name="T2"
-		Inputs="$(OutputDir)\F2.txt"
-		Outputs="$(OutputDir)\F3.txt">
-	</Target>
+  - name:    T3
+    inputs:  [$(OutputDir)\F3.txt]
+    outputs: [$(OutputDir)\F4.txt]
 
-	<Target 
-		Name="T1"
-		Inputs="$(InputDir)\F1.txt"
-		Outputs="$(OutputDir)\F2.txt">
-	</Target>
+  - name:    T2
+    inputs:  [$(OutputDir)\F2.txt]
+    outputs: [$(OutputDir)\F3.txt]
 
-</Content>
+  - name:    T1
+    inputs:  [$(InputDir)\F1.txt]
+    outputs: [$(OutputDir)\F2.txt]

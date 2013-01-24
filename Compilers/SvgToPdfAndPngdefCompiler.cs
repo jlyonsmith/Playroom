@@ -5,33 +5,34 @@ using System.Text;
 using ToolBelt;
 using System.IO;
 using System.Xml;
+using YamlDotNet.RepresentationModel;
+using YamlDotNet.RepresentationModel.Serialization;
 
 namespace Playroom
 {
-	// TODO: Change the extension of this .json file to .pngdef
-
-    public class SvgToPdfAndJsonCompiler : IContentCompiler
+	public class SvgToPdfAndPngdefCompiler : IContentCompiler
     {
-        #region IContentCompiler Members
-
-        public string[] InputExtensions
-        {
-            get { return new string[] { ".svg" }; }
-        }
-        public string[] OutputExtensions
-        {
-            get { return new string[] { ".pdf", ".json" }; }
-        }
-        public BuildContext Context { get; set; }
+		#region Fields
+		private CompilerExtension[] extensions = new CompilerExtension[]
+		{
+			new CompilerExtension(".svg", ".pdf:.pngdef")
+		};
+		#endregion 
+		
+		#region IContentCompiler
+		public CompilerExtension[] Extensions { get { return extensions; } }
+		public BuildContext Context { get; set; }
         public BuildTarget Target { get; set; }
 
-        public void Compile()
+		public void Setup(YamlMappingNode settings)
+		{
+		}
+		
+		public void Compile()
 		{
 			IEnumerable<ParsedPath> svgPaths = Target.InputPaths.Where(f => f.Extension == ".svg");
 			ParsedPath pdfPath = Target.OutputPaths.Where(f => f.Extension == ".pdf").First();
-			ParsedPath jsonPath = Target.OutputPaths.Where(f => f.Extension == ".json").First();
-
-			// TODO: Ensure that pdf and xnb have the same root directories (and volumes)
+			ParsedPath pngdefPath = Target.OutputPaths.Where(f => f.Extension == ".pngdef").First();
 
 			int numRows;
 			int numCols;
@@ -71,12 +72,17 @@ namespace Playroom
 			pdfInfo.Add(numRows.ToString());
 			pdfInfo.Add(numCols.ToString());
 
-			if (!Directory.Exists(jsonPath.VolumeAndDirectory))
+			if (!Directory.Exists(pngdefPath.VolumeAndDirectory))
 			{
-				Directory.CreateDirectory(jsonPath.VolumeAndDirectory);
+				Directory.CreateDirectory(pngdefPath.VolumeAndDirectory);
 			}
 
-			JsonFileWriter.WriteFile(jsonPath, pdfInfo);
+			var serializer = new Serializer();
+			
+			using (StreamWriter writer = new StreamWriter(pngdefPath))
+			{
+				serializer.Serialize(writer, pdfInfo, SerializationOptions.JsonCompatible);
+			}
 		}
 
 		void CreateNupSvg(IEnumerable<ParsedPath> svgPaths, ParsedPath nUpSvgPath, int numRows, int numCols)
@@ -161,6 +167,6 @@ namespace Playroom
 				height = double.Parse(reader.GetAttribute("height"));
 			}
 		}
-#endregion
+		#endregion
     }
 }
