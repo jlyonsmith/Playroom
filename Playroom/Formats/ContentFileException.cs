@@ -73,8 +73,20 @@ namespace Playroom
 			Start = End = start;
 		}
 
-		public ContentFileException(string message, YamlException innerException) :
-			base(message, innerException)
+		// HACK: Get around the fact that you can't modify parameters before calling base constructors
+		public static ContentFileException New(YamlException yamlException)
+		{
+			// Strip off the extra location information in the message
+			string message = yamlException.Message;
+			int n = message.IndexOf("): ");
+			
+			if (n != -1)
+				message = message.Substring(n + 3);
+
+			return new ContentFileException(message, yamlException);
+		}
+
+		public ContentFileException(string message, YamlException innerException) : base(message)
 		{
 			Start = innerException.Start;
 			End = innerException.End;

@@ -77,7 +77,7 @@ namespace Playroom
 			CompilerClasses = new List<CompilerClass>();
 			NewestAssemblyWriteTime = DateTime.MinValue;
 
-			ParsedPathList pathList = new ParsedPathList();
+			ParsedPathList assemblyPaths = new ParsedPathList();
 			
 			foreach (var rawAssembly in ContentFile.CompilerAssemblies)
 			{
@@ -92,23 +92,12 @@ namespace Playroom
 					throw new ContentFileException(rawAssembly, e);
 				}
 				
-				if (pathSpec.HasWildcards)
-				{
-					ParsedPathList foundPaths = new ParsedPathList(DirectoryUtility.GetFiles(pathSpec, SearchScope.DirectoryOnly));
-					
-					foreach (var path in foundPaths)
-					{
-						pathList.Add(path);
-					}
-				}
-				else
-				{
-					pathList.Add(pathSpec);
-				}
+				assemblyPaths.Add(pathSpec);
 			}
 			
-			foreach (var path in pathList)
+			for (int i = 0; i < assemblyPaths.Count; i++)
 			{
+				var assemblyPath = assemblyPaths[i];
 				Assembly assembly = null;
 				
 				try
@@ -117,11 +106,11 @@ namespace Playroom
 					// assemblies end up in the correct load context.  If the assembly cannot be
 					// found it will raise a AssemblyResolve event where we will search for the 
 					// assembly.
-					assembly = Assembly.LoadFrom(path);
+					assembly = Assembly.LoadFrom(assemblyPath);
 				}
 				catch (Exception e)
 				{
-					throw new ApplicationException("Unable to load content compiler assembly file '{0}'. {1}".CultureFormat(path, e.ToString()), e);
+					throw new ContentFileException(this.ContentFile.CompilerAssemblies[i], e);
 				}
 				
 				Type[] types;
@@ -133,7 +122,7 @@ namespace Playroom
 				}
 				catch (ReflectionTypeLoadException e)
 				{
-					string message = "Unable to reflect on assembly '{0}'".CultureFormat(path);
+					string message = "Unable to reflect on assembly '{0}'".CultureFormat(assemblyPath);
 					
 					// There is one entry in the exceptions array for each null in the types array,
 					// and they correspond positionally.
@@ -141,7 +130,7 @@ namespace Playroom
 						message += Environment.NewLine + "   " + ex.Message;
 					
 					// Not being able to reflect on classes in the compiler assembly is a critical error
-					throw new ApplicationException(message, e);
+					throw new ContentFileException(this.ContentFile.CompilerAssemblies[i], message, e);
 				}
 				
 				int compilerCount = 0;

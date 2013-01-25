@@ -128,22 +128,25 @@ namespace Playroom
 					int line = cfe.Start.Line + 1;
 					int column = cfe.Start.Column + 1;
 
-					Output.Error(ContentPath, line, column, e.Message);
-#if DEBUG
-					Console.WriteLine(e.StackTrace);
-#endif
-
-					while ((e = e.InnerException) != null)
+					do
 					{
 						Output.Error(ContentPath, line, column, e.Message);
 #if DEBUG
 						Console.WriteLine(e.StackTrace);
 #endif
 					}
+					while ((e = e.InnerException) != null);
 				}
 				else
 				{
-					Output.Error(e.Message);
+					do 
+					{
+						Output.Error(e.Message);
+#if DEBUG
+						Console.WriteLine(e.StackTrace);
+#endif
+					}
+					while ((e = e.InnerException) != null);
 				}
 			}
 		}

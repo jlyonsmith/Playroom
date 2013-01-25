@@ -64,14 +64,7 @@ namespace Playroom
 
 				if (ye != null)
 				{
-					// HACK: Strip off the extra location information in the message
-					string message = ye.Message;
-					int n = message.IndexOf("): ");
-					
-					if (n != -1)
-						message = message.Substring(n + 3);
-
-					throw new ContentFileException(message, ye);
+					throw ContentFileException.New(ye);
 				}
 				else if (cfe != null)
 				{
