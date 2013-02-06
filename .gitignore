@@ -19,5 +19,6 @@ Debug/
 Release/
 bin/
 obj/
+Test/
 _UpgradeReport_Files/
 ItemTemplates/*.zip

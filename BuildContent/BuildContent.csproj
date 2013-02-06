@@ -22,7 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Commandlineparameters>build -f ../../../Test/RawContent/TestContent1.content</Commandlineparameters>
+    <Commandlineparameters>build ../../../Test/RawContent/TestContent2.content</Commandlineparameters>
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeExecute" command="/bin/bash CopyExtraFiles.sh" workingdir="${ProjectDir}" />

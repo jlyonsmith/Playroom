@@ -17,10 +17,54 @@ properties:
   OutputDir: $(ContentFileDir)../Content
 
 targets:
+  - name:     ExamplePinboardJson
+    inputs:   [$(InputDir)/Example.pinboard]
+    outputs:  [$(OutputDir)/$(TargetName).json]
+    parameters:
+      Test: 1234
+
+  - name:     ExampleRectangles
+    inputs:   [$(InputDir)/*.pinboard]
+    outputs:  [$(OutputDir)/$(TargetName).cs]
+    compiler: PinboardInventoryToCsCompiler
+    parameters:
+      Namespace: Company.Products
+
+  - name:     ExampleResx
+    inputs:   [$(InputDir)/Example.resx]
+    outputs:  [$(OutputDir)/$(TargetName).strings]
+
+  - name:     ExampleStrings2
+    inputs:   [$(InputDir)/Example.strings]
+    outputs:  [$(OutputDir)/$(TargetName).cs, $(OutputDir)/$(TargetName).json]
+    parameters:
+      Namespace: Company.Product
+
+  - name:     ExamplePngPng
+    inputs:   [$(InputDir)/Example.png]
+    outputs:  [$(OutputDir)/$(TargetName).png]
+
   - name:     ExampleSvgPng
     inputs:   [$(InputDir)/Example.svg]
     outputs:  [$(OutputDir)/$(TargetName).png]
     parameters:
       Width:  100
       Height: 100
+
+  - name:     ExampleSvgPinboardPng
+    inputs:   [$(InputDir)/Example.svg, $(InputDir)/Example.pinboard]
+    outputs:  [$(OutputDir)/$(TargetName).png]
+    parameters:
+      Rectangle: Thing
+
+  - name:     ExampleSvgPdfPngdef
+    inputs:   [$(InputDir)/Example.svg]
+    outputs:  [$(OutputDir)/$(TargetName).pdf, $(OutputDir)/$(TargetName).pngdef]
+    parameters: 
+      Pinboard: Example
+      Rectangle: Screen
+
+  - name:     ExampleWavWav
+    inputs:   [$(InputDir)/Example.wav]
+    outputs:  [$(OutputDir)/$(TargetName).wav]
 
