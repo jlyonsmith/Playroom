@@ -7,7 +7,6 @@ using System.IO;
 using System.Drawing;
 using System.Json;
 using ToolBelt;
-using YamlDotNet.RepresentationModel;
 using YamlDotNet.RepresentationModel.Serialization;
 
 namespace Playroom.Compilers
@@ -22,13 +21,9 @@ namespace Playroom.Compilers
 		#endregion 
 		
 		#region IContentCompiler
-		public CompilerExtension[] Extensions { get { return extensions; } }
+		public IList<CompilerExtension> Extensions { get { return extensions; } }
 		public BuildContext Context { get; set; }
         public BuildTarget Target { get; set; }
-
-		public void Setup(YamlMappingNode settings)
-		{
-		}
 
 		public void Compile()
 		{

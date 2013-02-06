@@ -13,36 +13,31 @@ namespace Playroom
     {
 		public Mark Start { get; private set; }
 		public CompilerClass CompilerClass { get; private set; }
-		public PropertyCollection Properties { get; private set; }
 		public string Name { get; private set; }
 		public IList<ParsedPath> InputPaths { get; private set; }
 		public IList<ParsedPath> OutputPaths { get; private set; }
 		public CompilerExtension Extension { get; private set; }
 		public string Hash { get; private set; }
+		internal ContentFileV4.Target RawTarget{ get; set; }
 
 		public BuildTarget(
-			ContentFileV4.Target contentFileTarget, 
+			ContentFileV4.Target rawTarget, 
 			BuildContext buildContext)
 		{
-			this.Name = contentFileTarget.Name.Value;
-			this.Start = contentFileTarget.Name.Start;
-			this.Properties = new PropertyCollection(buildContext.Properties);
-			this.Properties.Set("TargetName", this.Name);
-			
-			if (contentFileTarget.Properties != null)
-				this.Properties.AddFromList(
-					contentFileTarget.Properties.Select(p => new KeyValuePair<string, string>(p.Name.Value, p.Value.Value)));
-			
-			if (contentFileTarget.Inputs.Count == 0)
-				throw new ContentFileException(contentFileTarget.Name, "Target must have at least one input");
+			this.RawTarget = rawTarget;
+			this.Name = rawTarget.Name.Value;
+			this.Start = rawTarget.Name.Start;
+
+			if (rawTarget.Inputs.Count == 0)
+				throw new ContentFileException(rawTarget.Name, "Target must have at least one input");
 
 			List<ParsedPath> inputPaths = new List<ParsedPath>();
-			IEnumerable<string> list = contentFileTarget.Inputs.Select(p => p.Value);
+			IEnumerable<string> list = rawTarget.Inputs.Select(p => p.Value);
 			
 			foreach (var rawInputFile in list)
 			{
 				ParsedPath pathSpec = null; 
-				string s = Properties.ExpandVariables(rawInputFile);
+				string s = buildContext.Properties.ExpandVariables(rawInputFile);
 				
 				try
 				{
@@ -80,14 +75,14 @@ namespace Playroom
 			
 			List<ParsedPath> outputPaths = new List<ParsedPath>();
 			
-			if (contentFileTarget.Outputs.Count == 0)
-				throw new ContentFileException(contentFileTarget.Name, "Target must have at least one output");
+			if (rawTarget.Outputs.Count == 0)
+				throw new ContentFileException(rawTarget.Name, "Target must have at least one output");
 
-			list = contentFileTarget.Outputs.Select(p => p.Value);
+			list = rawTarget.Outputs.Select(p => p.Value);
 			
 			foreach (var rawOutputFile in list)
 			{
-				string s = this.Properties.ExpandVariables(rawOutputFile);
+				string s = buildContext.Properties.ExpandVariables(rawOutputFile);
 				
 				try
 				{
@@ -106,7 +101,7 @@ namespace Playroom
 
 			this.Extension = new CompilerExtension(this.InputPaths.AsEnumerable(), this.OutputPaths.AsEnumerable());
 
-			if (contentFileTarget.Compiler == null || contentFileTarget.Compiler.Value.Length == 0)
+			if (rawTarget.Compiler == null || rawTarget.Compiler.Value.Length == 0)
 			{
 				IEnumerator<CompilerClass> e = buildContext.CompilerClasses.GetEnumerator();
 				
@@ -136,7 +131,7 @@ namespace Playroom
 				// Search for the compiler based on the supplied name and validate it handles the extensions
 				foreach (var compilerClass in buildContext.CompilerClasses)
 				{
-					if (compilerClass.Name.EndsWith(contentFileTarget.Compiler.Value, StringComparison.OrdinalIgnoreCase))
+					if (compilerClass.Name.EndsWith(rawTarget.Compiler.Value, StringComparison.OrdinalIgnoreCase))
 					{
 						this.CompilerClass = compilerClass;
 						break;
@@ -144,21 +139,21 @@ namespace Playroom
 				}
 
 				if (this.CompilerClass == null)
-					throw new ArgumentException("Supplied compiler '{0}' was not found".CultureFormat(contentFileTarget.Compiler));
+					throw new ArgumentException("Supplied compiler '{0}' was not found".CultureFormat(rawTarget.Compiler));
 			}
 
 			SHA1 sha1 = SHA1.Create();
 			StringBuilder sb = new StringBuilder();
 
-			sb.Append(contentFileTarget.Inputs);
-			sb.Append(contentFileTarget.Outputs);
+			sb.Append(rawTarget.Inputs);
+			sb.Append(rawTarget.Outputs);
 			
-			if (contentFileTarget.Compiler != null)
-				sb.Append(contentFileTarget.Compiler);
+			if (rawTarget.Compiler != null)
+				sb.Append(rawTarget.Compiler);
 
-			if (contentFileTarget.Properties != null)
+			if (rawTarget.Parameters != null)
 			{
-				foreach (var property in contentFileTarget.Properties)
+				foreach (var property in rawTarget.Parameters)
 				{
 					sb.Append(property.Name);
 					sb.Append(property.Value);

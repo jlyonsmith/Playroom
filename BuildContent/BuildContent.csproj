@@ -22,12 +22,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Commandlineparameters>~/Projects/Spider/Spider/RawContent/Spider.iOS.content -p:OutputDir=~/Projects/Spider/Spider/Content</Commandlineparameters>
+    <Commandlineparameters>-? ../../../Test/RawContent/TestContent1.content</Commandlineparameters>
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeExecute" command="/bin/bash CopyExtraFiles.sh" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
+    <Externalconsole>True</Externalconsole>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using ToolBelt;
 using System.IO;
-using YamlDotNet.RepresentationModel;
 using YamlDotNet.RepresentationModel.Serialization;
 
 namespace Playroom
@@ -34,16 +33,28 @@ namespace Playroom
 			new CompilerExtension(".strings", ".json:.cs")
 		};
 		#endregion 
+
+		#region Properties
+		[ContentCompilerParameterAttribute("Class name for the generated C# file.  Xxx will be replaced with the base file name of the input strings file.", Optional = true)]
+		public string ClassName { get; set; }
+
+		[ContentCompilerParameterAttribute("Namespace for the generated C# file.", Optional = false)]
+		public string Namespace { get; set; }
+		#endregion
+
+		#region Construction
+		public StringsToJsonAndCsCompiler()
+		{
+			ClassName = "XxxStrings";
+		}
+
+		#endregion
 		
 		#region IContentCompiler
-		public CompilerExtension[] Extensions { get { return extensions; } }
+		public IList<CompilerExtension> Extensions { get { return extensions; } }
 		public BuildContext Context { get; set; }
         public BuildTarget Target { get; set; }
 
-		public void Setup(YamlMappingNode settings)
-		{
-		}
-		
 		public void Compile()
 		{
 			if (Target.InputPaths.Count != 1)
@@ -56,11 +67,10 @@ namespace Playroom
 			ParsedPath csFilePath = Target.OutputPaths[0];
 			ParsedPath jsonFilePath = Target.OutputPaths[1];
 
-			string className;
+			if (ClassName.StartsWith("Xxx"))
+				this.ClassName = this.ClassName.Replace("Xxx", stringsFilePath.File + "Strings");
 
-			Target.Properties.GetOptionalValue("ClassName", out className, stringsFilePath.File + "Strings");
-
-            StringsContent stringsData = CreateStringsData(className, ReadStringsFile(stringsFilePath));
+			StringsContent stringsData = CreateStringsData(this.ClassName, ReadStringsFile(stringsFilePath));
 
             string[] strings = stringsData.Strings.Select(s => s.Value).ToArray();
 
@@ -109,12 +119,7 @@ namespace Playroom
 
             stringsData.ClassName = className;
             stringsData.Strings = new List<StringsContent.String>();
-
-			string namespaceName;
-
-			Target.Properties.GetRequiredValue("Namespace", out namespaceName);
-
-            stringsData.Namespace = namespaceName;
+            stringsData.Namespace = this.Namespace;
 
             foreach (var pair in stringDict)
             {

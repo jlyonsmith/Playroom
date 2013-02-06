@@ -15,23 +15,37 @@ namespace Playroom
 			public List<YamlScalarNode> Inputs;
 			public List<YamlScalarNode> Outputs;
 			public YamlScalarNode Compiler;
-			public List<Property> Properties;
+			public List<ContentFileV4.NameValue> Parameters;
         }
 
-		public class CompilerSetting
+		public class CompilerSettings
 		{
-			public CompilerSetting(YamlScalarNode name, YamlMappingNode settings)
+			public CompilerSettings(YamlScalarNode name, List<ContentFileV4.NameValue> parameters, List<ContentFileV4.CompilerExtensions> extensions)
 			{
 				Name = name;
-				Settings = settings;
+				Parameters = parameters;
+				Extensions = extensions;
 			}
 			public YamlScalarNode Name;
-			public YamlMappingNode Settings;
+			public List<ContentFileV4.CompilerExtensions> Extensions;
+			public List<ContentFileV4.NameValue> Parameters;
 		}
 
-		public class Property
+		public class CompilerExtensions
 		{
-			public Property(YamlScalarNode name, YamlScalarNode value)
+			public CompilerExtensions(YamlScalarNode inputs, YamlScalarNode outputs)
+			{
+				Inputs = inputs;
+				Outputs = outputs;
+			}
+
+			public YamlScalarNode Inputs;
+			public YamlScalarNode Outputs;
+		}
+
+		public class NameValue
+		{
+			public NameValue(YamlScalarNode name, YamlScalarNode value)
 			{
 				Name = name;
 				Value = value;
@@ -40,9 +54,9 @@ namespace Playroom
 			public YamlScalarNode Value;
 		}
 
-		public List<YamlScalarNode> CompilerAssemblies;
-		public List<ContentFileV4.CompilerSetting> CompilerSettings;
-		public List<Property> Properties;
+		public List<YamlScalarNode> Assemblies;
+		public List<ContentFileV4.CompilerSettings> Settings;
+		public List<NameValue> Properties;
 		public List<ContentFileV4.Target> Targets;
 
 		public void Load(ParsedPath contentPath)
@@ -79,7 +93,7 @@ namespace Playroom
 
 		private void ReadDocument(YamlDocument document)
 		{
-			YamlScalarNode scalar1, scalar2;
+			YamlScalarNode scalar1;
 			YamlMappingNode mapping1, mapping2, mapping3;
 			YamlSequenceNode sequence1, sequence2;
 
@@ -91,43 +105,19 @@ namespace Playroom
 
 			mapping1.GetChildNode("compiler-assemblies", out sequence1);
 
-			this.CompilerAssemblies = new List<YamlScalarNode>();
+			this.Assemblies = new List<YamlScalarNode>();
 
 			foreach (YamlNode node in sequence1)
 			{
 				node.CastNode(out scalar1);
 
-				this.CompilerAssemblies.Add(scalar1);
+				this.Assemblies.Add(scalar1);
 			}
 
-			this.CompilerSettings = new List<CompilerSetting>();
 			mapping1.GetOptionalChildNode("compiler-settings", out sequence1);
 
-			if (sequence1 != null)
-			{
-				foreach (YamlNode node in sequence1)
-				{
-					node.CastNode(out mapping2);
-					mapping2.GetChildNode("name", out scalar1);
-					mapping2.GetChildNode("settings", out mapping3);
-
-					this.CompilerSettings.Add(new ContentFileV4.CompilerSetting(scalar1, mapping3));
-				}
-			}
-
-			this.Properties = new List<Property>();
-			mapping1.GetOptionalChildNode("properties", out mapping2);
-			
-			if (mapping2 != null)
-			{
-				foreach (var pair in mapping2)
-				{
-					pair.Key.CastNode(out scalar1);
-					pair.Value.CastNode(out scalar2);
-
-					this.Properties.Add(new Property(scalar1, scalar2));
-				}
-			}
+			this.Settings = ReadCompilerSettings(sequence1);
+			this.Properties = ReadOptionalNameValues(mapping1);
 
 			this.Targets = new List<Target>();
 			mapping1.GetChildNode("targets", out sequence1);
@@ -147,22 +137,75 @@ namespace Playroom
 				sequence2.ForEach(n => { n.CastNode(out scalar1); target.Outputs.Add(scalar1); });
 				mapping2.GetOptionalChildNode("compiler", out scalar1);
 				target.Compiler = scalar1;
-				mapping2.GetOptionalChildNode("properties", out mapping3);
-				target.Properties = new List<Property>();
-
-				if (mapping3 != null)
-				{
-					foreach (var pair in mapping3)
-					{
-						pair.Key.CastNode(out scalar1);
-						pair.Value.CastNode(out scalar2);
-						
-						target.Properties.Add(new Property(scalar1, scalar2));
-					}
-				}
+				mapping2.GetOptionalChildNode("parameters", out mapping3);
+				target.Parameters = ReadOptionalNameValues(mapping3);
 
 				Targets.Add(target);
 			}
+		}
+
+		private List<CompilerSettings> ReadCompilerSettings(YamlSequenceNode sequence1)
+		{
+			List<CompilerSettings> compilerSettings = new List<CompilerSettings>();
+
+			if (sequence1 == null)
+				return compilerSettings;
+
+			YamlMappingNode mapping1, mapping2;
+			YamlScalarNode scalar1, scalar2, scalar3;
+			YamlSequenceNode sequence2;
+
+			foreach (YamlNode node1 in sequence1)
+			{
+				node1.CastNode(out mapping1);
+				mapping1.GetChildNode("name", out scalar1);
+
+				List<ContentFileV4.CompilerExtensions> extensions = new List<ContentFileV4.CompilerExtensions>();
+				mapping1.GetOptionalChildNode("extensions", out sequence2);
+
+				if (sequence2 != null)
+				{
+					foreach (var node2 in sequence2)
+					{
+						node2.CastNode(out mapping2);
+						mapping2.GetChildNode("inputs", out scalar2);
+						mapping2.GetChildNode("outputs", out scalar3);
+						
+						extensions.Add(new ContentFileV4.CompilerExtensions(scalar2, scalar3));
+					}
+				}
+
+				mapping1.GetOptionalChildNode("parameters", out mapping2);
+
+				List<ContentFileV4.NameValue> settings = ReadOptionalNameValues(mapping2);
+
+				compilerSettings.Add(new ContentFileV4.CompilerSettings(scalar1, settings, extensions));
+			}
+
+			return compilerSettings;
+		}
+
+		private List<ContentFileV4.NameValue> ReadOptionalNameValues(YamlMappingNode mapping1)
+		{
+			List<NameValue> nameValues = new List<NameValue>();
+
+			if (mapping1 == null)
+				return nameValues;
+
+			YamlScalarNode scalar1, scalar2;
+
+			if (mapping1 != null)
+			{
+				foreach (var pair in mapping1)
+				{
+					pair.Key.CastNode(out scalar1);
+					pair.Value.CastNode(out scalar2);
+					
+					nameValues.Add(new NameValue(scalar1, scalar2));
+				}
+			}
+
+			return nameValues;
 		}
 	}
 }

@@ -5,7 +5,6 @@ using System.Text;
 using ToolBelt;
 using System.IO;
 using System.Xml;
-using YamlDotNet.RepresentationModel;
 
 namespace Playroom
 {
@@ -44,21 +43,28 @@ namespace Playroom
         #endregion
 
 		#region Fields
-		private CompilerExtension[] extensions = new CompilerExtension[]
+		private IList<CompilerExtension> extensions = new CompilerExtension[]
 		{
 			new CompilerExtension(".pinboard", ".cs")
 		};
 		#endregion
         
-        #region IContentCompiler Members
+		#region Properties
+		[ContentCompilerParameterAttribute("Namespace for the generated C# file", Optional = false)]
+		public string Namespace { get; set; }
 
-        public CompilerExtension[] Extensions { get { return extensions; } }
-        public BuildContext Context { get; set; }
-        public BuildTarget Target { get; set; }
+		#endregion
 
-		public void Setup(YamlMappingNode settings)
+		#region Construction
+		public PinboardInventoryToCsCompiler()
 		{
 		}
+		#endregion
+		
+		#region IContentCompiler Members
+        public IList<CompilerExtension> Extensions { get { return extensions; } }
+        public BuildContext Context { get; set; }
+        public BuildTarget Target { get; set; }
 
         public void Compile()
         {
@@ -93,7 +99,7 @@ namespace Playroom
         {
             RectanglesContent rectData = new RectanglesContent();
 
-			rectData.Namespace = Target.Properties.GetRequiredValue("Namespace");
+			rectData.Namespace = this.Namespace;
             rectData.Classes = new List<RectanglesContent.Class>();
 
             foreach (var pinboardFile in distinctPinboardFiles)

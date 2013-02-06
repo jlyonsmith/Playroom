@@ -7,12 +7,11 @@ compiler-assemblies:
 
 compiler-settings:
   - name: CopyCompiler
-    settings:
-      extensions:
-        - inputs:  .png
-          outputs: .png
-        - inputs:  .wav
-          outputs: .wav
+    extensions:
+    - inputs:  .png
+      outputs: .png
+    - inputs:  .wav
+      outputs: .wav
 
 properties:
   property1: abc
@@ -23,14 +22,14 @@ targets:
     inputs:   [$(InputDir)/Example.pinboard]
     outputs:  [$(OutputDir)/$(TargetName).json]
     properties:
-      test: 1234
+      Test: 1234
 
   - name:     ExampleRectangles
     inputs:   [$(InputDir)/*.pinboard]
     outputs:  [$(OutputDir)/$(TargetName).cs]
     compiler: PinboardInventoryToCsCompiler
     properties:
-      namespace: Company.Products
+      Namespace: Company.Products
 
   - name:     ExampleResx
     inputs:   [$(InputDir)/Example.resx]
@@ -40,7 +39,7 @@ targets:
     inputs:   [$(InputDir)/Example.strings]
     outputs:  [$(OutputDir)/$(TargetName).cs, $(OutputDir)/$(TargetName).json]
     properties:
-      namespace: Company.Product
+      Namespace: Company.Product
 
   - name:     ExamplePngPng
     inputs:   [$(InputDir)/Example.png]
@@ -50,21 +49,21 @@ targets:
     inputs:   [$(InputDir)/Example.svg]
     outputs:  [$(OutputDir)/$(TargetName).png]
     properties:
-      width:  100
-      height: 100
+      Width:  100
+      Height: 100
 
   - name:     ExampleSvgPinboardPng
     inputs:   [$(InputDir)/Example.svg, $(InputDir)/Example.pinboard]
     outputs:  [$(OutputDir)/$(TargetName).png]
     properties:
-      rectangles: Thing
+      Rectangles: Thing
 
   - name:     ExampleSvgPdfPngdef
     inputs:   [$(InputDir)/Example.svg]
     outputs:  [$(OutputDir)/$(TargetName).pdf, $(OutputDir)/$(TargetName).pngdef]
     properties: 
-      pinboard: Example
-      rectangle: Screen
+      Pinboard: Example
+      Rectangle: Screen
 
   - name:     ExampleWavWav
     inputs:   [$(InputDir)/Example.wav]

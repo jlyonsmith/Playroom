@@ -5,41 +5,53 @@ using System.Text;
 using ToolBelt;
 using System.IO;
 using System.Xml;
-using YamlDotNet.RepresentationModel;
 using YamlDotNet.RepresentationModel.Serialization;
 
 namespace Playroom
 {
 	public class SvgToPdfAndPngdefCompiler : IContentCompiler
     {
+		#region Construction
+		public SvgToPdfAndPngdefCompiler()
+		{
+			Rows = 1;
+			Columns = 1;
+		}
+		#endregion
+
 		#region Fields
 		private CompilerExtension[] extensions = new CompilerExtension[]
 		{
 			new CompilerExtension(".svg", ".pdf:.pngdef")
 		};
 		#endregion 
+
+		#region Properties
+		[ContentCompilerParameterAttribute("Number of rows of images. Used for compound images.", Optional = true)]
+		public int Rows { get; set; }
 		
+		[ContentCompilerParameterAttribute("Number of columns of images.  Used for compound images", Optional = true)]
+		public int Columns { get; set; }
+		
+		[ContentCompilerParameterAttribute("Name of the pinboard to use for the rectangle")]
+		public string Pinboard { get; set; }
+		
+		[ContentCompilerParameterAttribute("Name of the rectangle to use to size the image")]
+		public string Rectangle { get; set; }
+
+		#endregion
+
 		#region IContentCompiler
-		public CompilerExtension[] Extensions { get { return extensions; } }
+		public IList<CompilerExtension> Extensions { get { return extensions; } }
 		public BuildContext Context { get; set; }
         public BuildTarget Target { get; set; }
 
-		public void Setup(YamlMappingNode settings)
-		{
-		}
-		
 		public void Compile()
 		{
 			IEnumerable<ParsedPath> svgPaths = Target.InputPaths.Where(f => f.Extension == ".svg");
 			ParsedPath pdfPath = Target.OutputPaths.Where(f => f.Extension == ".pdf").First();
 			ParsedPath pngdefPath = Target.OutputPaths.Where(f => f.Extension == ".pngdef").First();
 
-			int numRows;
-			int numCols;
-			
-			this.Target.Properties.GetOptionalValue("Rows", out numRows, 1);
-			this.Target.Properties.GetOptionalValue("Columns", out numCols, 1);
- 
 			ParsedPath nUpSvgPath = null;
 
 			try
@@ -47,9 +59,9 @@ namespace Playroom
 				if (svgPaths.Count() > 1)
 				{
 					nUpSvgPath = pdfPath.WithFileAndExtension(
-						String.Format("{0}_{1}x{2}.svg", pdfPath.File, numRows, numCols));
+						String.Format("{0}_{1}x{2}.svg", pdfPath.File, Rows, Columns));
 
-					CreateNupSvg(svgPaths, nUpSvgPath, numRows, numCols);
+					CreateNupSvg(svgPaths, nUpSvgPath, Rows, Columns);
 				}
 
 				if (!Directory.Exists(pdfPath.VolumeAndDirectory))
@@ -67,10 +79,10 @@ namespace Playroom
 
 			List<string> pdfInfo = new List<string>();
 			
-			pdfInfo.Add(this.Target.Properties.GetRequiredValue("Pinboard"));
-			pdfInfo.Add(this.Target.Properties.GetRequiredValue("Rectangle"));
-			pdfInfo.Add(numRows.ToString());
-			pdfInfo.Add(numCols.ToString());
+			pdfInfo.Add(this.Pinboard);
+			pdfInfo.Add(this.Rectangle);
+			pdfInfo.Add(Rows.ToString());
+			pdfInfo.Add(Columns.ToString());
 
 			if (!Directory.Exists(pngdefPath.VolumeAndDirectory))
 			{

@@ -38,6 +38,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YamlDotNet.Core", "..\YamlD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YamlDotNet.RepresentationModel", "..\YamlDotNet\YamlDotNet.RepresentationModel\YamlDotNet.RepresentationModel.csproj", "{21CA0077-E15C-446D-9C43-F6D3F9D09687}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{D8B2FDC1-7D64-4B93-B849-A7B9155519E6}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\buildcontent = Scripts\buildcontent
+		Scripts\copy_to_bin.py = Scripts\copy_to_bin.py
+		Scripts\CopyToBin.sh = Scripts\CopyToBin.sh
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86

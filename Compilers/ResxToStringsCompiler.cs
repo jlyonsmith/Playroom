@@ -7,7 +7,6 @@ using System.Resources;
 using System.Collections;
 using System.ComponentModel.Design;
 using System.Xml;
-using YamlDotNet.RepresentationModel;
 
 namespace Playroom
 {
@@ -76,14 +75,10 @@ namespace Playroom
 
         #region IContentCompiler Members
 
-		public CompilerExtension[] Extensions { get { return extensions; } }
+		public IList<CompilerExtension> Extensions { get { return extensions; } }
 		public BuildContext Context { get; set; } 
         public BuildTarget Target { get; set; }
 
-		public void Setup(YamlMappingNode settings)
-		{
-		}
-		
 		public void Compile()
         {
             ParsedPath resxPath = Target.InputPaths.Where(f => f.Extension == ".resx").First();

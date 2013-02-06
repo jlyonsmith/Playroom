@@ -52,7 +52,7 @@ namespace Playroom
 			SHA1 sha1 = SHA1.Create();
 			StringBuilder sb = new StringBuilder();
 			
-			foreach (var rawAssembly in ContentFile.CompilerAssemblies)
+			foreach (var rawAssembly in ContentFile.Assemblies)
 			{
 				sb.Append(rawAssembly);
 			}
@@ -61,10 +61,21 @@ namespace Playroom
 				sb.Append(rawProperty.Name);
 				sb.Append(rawProperty.Value);
 			}
-			foreach (var rawCopyTarget in ContentFile.CompilerSettings)
+			foreach (ContentFileV4.CompilerSettings rawCompilerSettings in this.ContentFile.Settings)
 			{
-				sb.Append(rawCopyTarget.Name);
-				sb.Append(rawCopyTarget.Settings);
+				sb.Append(rawCompilerSettings.Name);
+
+				foreach (var property in rawCompilerSettings.Extensions)
+				{
+					sb.Append(property.Inputs);
+					sb.Append(property.Outputs);
+				}
+
+				foreach (var property in rawCompilerSettings.Parameters)
+				{
+					sb.Append(property.Name);
+					sb.Append(property.Value);
+				}
 			}
 			
 			GlobalHash = BitConverter.ToString(sha1.ComputeHash(Encoding.UTF8.GetBytes(sb.ToString()))).Replace("-", "");
@@ -79,7 +90,7 @@ namespace Playroom
 
 			ParsedPathList assemblyPaths = new ParsedPathList();
 			
-			foreach (var rawAssembly in ContentFile.CompilerAssemblies)
+			foreach (var rawAssembly in ContentFile.Assemblies)
 			{
 				ParsedPath pathSpec = null;
 				
@@ -110,7 +121,7 @@ namespace Playroom
 				}
 				catch (Exception e)
 				{
-					throw new ContentFileException(this.ContentFile.CompilerAssemblies[i], e);
+					throw new ContentFileException(this.ContentFile.Assemblies[i], e);
 				}
 				
 				Type[] types;
@@ -130,7 +141,7 @@ namespace Playroom
 						message += Environment.NewLine + "   " + ex.Message;
 					
 					// Not being able to reflect on classes in the compiler assembly is a critical error
-					throw new ContentFileException(this.ContentFile.CompilerAssemblies[i], message, e);
+					throw new ContentFileException(this.ContentFile.Assemblies[i], message, e);
 				}
 				
 				int compilerCount = 0;
@@ -141,37 +152,13 @@ namespace Playroom
 				{
 					Type interfaceType = type.GetInterface(typeof(IContentCompiler).ToString());
 					
-					if (interfaceType != null)
-					{
-						CompilerClass compilerClass = new CompilerClass(assembly, type, interfaceType);
+					if (interfaceType == null)
+						continue;
+
+					CompilerClass compilerClass = new CompilerClass(this.ContentFile.Assemblies[i], assembly, type, interfaceType);
 						
-						CompilerClasses.Add(compilerClass);
-						compilerCount++;
-						
-						// See if any compiler settings apply to this compiler
-						YamlMappingNode settingsNode = null;
-						
-						foreach (var rawSettings in this.ContentFile.CompilerSettings)
-						{
-							if (compilerClass.Name.EndsWith(rawSettings.Name.Value))
-							{
-								settingsNode = rawSettings.Settings;
-								break;
-							}
-						}
-						
-						try 
-						{
-							compilerClass.SettingsMethod.Invoke(compilerClass.Instance, new object[] { settingsNode });
-						}
-						catch (Exception e)
-						{
-							if (settingsNode == null)
-								throw new ApplicationException("Failed to setup compiler '{0}'".CultureFormat(compilerClass.Name));
-							else
-								throw new ContentFileException(settingsNode, "Error setting up compiler with given settings", e);
-						}
-					}
+					CompilerClasses.Add(compilerClass);
+					compilerCount++;
 				}
 
 				DateTime dateTime = File.GetLastWriteTime(assembly.Location);
