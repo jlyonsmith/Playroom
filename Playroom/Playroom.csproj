@@ -92,5 +92,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="PlayroomResources.resources" />
+    <EmbeddedResource Include="Template.content" />
   </ItemGroup>
 </Project>

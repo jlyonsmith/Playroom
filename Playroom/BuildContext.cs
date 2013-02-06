@@ -25,28 +25,41 @@ namespace Playroom
 		internal DateTime NewestAssemblyWriteTime { get; set; }
 
 		public BuildContext(OutputHelper output, string properties, ParsedPath contentFilePath)
-        {
-            Output = output;
-            ContentFilePath = contentFilePath;
+		{
+			Output = output;
+			ContentFilePath = contentFilePath;
 
-			Properties = new PropertyCollection();
-			Properties.AddFromEnvironment();
-			Properties.AddWellKnown(
-				new ParsedPath(Assembly.GetExecutingAssembly().Location, PathType.File).VolumeAndDirectory,
-				contentFilePath.VolumeAndDirectory);
-			Properties.AddFromString(properties);
 			ContentFile = new ContentFileV4();
-
 			ContentFile.Load(ContentFilePath);
-
+			
 			Output.Message(MessageImportance.Low, "Read content file '{0}'", ContentFilePath);
+			
+			Properties = new PropertyCollection();
 
+			// Start with the environment
+			Properties.AddFromEnvironment();
+
+			// Set defaults for important locations
+			Properties.Set("BuildContentDir", new ParsedPath(Assembly.GetExecutingAssembly().Location, PathType.File).VolumeAndDirectory.ToString());
+			Properties.Set("ContentFileDir", contentFilePath.VolumeAndDirectory);
+			Properties.Set("InputDir", contentFilePath.VolumeAndDirectory);
+			Properties.Set("OutputDir", contentFilePath.VolumeAndDirectory);
+
+			// Now override with from content file
 			Properties.AddFromList(ContentFile.Properties.Select(p => new KeyValuePair<string, string>(p.Name.Value, p.Value.Value)));
 
-			ContentFileHashesPath = new ParsedPath(
-				Properties.GetOptionalValue(
-				"TargetHashesFile", Properties.ExpandVariables("$(OutputDir)/" + ContentFilePath.FileAndExtension + ".hashes")), PathType.File).MakeFullPath();
+			// Now override with command line
+			Properties.AddFromString(properties);
 
+			// Add content file hash location if not set already
+			if (!Properties.Contains("ContentFileHashes"))
+			{
+				ParsedPath path = new ParsedPath(Properties.GetRequiredValue("OutputDir"), PathType.Directory);
+
+				Properties.Set("ContentHashesFile", path.Append(ContentFilePath.FileAndExtension + ".hashes", PathType.File));
+			}
+
+			ContentFileHashesPath = new ParsedPath(Properties.GetRequiredValue("ContentHashesFile"), PathType.File).MakeFullPath();
 			ContentFileWriteTime = File.GetLastWriteTime(this.ContentFilePath);
 
 			SHA1 sha1 = SHA1.Create();

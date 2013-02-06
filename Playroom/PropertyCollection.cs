@@ -34,7 +34,7 @@ namespace Playroom
 		#region IEnumerable
 		public IEnumerator GetEnumerator()
 		{
-			return (IEnumerator)GetEnumerator();
+			return (IEnumerator)dictionary.GetEnumerator();
 		}
 
 		IEnumerator<KeyValuePair<string, string>> IEnumerable<KeyValuePair<string, string>>.GetEnumerator()
@@ -45,18 +45,9 @@ namespace Playroom
 		#endregion
 
 		#region Methods
-		public string ExpandVariables(string s)
+		public string ExpandVariables(string s, bool throwOnUnknown = true)
 		{
-			return s.ReplaceTags("$(", ")", this.dictionary, TaggedStringOptions.ThrowOnUnknownTags);
-		}
-		
-		public void AddWellKnown(
-			ParsedPath buildContentDir,
-			ParsedPath contentFileDir)
-		{
-			this.Set("BuildContentDir", buildContentDir.ToString());
-			this.Set("InputDir", contentFileDir.ToString());
-			this.Set("OutputDir", contentFileDir.ToString());
+			return s.ReplaceTags("$(", ")", this.dictionary, throwOnUnknown ? TaggedStringOptions.ThrowOnUnknownTags : TaggedStringOptions.LeaveUnknownTags);
 		}
 		
 		public void AddFromList(IEnumerable<KeyValuePair<string, string>> pairs)

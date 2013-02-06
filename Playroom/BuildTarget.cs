@@ -18,6 +18,7 @@ namespace Playroom
 		public IList<ParsedPath> OutputPaths { get; private set; }
 		public CompilerExtension Extension { get; private set; }
 		public string Hash { get; private set; }
+		public PropertyCollection Properties { get; private set; }
 		internal ContentFileV4.Target RawTarget{ get; set; }
 
 		public BuildTarget(
@@ -31,14 +32,26 @@ namespace Playroom
 			if (rawTarget.Inputs.Count == 0)
 				throw new ContentFileException(rawTarget.Name, "Target must have at least one input");
 
+			this.Properties = new PropertyCollection();
+			this.Properties.Set("TargetName", this.Name);
+
 			List<ParsedPath> inputPaths = new List<ParsedPath>();
-			IEnumerable<string> list = rawTarget.Inputs.Select(p => p.Value);
-			
-			foreach (var rawInputFile in list)
+
+			foreach (var rawInputFile in rawTarget.Inputs)
 			{
 				ParsedPath pathSpec = null; 
-				string s = buildContext.Properties.ExpandVariables(rawInputFile);
+				string s;
 				
+				try
+				{
+					s = buildContext.Properties.ExpandVariables(rawInputFile.Value, false);
+					s = this.Properties.ExpandVariables(s);
+				}
+				catch (Exception e)
+				{
+					throw new ContentFileException(rawInputFile, e);
+				}
+
 				try
 				{
 					pathSpec = new ParsedPath(s, PathType.File).MakeFullPath();
@@ -78,11 +91,19 @@ namespace Playroom
 			if (rawTarget.Outputs.Count == 0)
 				throw new ContentFileException(rawTarget.Name, "Target must have at least one output");
 
-			list = rawTarget.Outputs.Select(p => p.Value);
-			
-			foreach (var rawOutputFile in list)
+			foreach (var rawOutputFile in rawTarget.Outputs)
 			{
-				string s = buildContext.Properties.ExpandVariables(rawOutputFile);
+				string s;
+
+				try
+				{
+					s = buildContext.Properties.ExpandVariables(rawOutputFile.Value, false);
+					s = this.Properties.ExpandVariables(s);
+				}
+				catch (Exception e)
+				{
+					throw new ContentFileException(rawOutputFile, e);
+				}
 				
 				try
 				{

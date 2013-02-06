@@ -117,7 +117,9 @@ namespace Playroom
 			mapping1.GetOptionalChildNode("compiler-settings", out sequence1);
 
 			this.Settings = ReadCompilerSettings(sequence1);
-			this.Properties = ReadOptionalNameValues(mapping1);
+
+			mapping1.GetOptionalChildNode("properties", out mapping2);
+			this.Properties = ReadOptionalNameValues(mapping2);
 
 			this.Targets = new List<Target>();
 			mapping1.GetChildNode("targets", out sequence1);

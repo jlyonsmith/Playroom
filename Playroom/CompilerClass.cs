@@ -65,10 +65,10 @@ namespace Playroom
 
 					var property = new AttributedProperty(attribute, propertyInfo);
 
-					if (!attribute.ForCompiler)
-						targetParameters.Add(propertyInfo.Name, property);
-					else
+					if (attribute.ForCompiler)
 						compilerParameters.Add(propertyInfo.Name, property);
+					else
+						targetParameters.Add(propertyInfo.Name, property);
 				}
 			}
 		}

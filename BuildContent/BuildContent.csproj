@@ -22,13 +22,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Commandlineparameters>-? ../../../Test/RawContent/TestContent1.content</Commandlineparameters>
+    <Commandlineparameters>build -f ../../../Test/RawContent/TestContent1.content</Commandlineparameters>
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeExecute" command="/bin/bash CopyExtraFiles.sh" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
-    <Externalconsole>True</Externalconsole>
+    <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>

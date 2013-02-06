@@ -14,24 +14,20 @@ using YamlDotNet.RepresentationModel.Serialization;
 
 namespace Playroom
 {
-	public enum BuildContentMode
-	{
-		Build,
-		Rebuild,
-		Clean,
-		Debug
-	}
-
 	[CommandLineTitle("Playroom Content Builder")]
 	[CommandLineDescription("A tool for compiling game and application content from raw resources")]
 	[CommandLineCopyright("Copyright (c) 2013, Jamoki LLC")]
+	[CommandLineCommandDescription("build", Description = "Builds content from using a .contents file")]
+	[CommandLineCommandDescription("clean", Description = "Cleans content using a .contents file")]
+	[CommandLineCommandDescription("new", Description = "Creates a new bare bones .contents file")]
+	[CommandLineCommandDescription("help", Description = "Displays help for this tool ")]
 	public class BuildContentTool : ITool, IProcessCommandLine
 	{
 		#region Fields
 		private bool runningFromCommandLine = false;
 		private BuildContext buildContext = null;
 
-        #endregion
+        	#endregion
 
         #region Construction
 		public BuildContentTool(IOutputter outputter)
@@ -41,34 +37,39 @@ namespace Playroom
 
         #endregion
 
+		[CommandCommandLineArgument("mode", Description = "Mode to execute in.  Can be build, clean, help, new.", Commands = "help,build,clean,new")]
+		public string Command { get; set; }
+
 		[DefaultCommandLineArgument(
 			"default", Description = "Input .content data file", ValueHint = "<content-file>", 
-            Initializer = typeof(BuildContentTool), MethodName="ParseCommandLineFilePath")]
+            Initializer = typeof(BuildContentTool), MethodName="ParseCommandLineFilePath",
+			Commands = "build,help,clean,new")]
 		public ParsedPath ContentPath { get; set; }
 
 		[CommandLineArgument(
 			"properties", ShortName = "p", Description = "Additional properties to set", 
-			ValueHint = "<prop1=val1;prop2=val2>")]
+			ValueHint = "<prop1=val1;prop2=val2>",
+			Commands = "build,clean")]
 		public string Properties { get; set; }
 
-		[CommandLineArgument("help", ShortName = "?", Description = "Displays this help and help for content compilers")]
-		public bool ShowHelp { get; set; }
-
-		[CommandLineArgument("nologo", Description = "Suppress display of logo/banner")]
-		public bool NoLogo { get; set; }
-
 		[CommandLineArgument(
-			"mode", ShortName = "m", Initializer = typeof(BuildContentTool), MethodName="ParseCommandLineBuildMode", 
-			Description = @"Build mode; build, rebuild, clean, debug or help.  
-Build only builds out of date targets.  
-Rebuild builds all targets.  
-Clean removes deletes all targets. 
-Debug shows all properties and what would be built.  
-Help shows help information for compilers given in the .content file")]
-		public BuildContentMode Mode { get; set; }
+			"test", ShortName = "t", Description = "Show what would be built without actually building it",
+			Commands = "build")]
+		public bool TestOnly { get; set; }
 		
-		[CommandLineArgument("test", Description = "Test mode. Indicates what would be done but does not actually do it")]
-		public bool TestMode { get; set; }
+		[CommandLineArgument(
+			"force", ShortName = "f", Description = "Force a build where every source file is out of date.",
+			Commands = "build")]
+		public bool Force { get; set; }
+
+		[CommandLineArgument("debug", ShortName = "d", Description="Show property information while building", Commands="build")]
+		public bool ShowProperties { get; set; }
+		
+		[CommandLineArgument("help", ShortName = "?", Description="Displays this help")]
+		public bool ShowHelp { get; set; }
+		
+		[CommandLineArgument("nologo", Description = "Suppress display of logo/banner", Commands = "build, clean")]
+		public bool NoLogo { get; set; }
 
 		public OutputHelper Output { get; set; }
 
@@ -98,11 +99,6 @@ Help shows help information for compilers given in the .content file")]
 			return new ParsedPath(value, PathType.File);
 		}
 
-		public static BuildContentMode ParseCommandLineBuildMode(string value)
-		{
-			return (BuildContentMode)Enum.Parse(typeof(BuildContentMode), value, true);
-		}
-
 		public void Execute()
 		{
 			try
@@ -118,7 +114,8 @@ Help shows help information for compilers given in the .content file")]
 
 				bool hasContentFile = !String.IsNullOrEmpty(ContentPath);
 
-				if (!hasContentFile && ShowHelp)
+				if ((!hasContentFile && this.Command == "help") ||
+					(String.IsNullOrEmpty(this.Command) && this.ShowHelp))
 				{
 					Console.WriteLine(Parser.Usage);
 					return;
@@ -131,7 +128,13 @@ Help shows help information for compilers given in the .content file")]
 				}
 				
 				this.ContentPath = this.ContentPath.MakeFullPath();
-				
+
+				if (this.Command == "new")
+				{
+					CreateContentFileFromTemplate();
+					return;
+				} 
+
 				if (!File.Exists(this.ContentPath))
 				{
 					Output.Error("Content file '{0}' does not exist", this.ContentPath);
@@ -142,54 +145,64 @@ Help shows help information for compilers given in the .content file")]
 
 				ApplyCompilerSettingsExtensions();
 
-				if (ShowHelp)
+				if (this.Command == "help")
 				{
-					WriteContentCompilerUsage(buildContext);
+					WriteContentCompilerUsage();
 					return;
 				}
 
 				List<BuildTarget> buildTargets;
 
 				PrepareBuildTargets(out buildTargets);
-				Build(buildTargets);
+
+				if (this.Command == "clean")
+				{
+					Clean(buildTargets);
+				}
+				else
+				{
+					Build(buildTargets);
+				}
 
 				Output.Message(MessageImportance.Normal, "Done");
 			}
 			catch (Exception e)
 			{
-				ContentFileException cfe = e as ContentFileException;
-
-				if (cfe != null)
+				do
 				{
-					int line = cfe.Start.Line + 1;
-					int column = cfe.Start.Column + 1;
+					ContentFileException cfe = e as ContentFileException;
 
-					do
+					if (cfe != null)
 					{
-						Output.Error(ContentPath, line, column, e.Message);
-#if DEBUG
-						Console.WriteLine(e.StackTrace);
-#endif
+						Output.Error(ContentPath, cfe.Start.Line + 1, cfe.Start.Column + 1, e.Message);
 					}
-					while ((e = e.InnerException) != null);
-				}
-				else
-				{
-					do
+					else
 					{
 						Output.Error(e.Message);
-#if DEBUG
-						Console.WriteLine(e.StackTrace);
-#endif
 					}
-					while ((e = e.InnerException) != null);
+#if DEBUG
+					Console.WriteLine(e.StackTrace);
+#endif
 				}
+				while ((e = e.InnerException) != null);
 			}
 		}
 
         #region Private Methods
 
-		private void WriteContentCompilerUsage(BuildContext buildContext)
+		private void CreateContentFileFromTemplate()
+		{
+			// Get this type's assembly
+			Assembly assem = this.GetType().Assembly;
+			
+			// Load the resource using a namespace
+			using (StreamReader reader = new StreamReader(assem.GetManifestResourceStream(this.GetType(), "Template.content")))
+			{
+				File.WriteAllText(this.ContentPath, reader.ReadToEnd());
+			}
+		}
+
+		private void WriteContentCompilerUsage()
 		{
 			foreach (var compilerClass in buildContext.CompilerClasses)
 			{
@@ -211,18 +224,18 @@ Help shows help information for compilers given in the .content file")]
 				if (compilerClass.CompilerParameters.Count > 0)
 				{
 					Console.WriteLine("  Compiler Parameters:");
-					WriteProperties(compilerClass, compilerClass.CompilerParameters);
+					WriteParameters(compilerClass, compilerClass.CompilerParameters);
 				}
 
 				if (compilerClass.TargetParameters.Count > 0)
 				{
 					Console.WriteLine("  Target Paramaters:");
-					WriteProperties(compilerClass, compilerClass.TargetParameters);
+					WriteParameters(compilerClass, compilerClass.TargetParameters);
 				}
 			}
 		}
 
-		private void WriteProperties(CompilerClass compilerClass, Dictionary<string, AttributedProperty> settings)
+		private void WriteParameters(CompilerClass compilerClass, Dictionary<string, AttributedProperty> settings)
 		{
 			foreach (var pair in settings)
 			{
@@ -262,7 +275,17 @@ Help shows help information for compilers given in the .content file")]
 				}
 			}
 		}
-		
+
+		private void WriteProperties(PropertyCollection properties)
+		{
+			Output.Message(MessageImportance.Low, "  Properties:");
+
+			foreach (KeyValuePair<string, string> pair in properties)
+			{
+				Output.Message(MessageImportance.Low, "    {0} = {1}", pair.Key, pair.Value);
+			}
+		}
+
 		private void PrepareBuildTargets(out List<BuildTarget> buildTargets)
 		{
 			buildTargets = new List<BuildTarget>();
@@ -402,97 +425,131 @@ Help shows help information for compilers given in the .content file")]
 			}
 		}
 		
-		private void ApplyCompilerSettingsProperties()
+		private void ApplyCompilerSettingsParameters()
 		{
 			foreach (var compilerClass in buildContext.CompilerClasses)
 			{
 				// Get the compiler setup entry for this compiler if there is one
 				ContentFileV4.CompilerSettings rawCompilerSettings = buildContext.ContentFile.Settings.FirstOrDefault(s => compilerClass.Name.EndsWith(s.Name.Value));
 
-				ApplyProperties(rawCompilerSettings.Name, compilerClass, rawCompilerSettings.Parameters);
+				ApplyParameters(
+					rawCompilerSettings.Name, 
+					compilerClass.Name, 
+					compilerClass.Instance, 
+					compilerClass.CompilerParameters, 
+					rawCompilerSettings.Parameters);
 			}
 		}
 		
-		private void ApplyProperties(YamlNode yamlParentNode, CompilerClass compilerClass, List<ContentFileV4.NameValue> rawProperties)
+		private void ApplyParameters(
+			YamlNode yamlParentNode, 
+			string compilerName, 
+			object instance, 
+			Dictionary<string, AttributedProperty> attrProps, 
+			List<ContentFileV4.NameValue> rawNameValues)
 		{
-			string compilerName = compilerClass.Name;
 			HashSet<string> required = 
 				new HashSet<string>(
-					from s in compilerClass.CompilerParameters
+					from s in attrProps
 					where s.Value.Attribute.Optional == false
 					select s.Key);
 			
-			for (int i = 0; i < rawProperties.Count; i++)
+			for (int i = 0; i < rawNameValues.Count; i++)
 			{
-				ContentFileV4.NameValue rawProperty = rawProperties[i];
-				string propertyName = rawProperty.Name.Value;
-				AttributedProperty settingProperty;
+				ContentFileV4.NameValue rawNameValue = rawNameValues[i];
+				string rawName = rawNameValue.Name.Value;
+				string rawValue = rawNameValue.Value.Value;
+				AttributedProperty attrProp;
 				
-				compilerClass.CompilerParameters.TryGetValue(propertyName, out settingProperty);
+				attrProps.TryGetValue(rawName, out attrProp);
 				
-				if (settingProperty == null)
+				if (attrProp == null)
 				{
-					Output.Warning("Supplied property '{0}' is not applicable to the '{1}' compiler".CultureFormat(propertyName, compilerName));
+					Output.Warning("Supplied parameter '{0}' is not applicable to the '{1}' compiler".CultureFormat(rawName, compilerName));
 					continue;
 				}
 				
-				PropertyInfo propertyInfo = settingProperty.Property;
+				PropertyInfo propertyInfo = attrProp.Property;
 				
-				if (!compilerClass.ExtensionsProperty.CanWrite)
-					throw new ContentFileException(yamlParentNode, "Unable to write to the '{0}' property of '{1}' compiler".CultureFormat(propertyName, compilerName));
+				if (!propertyInfo.CanWrite)
+					throw new ContentFileException(yamlParentNode, "Unable to write to the '{0}' property of '{1}' compiler".CultureFormat(rawName, compilerName));
 				
 				object obj = null;
-				string valueString = rawProperty.Value.Value;
-				
+
 				if (propertyInfo.PropertyType == typeof(int))
 				{
 					try
 					{
-						obj = int.Parse(valueString);
+						obj = int.Parse(rawValue);
 					}
 					catch
 					{
-						throw new ContentFileException(rawProperty.Name, "Unable to parse value '{0}' as Int32".CultureFormat(valueString));
+						throw new ContentFileException(rawNameValue.Name, "Unable to parse value '{0}' as Int32".CultureFormat(rawValue));
 					}
 				}
 				else if (propertyInfo.PropertyType == typeof(double))
 				{
 					try
 					{
-						obj = double.Parse(valueString);
+						obj = double.Parse(rawValue);
 					}
 					catch
 					{
-						throw new ContentFileException(rawProperty.Name, "Unable to parse value '{0}' as Double".CultureFormat(valueString));
+						throw new ContentFileException(rawNameValue.Name, "Unable to parse value '{0}' as Double".CultureFormat(rawValue));
 					}
 				}
 				else if (propertyInfo.PropertyType == typeof(string))
 				{
-					obj = valueString;
+					obj = rawValue;
 				}
 				else
 				{
 					throw new ContentFileException(
-						rawProperty.Name, 
-						"Setting '{0}' property for compiler '{1}' must be int, double or string".CultureFormat(propertyName, compilerName));
+						rawNameValue.Name, 
+						"Setting '{0}' parameter for compiler '{1}' must be int, double or string".CultureFormat(rawName, compilerName));
 				}
 				
 				try
 				{
-					propertyInfo.SetValue(compilerClass.Instance, obj, null);
+					propertyInfo.SetValue(instance, obj, null);
 				}
 				catch (Exception e)
 				{
-					throw new ContentFileException(rawProperty.Value, "Error setting compiler property", e);
+					throw new ContentFileException(rawNameValue.Value, "Error setting compiler property", e);
 				}
 				
-				required.Remove(compilerClass.Name);
+				required.Remove(rawName);
 			}
 
 			if (required.Count != 0)
 				throw new ContentFileException(
 					yamlParentNode, 
-					"Required property '{0}' of compiler '{1}' was not set".CultureFormat(required.First(), compilerClass.Name));
+					"Required property '{0}' of compiler '{1}' was not set".CultureFormat(required.First(), compilerName));
+		}
+
+		private void Clean(List<BuildTarget> buildTargets)
+		{
+			foreach (var buildTarget in buildTargets)
+			{
+				Output.Message("Cleaning target '{0}'", buildTarget.Name);
+
+				foreach (var outputPath in buildTarget.OutputPaths)
+				{
+					if (File.Exists(outputPath))
+					{
+						File.Delete(outputPath);
+						Output.Message("\tDeleted '{0}'", outputPath);
+					}
+				}
+			}
+
+			string hashPath = buildContext.ContentFileHashesPath;
+
+			if (File.Exists(hashPath))
+			{
+				File.Delete(hashPath);
+				Output.Message("Deleted content hash file '{0}'", hashPath);
+			}
 		}
 
 		private void Build(List<BuildTarget> buildTargets)
@@ -501,6 +558,11 @@ Help shows help information for compilers given in the .content file")]
 			HashSet<string> oldTargetHashes;
 
 			ReadOldContentFileHashes(out oldGlobalHash, out oldTargetHashes);
+
+			if (ShowProperties)
+			{
+				WriteProperties(buildContext.Properties);
+			}
 
 			foreach (var buildTarget in buildTargets)
 			{
@@ -520,16 +582,21 @@ Help shows help information for compilers given in the .content file")]
 
 				foreach (var input in buildTarget.InputPaths)
 				{
-					msg += Environment.NewLine + "\t" + input;
+					msg += Environment.NewLine + "  " + input;
 				}
-				msg += Environment.NewLine + "\t->";
+				msg += Environment.NewLine + "  ->";
 				foreach (var output in buildTarget.OutputPaths)
 				{
-					msg += Environment.NewLine + "\t" + output;
+					msg += Environment.NewLine + "  " + output;
 				}
 				Output.Message(MessageImportance.Normal, msg);
 
-				if (TestMode)
+				if (ShowProperties)
+				{
+					WriteProperties(buildTarget.Properties);
+				}
+
+				if (TestOnly)
 					continue;
 
 				// Set the Context and Target properties on the Compiler class instance
@@ -537,7 +604,12 @@ Help shows help information for compilers given in the .content file")]
 				compilerClass.TargetProperty.SetValue(compilerClass.Instance, buildTarget, null);
 
 				// Set all target properties
-				ApplyProperties(buildTarget.RawTarget.Name, compilerClass, buildTarget.RawTarget.Parameters);
+				ApplyParameters(
+					buildTarget.RawTarget.Name, 
+					compilerClass.Name,
+					compilerClass.Instance,
+					compilerClass.TargetParameters, 
+					buildTarget.RawTarget.Parameters);
 
 				try
 				{
@@ -620,7 +692,7 @@ Help shows help information for compilers given in the .content file")]
 
 		private bool IsCompileRequired(BuildTarget buildTarget, string oldGlobalHash, HashSet<string> oldTargetHashes)
 		{
-			if (Mode == BuildContentMode.Rebuild)
+			if (this.Force)
 				return true;
 
 			DateTime lastWriteTime;

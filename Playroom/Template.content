@@ -1,0 +1,21 @@
+%YAML 1.1
+---
+version: 4
+
+compiler-assemblies:
+  - $(BuildContentDir)/Playroom.Compilers.dll
+
+compiler-settings:
+  - name: CopyCompiler
+    extensions:
+    - inputs:  .txt
+      outputs: .txt
+
+properties:
+  TestFile: test.txt
+
+targets:
+  - name:     Test
+    inputs:   [$(InputDir)/$(TestFile)]
+    outputs:  [$(OutputDir)/$(TestFile)]
+
