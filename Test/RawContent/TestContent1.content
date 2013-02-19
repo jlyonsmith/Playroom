@@ -1,70 +1,70 @@
 ﻿%YAML 1.1
 ---
-version: 4
+Version: 4
 
-compiler-assemblies:
+CompilerAssemblies:
   - $(BuildContentDir)/Playroom.Compilers.dll
 
-compiler-settings:
-  - name: CopyCompiler
-    extensions:
-    - inputs:  .png
-      outputs: .png
-    - inputs:  .wav
-      outputs: .wav
+CompilerSettings:
+  - Name: CopyCompiler
+    Extensions:
+    - Inputs:  .png
+      Outputs: .png
+    - Inputs:  .wav
+      Outputs: .wav
 
-properties:
+Properties:
   OutputDir: $(ContentFileDir)../Content
 
-targets:
-  - name:     ExamplePinboardJson
-    inputs:   [$(InputDir)/Example.pinboard]
-    outputs:  [$(OutputDir)/$(TargetName).json]
-    parameters:
+Targets:
+  - Name:     ExamplePinboardJson
+    Inputs:   [$(InputDir)/Example.pinboard]
+    Outputs:  [$(OutputDir)/$(TargetName).json]
+    Parameters:
       Test: 1234
 
-  - name:     ExampleRectangles
-    inputs:   [$(InputDir)/*.pinboard]
-    outputs:  [$(OutputDir)/$(TargetName).cs]
-    compiler: PinboardInventoryToCsCompiler
-    parameters:
+  - Name:     ExampleRectangles
+    Inputs:   [$(InputDir)/*.pinboard]
+    Outputs:  [$(OutputDir)/$(TargetName).cs]
+    Compiler: PinboardInventoryToCsCompiler
+    Parameters:
       Namespace: Company.Products
 
-  - name:     ExampleResx
-    inputs:   [$(InputDir)/Example.resx]
-    outputs:  [$(OutputDir)/$(TargetName).strings]
+  - Name:     ExampleResx
+    Inputs:   [$(InputDir)/Example.resx]
+    Outputs:  [$(OutputDir)/$(TargetName).strings]
 
-  - name:     ExampleStrings2
-    inputs:   [$(InputDir)/Example.strings]
-    outputs:  [$(OutputDir)/$(TargetName).cs, $(OutputDir)/$(TargetName).json]
-    parameters:
+  - Name:     ExampleStrings2
+    Inputs:   [$(InputDir)/Example.strings]
+    Outputs:  [$(OutputDir)/$(TargetName).cs, $(OutputDir)/$(TargetName).json]
+    Parameters:
       Namespace: Company.Product
 
-  - name:     ExamplePngPng
-    inputs:   [$(InputDir)/Example.png]
-    outputs:  [$(OutputDir)/$(TargetName).png]
+  - Name:     ExamplePngPng
+    Inputs:   [$(InputDir)/Example.png]
+    Outputs:  [$(OutputDir)/$(TargetName).png]
 
-  - name:     ExampleSvgPng
-    inputs:   [$(InputDir)/Example.svg]
-    outputs:  [$(OutputDir)/$(TargetName).png]
-    parameters:
+  - Name:     ExampleSvgPng
+    Inputs:   [$(InputDir)/Example.svg]
+    Outputs:  [$(OutputDir)/$(TargetName).png]
+    Parameters:
       Width:  100
       Height: 100
 
-  - name:     ExampleSvgPinboardPng
-    inputs:   [$(InputDir)/Example.svg, $(InputDir)/Example.pinboard]
-    outputs:  [$(OutputDir)/$(TargetName).png]
-    parameters:
+  - Name:     ExampleSvgPinboardPng
+    Inputs:   [$(InputDir)/Example.svg, $(InputDir)/Example.pinboard]
+    Outputs:  [$(OutputDir)/$(TargetName).png]
+    Parameters:
       Rectangle: Thing
 
-  - name:     ExampleSvgPdfPngdef
-    inputs:   [$(InputDir)/Example.svg]
-    outputs:  [$(OutputDir)/$(TargetName).pdf, $(OutputDir)/$(TargetName).pngdef]
-    parameters: 
+  - Name:     ExampleSvgPdfPngdef
+    Inputs:   [$(InputDir)/Example.svg]
+    Outputs:  [$(OutputDir)/$(TargetName).pdf, $(OutputDir)/$(TargetName).pngdef]
+    Parameters: 
       Pinboard: Example
       Rectangle: Screen
 
-  - name:     ExampleWavWav
-    inputs:   [$(InputDir)/Example.wav]
-    outputs:  [$(OutputDir)/$(TargetName).wav]
+  - Name:     ExampleWavWav
+    Inputs:   [$(InputDir)/Example.wav]
+    Outputs:  [$(OutputDir)/$(TargetName).wav]
 

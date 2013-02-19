@@ -71,6 +71,7 @@
     <Compile Include="YamlNodeHelper.cs" />
     <Compile Include="Formats\ContentFileHashesFile.cs" />
     <Compile Include="ContentCompilerParameterAttribute.cs" />
+    <Compile Include="CSharpStreamWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PlayroomResources.resx" />

@@ -401,10 +401,18 @@ namespace Playroom
 				
 				// If there are extensions in the settings try and set the Extensions property
 				if (rawSetup == null || rawSetup.Extensions.Count == 0)
-					continue;
+				{
+					if (compilerClass.ExtensionsProperty.CanWrite)
+						// TODO: Make this a ContentFileException pointing to the Compilers section
+						throw new ApplicationException("Compiler '{0}' expects Extensions and none are set".CultureFormat(compilerClass.Name));
+					else
+						continue;
+				} 
 
 				if (!compilerClass.ExtensionsProperty.CanWrite)
+				{
 					throw new ContentFileException(rawSetup.Name, "Unable to write to Extensions property of '{0}' compiler".CultureFormat(compilerClass.Name));
+				}
 				
 				try
 				{
@@ -524,7 +532,7 @@ namespace Playroom
 			if (required.Count != 0)
 				throw new ContentFileException(
 					yamlParentNode, 
-					"Required property '{0}' of compiler '{1}' was not set".CultureFormat(required.First(), compilerName));
+					"Required parameter '{0}' of compiler '{1}' was not set".CultureFormat(required.First(), compilerName));
 		}
 
 		private void Clean(List<BuildTarget> buildTargets)

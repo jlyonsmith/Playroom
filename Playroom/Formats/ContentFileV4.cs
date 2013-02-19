@@ -98,12 +98,12 @@ namespace Playroom
 			YamlSequenceNode sequence1, sequence2;
 
 			document.RootNode.CastNode(out mapping1);
-			mapping1.GetChildNode("version", out scalar1);
+			mapping1.GetChildNode("Version", out scalar1);
 
 			if (scalar1.Value != "4")
 				throw new ContentFileException(mapping1, "Expected 'version' node with value 4");
 
-			mapping1.GetChildNode("compiler-assemblies", out sequence1);
+			mapping1.GetChildNode("CompilerAssemblies", out sequence1);
 
 			this.Assemblies = new List<YamlScalarNode>();
 
@@ -114,32 +114,32 @@ namespace Playroom
 				this.Assemblies.Add(scalar1);
 			}
 
-			mapping1.GetOptionalChildNode("compiler-settings", out sequence1);
+			mapping1.GetOptionalChildNode("CompilerSettings", out sequence1);
 
 			this.Settings = ReadCompilerSettings(sequence1);
 
-			mapping1.GetOptionalChildNode("properties", out mapping2);
+			mapping1.GetOptionalChildNode("Properties", out mapping2);
 			this.Properties = ReadOptionalNameValues(mapping2);
 
 			this.Targets = new List<Target>();
-			mapping1.GetChildNode("targets", out sequence1);
+			mapping1.GetChildNode("Targets", out sequence1);
 
 			foreach (var node1 in sequence1)
 			{
 				ContentFileV4.Target target = new ContentFileV4.Target();
 
 				node1.CastNode(out mapping2);
-				mapping2.GetChildNode("name", out scalar1);
+				mapping2.GetChildNode("Name", out scalar1);
 				target.Name = scalar1;
-				mapping2.GetChildNode("inputs", out sequence2);
+				mapping2.GetChildNode("Inputs", out sequence2);
 				target.Inputs = new List<YamlScalarNode>();
 				sequence2.ForEach(n => { n.CastNode(out scalar1); target.Inputs.Add(scalar1); });
-				mapping2.GetChildNode("outputs", out sequence2);
+				mapping2.GetChildNode("Outputs", out sequence2);
 				target.Outputs = new List<YamlScalarNode>();
 				sequence2.ForEach(n => { n.CastNode(out scalar1); target.Outputs.Add(scalar1); });
-				mapping2.GetOptionalChildNode("compiler", out scalar1);
+				mapping2.GetOptionalChildNode("Compiler", out scalar1);
 				target.Compiler = scalar1;
-				mapping2.GetOptionalChildNode("parameters", out mapping3);
+				mapping2.GetOptionalChildNode("Parameters", out mapping3);
 				target.Parameters = ReadOptionalNameValues(mapping3);
 
 				Targets.Add(target);
@@ -160,24 +160,24 @@ namespace Playroom
 			foreach (YamlNode node1 in sequence1)
 			{
 				node1.CastNode(out mapping1);
-				mapping1.GetChildNode("name", out scalar1);
+				mapping1.GetChildNode("Name", out scalar1);
 
 				List<ContentFileV4.CompilerExtensions> extensions = new List<ContentFileV4.CompilerExtensions>();
-				mapping1.GetOptionalChildNode("extensions", out sequence2);
+				mapping1.GetOptionalChildNode("Extensions", out sequence2);
 
 				if (sequence2 != null)
 				{
 					foreach (var node2 in sequence2)
 					{
 						node2.CastNode(out mapping2);
-						mapping2.GetChildNode("inputs", out scalar2);
-						mapping2.GetChildNode("outputs", out scalar3);
+						mapping2.GetChildNode("Inputs", out scalar2);
+						mapping2.GetChildNode("Outputs", out scalar3);
 						
 						extensions.Add(new ContentFileV4.CompilerExtensions(scalar2, scalar3));
 					}
 				}
 
-				mapping1.GetOptionalChildNode("parameters", out mapping2);
+				mapping1.GetOptionalChildNode("Parameters", out mapping2);
 
 				List<ContentFileV4.NameValue> settings = ReadOptionalNameValues(mapping2);
 

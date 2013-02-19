@@ -1,0 +1,10 @@
+#!/bin/bash
+CONFIG=$1
+if [ -z $CONFIG ]; then CONFIG=Release; fi
+cd $(upsearch "-e Playroom.version")
+rsync -av ./BuildContent/bin/$CONFIG/*.dll ~/bin/Playroom.app/ 
+rsync -av ./BuildContent/bin/$CONFIG/*.exe ~/bin/Playroom.app/
+rsync -av ./Squish2/Squish2/bin/$CONFIG/*.so ~/bin/Playroom.app/
+rsync -av ./Compilers/bin/$CONFIG/*.Compilers.dll ~/bin/Playroom.app/
+rsync -av ./Scripts/buildcontent ~/bin/
+

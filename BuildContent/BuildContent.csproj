@@ -22,7 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Commandlineparameters>build ../../../Test/RawContent/TestContent2.content</Commandlineparameters>
+    <Commandlineparameters>build ~/Projects/Spider/Spider/RawContent/Spider.iOS.content -p:ProjectDir=.\;OutputDir=./Content</Commandlineparameters>
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeExecute" command="/bin/bash CopyExtraFiles.sh" workingdir="${ProjectDir}" />
@@ -39,7 +39,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Commandlineparameters>~/Projects/Spider/Spider/RawContent/Spider.iOS.content -p:OutputDir=~/Projects/Spider/Spider/Content</Commandlineparameters>
+    <Commandlineparameters>build ~/Projects/Spider/Spider/RawContent/Spider.iOS.content -p:OutputDir=~/Projects/Spider/Spider/Content</Commandlineparameters>
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeExecute" />

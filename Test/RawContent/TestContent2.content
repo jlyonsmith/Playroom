@@ -1,35 +1,35 @@
 %YAML 1.1
 ---
-version: 4
+Version: 4
 
-compiler-assemblies:
+CompilerAssemblies:
   - $(BuildContentDir)\Playroom.Compilers.dll
 
-compiler-settings:
-  - name:  Playroom.CopyCompiler
-    extensions:
-      - { inputs: .txt, outputs: .txt }
+CompilerSettings:
+  - Name:  Playroom.CopyCompiler
+    Extensions:
+      - { Inputs: .Txt, outputs: .txt }
 
-properties:
+Properties:
   Test: 123
 
-targets:
-#  - name:    T5
-#    inputs:  [$(OutputDir)\F5.txt]
-#    outputs: [$(InputDir)\F1.txt]
+Targets:
+#  - Name:    T5
+#    Inputs:  [$(OutputDir)\F5.txt]
+#    Outputs: [$(InputDir)\F1.txt]
 
-  - name:    T4
-    inputs:  [$(OutputDir)\F2.txt]
-    outputs: [$(OutputDir)\F5.txt]
+  - Name:    T4
+    Inputs:  [$(OutputDir)\F2.txt]
+    Outputs: [$(OutputDir)\F5.txt]
 
-  - name:    T3
-    inputs:  [$(OutputDir)\F3.txt]
-    outputs: [$(OutputDir)\F4.txt]
+  - Name:    T3
+    Inputs:  [$(OutputDir)\F3.txt]
+    Outputs: [$(OutputDir)\F4.txt]
 
-  - name:    T2
-    inputs:  [$(OutputDir)\F2.txt]
-    outputs: [$(OutputDir)\F3.txt]
+  - Name:    T2
+    Inputs:  [$(OutputDir)\F2.txt]
+    Outputs: [$(OutputDir)\F3.txt]
 
-  - name:    T1
-    inputs:  [$(InputDir)\F1.txt]
-    outputs: [$(OutputDir)\F2.txt]
+  - Name:    T1
+    Inputs:  [$(InputDir)\F1.txt]
+    Outputs: [$(OutputDir)\F2.txt]

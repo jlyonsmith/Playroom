@@ -147,24 +147,26 @@ namespace Playroom
             return stringsData;
         }
 
-        private void WriteCsOutput(TextWriter writer, StringsContent stringsData)
+        private void WriteCsOutput(TextWriter textWriter, StringsContent stringsData)
         {
+			CSharpStreamWriter writer = new CSharpStreamWriter(textWriter);
+
             writer.WriteLine("//");
-            writer.WriteLine("// This file was generated on {0}.", DateTime.Now);
+			writer.WriteLine("// This file was generated on {{0}}.", DateTime.Now);
             writer.WriteLine("//");
             writer.WriteLine();
             writer.WriteLine("using System;");
-            writer.WriteLine("");
-            writer.WriteLine("namespace {0}", stringsData.Namespace);
+            writer.WriteLine();
+			writer.WriteLine("namespace {{0}}", stringsData.Namespace);
             writer.WriteLine("{");
-			writer.WriteLine("\tpublic class {0}", stringsData.ClassName);
-			writer.WriteLine("\t{");
-			writer.WriteLine("\t\tprivate string[] strings;");
-			writer.WriteLine("");
-			writer.WriteLine("\t\tpublic {0}(string[] strings)", stringsData.ClassName);
-			writer.WriteLine("\t\t{");
-			writer.WriteLine("\t\t\tthis.strings = strings;");
-			writer.WriteLine("\t\t}");
+			writer.WriteLine("public class {{0}}", stringsData.ClassName);
+			writer.WriteLine("{");
+			writer.WriteLine("private string[] strings;");
+			writer.WriteLine();
+			writer.WriteLine("public {{0}}(string[] strings)", stringsData.ClassName);
+			writer.WriteLine("{");
+			writer.WriteLine("this.strings = strings;");
+			writer.WriteLine("}");
 			writer.WriteLine();
 
             for (int i = 0; i < stringsData.Strings.Count; i++)
@@ -173,7 +175,7 @@ namespace Playroom
 
                 if (s.ArgCount == 0)
                 {
-                    writer.WriteLine("\t\tpublic string {0} {{ get {{ return strings[{1}]; }} }}",
+					writer.WriteLine("public string {{0}} { get { return strings[{{1}}]; } }",
                         s.Name, i);
                 }
                 else
@@ -193,12 +195,12 @@ namespace Playroom
                         }
                     }
 
-                    writer.WriteLine("\t\tpublic string {0}({1}) {{ return String.Format(strings[{2}], {3}); }}",
+					writer.WriteLine("public string {{0}}({{1}}) { return String.Format(strings[{{2}}], {{3}}); }",
                         s.Name, sb2.ToString(), i, sb1.ToString());
                 }
             }
 
-            writer.WriteLine("\t}");
+            writer.WriteLine("}");
             writer.WriteLine("}");
         }
     }
