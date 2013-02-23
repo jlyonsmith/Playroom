@@ -24,7 +24,12 @@ namespace Playroom
 			try
 			{
 				foreach (ParsedPath toPath in toPaths)
+				{
+					if (!Directory.Exists(toPath.VolumeAndDirectory))
+						Directory.CreateDirectory(toPath.VolumeAndDirectory);
+
 					toStreams.Add(new FileStream(toPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite));
+				}
 				
 				foreach (ParsedPath fromPath in fromPaths)
 				{

@@ -78,7 +78,7 @@ namespace Playroom
 
 				if (ye != null)
 				{
-					throw ContentFileException.New(ye);
+					throw new ContentFileException(ContentFileException.StripMessage(ye), ye);
 				}
 				else if (cfe != null)
 				{
@@ -101,7 +101,7 @@ namespace Playroom
 			mapping1.GetChildNode("Version", out scalar1);
 
 			if (scalar1.Value != "4")
-				throw new ContentFileException(mapping1, "Expected 'version' node with value 4");
+				throw new ContentFileException(mapping1, "Expected 'Version' node with value 4");
 
 			mapping1.GetChildNode("CompilerAssemblies", out sequence1);
 

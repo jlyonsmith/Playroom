@@ -122,5 +122,20 @@ Global
 		$4.inheritsSet = Mono
 		$4.inheritsScope = text/x-csharp
 		$4.scope = text/x-csharp
+		$0.TextStylePolicy = $5
+		$5.inheritsSet = null
+		$5.scope = application/x-sh
+		$0.TextStylePolicy = $6
+		$6.inheritsSet = null
+		$6.scope = application/config+xml
+		$0.XmlFormattingPolicy = $7
+		$7.inheritsSet = null
+		$7.scope = application/config+xml
+		$0.TextStylePolicy = $8
+		$8.inheritsSet = null
+		$8.scope = text/x-c++src
+		$0.TextStylePolicy = $9
+		$9.inheritsSet = null
+		$9.scope = text/x-chdr
 	EndGlobalSection
 EndGlobal

@@ -171,16 +171,20 @@ namespace Playroom
 				do
 				{
 					ContentFileException cfe = e as ContentFileException;
+					Mark? mark;
 
 					if (cfe != null)
 					{
-						Output.Error(ContentPath, cfe.Start.Line + 1, cfe.Start.Column + 1, e.Message);
+						mark = cfe.Start;
 					}
+
+					// If we started showing content file errors, keep going... 
+					if (mark.HasValue)
+						Output.Error(ContentPath, mark.Value.Line + 1, mark.Value.Index + 1, e.Message);
 					else
-					{
 						Output.Error(e.Message);
-					}
 #if DEBUG
+					// Gotta have this in debug builds
 					Console.WriteLine(e.StackTrace);
 #endif
 				}
@@ -652,12 +656,12 @@ namespace Playroom
 			{
 				try
 				{
-					var serializer = new YamlSerializer<ContentFileHashesFile>();
+					var deserializer = new YamlDeserializer<ContentFileHashesFile>();
 					ContentFileHashesFile hashes;
 					
 					using (StreamReader reader = new StreamReader(buildContext.ContentFileHashesPath))
 					{
-						hashes = serializer.Deserialize(reader);
+						hashes = deserializer.Deserialize(reader);
 					}
 
 					oldGlobalHash = hashes.Global;
@@ -677,7 +681,7 @@ namespace Playroom
 
 		private void WriteNewContentFileHashes(List<BuildTarget> buildTargets)
 		{
-			var serializer = new Serializer();
+			var serializer = new YamlSerializer();
 
 			ContentFileHashesFile hashes = new ContentFileHashesFile()
 			{
@@ -689,7 +693,7 @@ namespace Playroom
 			{
 				using (StreamWriter writer = new StreamWriter(buildContext.ContentFileHashesPath))
 				{
-					serializer.Serialize(writer, hashes, SerializationOptions.Roundtrip);
+					serializer.Serialize(writer, hashes);
 				}
 			}
 			catch

@@ -50,11 +50,13 @@ namespace Playroom.Compilers
 				Directory.CreateDirectory(jsonPath.VolumeAndDirectory);
 			}
 
-			var serializer = new Serializer();
+			var serializer = new YamlSerializer();
 
 			using (StreamWriter writer = new StreamWriter(jsonPath))
 			{
-				serializer.Serialize(writer, rectangles, SerializationOptions.JsonCompatible);
+				serializer.Serialize(
+					writer, rectangles, 
+                    YamlSerializerFlags.DisableAliases | YamlSerializerFlags.JsonCompatible);
 			}
         }
 

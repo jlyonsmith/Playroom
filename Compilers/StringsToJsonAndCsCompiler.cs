@@ -5,6 +5,7 @@ using System.Text;
 using ToolBelt;
 using System.IO;
 using YamlDotNet.RepresentationModel.Serialization;
+using YamlDotNet.Core;
 
 namespace Playroom
 {
@@ -92,22 +93,39 @@ namespace Playroom
 
 		private void WriteJsonFile(ParsedPath jsonFilePath, object data)
 		{
-			var serializer = new Serializer();
+			var serializer = new YamlSerializer();
 
 			using (StreamWriter writer = new StreamWriter(jsonFilePath))
 			{
-				serializer.Serialize(writer, data, SerializationOptions.JsonCompatible | SerializationOptions.Roundtrip);
+				serializer.Serialize(writer, data, YamlSerializerFlags.JsonCompatible | YamlSerializerFlags.Roundtrip);
 			}
 		}
 
 		private Dictionary<string, string> ReadStringsFile(ParsedPath stringsFilePath)
 		{
-			var serializer = new YamlSerializer<Dictionary<string, string>>();
+			var serializer = new YamlDeserializer<Dictionary<string, string>>();
 			Dictionary<string, string> stringDict;
-			
-			using (StreamReader reader = new StreamReader(stringsFilePath))
+	
+			try
 			{
-				stringDict = serializer.Deserialize(reader);
+				using (StreamReader reader = new StreamReader(stringsFilePath))
+				{
+					stringDict = serializer.Deserialize(reader);
+				}
+			}
+			catch (Exception e)
+			{
+				YamlException ye = e as YamlException;
+
+				if (ye != null)
+				{
+					throw new ContentFileException(ContentFileException.StripMessage(ye), ye);
+				}
+				else
+				{
+					// Let the exception get wrapped by buildcontent
+					throw;
+				}
 			}
 
 			return stringDict;

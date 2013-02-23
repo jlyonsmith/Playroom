@@ -73,8 +73,8 @@ namespace Playroom
 			Start = End = start;
 		}
 
-		// HACK: Get around the fact that you can't modify parameters before calling base constructors
-		public static ContentFileException New(YamlException yamlException)
+		// Helper function to strip line information off of YamlException
+		public static string StripMessage(YamlException yamlException)
 		{
 			// Strip off the extra location information in the message
 			string message = yamlException.Message;
@@ -83,7 +83,7 @@ namespace Playroom
 			if (n != -1)
 				message = message.Substring(n + 3);
 
-			return new ContentFileException(message, yamlException);
+			return message;
 		}
 
 		public ContentFileException(string message, YamlException innerException) : base(message)

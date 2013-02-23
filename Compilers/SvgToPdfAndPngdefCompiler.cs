@@ -89,11 +89,11 @@ namespace Playroom
 				Directory.CreateDirectory(pngdefPath.VolumeAndDirectory);
 			}
 
-			var serializer = new Serializer();
+			var serializer = new YamlSerializer();
 			
 			using (StreamWriter writer = new StreamWriter(pngdefPath))
 			{
-				serializer.Serialize(writer, pdfInfo, SerializationOptions.JsonCompatible);
+				serializer.Serialize(writer, pdfInfo, YamlSerializerFlags.JsonCompatible);
 			}
 		}
 
