@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -76,20 +76,6 @@
   <ItemGroup>
     <None Include="PlayroomResources.resx" />
     <None Include="BuildResx.iOS.sh" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ToolBelt\ToolBelt\ToolBelt.MacOS.csproj">
-      <Project>{2055D34D-3DF2-444B-937B-32CC1A6E11DF}</Project>
-      <Name>ToolBelt.MacOS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\YamlDotNet\YamlDotNet.Core\YamlDotNet.Core.csproj">
-      <Project>{BF32DE1B-6276-4341-B212-F8862ADBBA7A}</Project>
-      <Name>YamlDotNet.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\YamlDotNet\YamlDotNet.RepresentationModel\YamlDotNet.RepresentationModel.csproj">
-      <Project>{21CA0077-E15C-446D-9C43-F6D3F9D09687}</Project>
-      <Name>YamlDotNet.RepresentationModel</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="PlayroomResources.resources" />

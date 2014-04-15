@@ -17,7 +17,7 @@ namespace BuildContent
 
             try
             {
-				((IProcessCommandLine)tool).ProcessCommandLine(args);
+		        ((IProcessCommandLine)tool).ProcessCommandLine(args);
 
 				tool.Execute();
             }

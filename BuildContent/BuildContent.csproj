@@ -65,10 +65,6 @@
     <PostBuildEvent>xcopy /d $(SolutionDir)\Squish2\$(Configuration)\Squish.dll $(ProjectDir)$(OutDir)</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ToolBelt\ToolBelt\ToolBelt.MacOS.csproj">
-      <Project>{2055D34D-3DF2-444B-937B-32CC1A6E11DF}</Project>
-      <Name>ToolBelt.MacOS</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Playroom\Playroom.csproj">
       <Project>{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}</Project>
       <Name>Playroom</Name>
