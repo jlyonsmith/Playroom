@@ -22,7 +22,6 @@ namespace Playroom
 	public class BuildContentTool : ToolBase
 	{
 		#region Fields
-		private bool runningFromCommandLine = false;
 		private BuildContext buildContext = null;
 
         #endregion
