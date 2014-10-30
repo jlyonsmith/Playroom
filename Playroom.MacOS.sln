@@ -23,13 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RawContent", "RawContent", 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E1FA1B02-BCCA-4265-8B68-7246E5F3FEAA}"
-	ProjectSection(SolutionItems) = preProject
-		LICENSE = LICENSE
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playroom.Compilers", "Compilers\Playroom.Compilers.csproj", "{1D531486-0385-4E9E-AB1B-755CEFF3A445}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{D8B2FDC1-7D64-4B93-B849-A7B9155519E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
