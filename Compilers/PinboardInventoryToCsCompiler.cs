@@ -78,7 +78,7 @@ namespace Playroom
             TextWriter writer;
             ParsedPath csFileName = Target.OutputPaths.Where(f => f.Extension == ".cs").First();
 
-            Context.Output.Message(MessageImportance.Low, "Writing output file '{0}'", csFileName);
+            Context.WriteMessage("Writing output file '{0}'", csFileName);
 
 			if (!Directory.Exists(csFileName.VolumeAndDirectory))
 				Directory.CreateDirectory(csFileName.VolumeAndDirectory);
@@ -186,7 +186,7 @@ namespace Playroom
 
             foreach (var pinboardFile in pinboardFiles)
             {
-                Context.Output.Message(MessageImportance.Low, "Reading pinboard file '{0}'", pinboardFile);
+                Context.WriteMessage("Reading pinboard file '{0}'", pinboardFile);
 
                 PinboardFileV1 pinboard = null;
 

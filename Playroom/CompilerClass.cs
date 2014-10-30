@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using ToolBelt;
-using YamlDotNet.RepresentationModel;
+using TsonLibrary;
 
 namespace Playroom
 {
@@ -25,7 +25,7 @@ namespace Playroom
 		private Dictionary<string, AttributedProperty> compilerParameters;
 		private Dictionary<string, AttributedProperty> targetParameters;
 
-		internal CompilerClass(YamlScalarNode assemblyNode, Assembly assembly, Type type, Type interfaceType)
+		internal CompilerClass(TsonStringNode assemblyNode, Assembly assembly, Type type, Type interfaceType)
 		{
 			this.Assembly = assembly;
 			this.Type = type;

@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playroom", "Playroom\Playro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildContent", "BuildContent\BuildContent.csproj", "{95B09EAB-7C4F-409C-B099-328C0DA3AF80}"
 EndProject
-Project("{2857B73E-F847-4B02-9238-064979017E93}") = "Squish2.MacOS", "Squish2\Squish2\Squish2.MacOS.cproj", "{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{6BE02424-B483-44A3-8C1A-9819FC704D0B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RawContent", "RawContent", "{FEB7E5A8-73FC-4112-AFBD-D72CD03060B4}"
@@ -21,7 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RawContent", "RawContent", 
 		Test\RawContent\WeeBairn-Regular.ttf = Test\RawContent\WeeBairn-Regular.ttf
 		Test\RawContent\TestContent2.content = Test\RawContent\TestContent2.content
 		Test\RawContent\TestContent1.content = Test\RawContent\TestContent1.content
-		Test\TestContent.Save.content = Test\TestContent.Save.content
 		Test\RawContent\F1.txt = Test\RawContent\F1.txt
 	EndProjectSection
 EndProject
@@ -33,9 +30,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playroom.Compilers", "Compilers\Playroom.Compilers.csproj", "{1D531486-0385-4E9E-AB1B-755CEFF3A445}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{D8B2FDC1-7D64-4B93-B849-A7B9155519E6}"
-	ProjectSection(SolutionItems) = preProject
-		Scripts\buildcontent = Scripts\buildcontent
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,10 +49,6 @@ Global
 		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Debug|x86.Build.0 = Debug|x86
 		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Release|x86.ActiveCfg = Release|x86
 		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Release|x86.Build.0 = Release|x86
-		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Debug|x86.ActiveCfg = Debug|x86
-		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Debug|x86.Build.0 = Debug|x86
-		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Release|x86.ActiveCfg = Release|x86
-		{B9EDFED1-366E-4B0B-9C8A-32AE76B7F402}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FEB7E5A8-73FC-4112-AFBD-D72CD03060B4} = {6BE02424-B483-44A3-8C1A-9819FC704D0B}

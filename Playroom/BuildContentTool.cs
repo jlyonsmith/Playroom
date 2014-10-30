@@ -8,9 +8,7 @@ using System.Reflection;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
-using YamlDotNet.Core;
-using YamlDotNet.RepresentationModel;
-using YamlDotNet.RepresentationModel.Serialization;
+using TsonLibrary;
 
 namespace Playroom
 {
@@ -21,27 +19,26 @@ namespace Playroom
 	[CommandLineCommandDescription("clean", Description = "Cleans content using a .contents file")]
 	[CommandLineCommandDescription("new", Description = "Creates a new bare bones .contents file")]
 	[CommandLineCommandDescription("help", Description = "Displays help for this tool ")]
-	public class BuildContentTool : ITool, IProcessCommandLine
+	public class BuildContentTool : ToolBase
 	{
 		#region Fields
 		private bool runningFromCommandLine = false;
 		private BuildContext buildContext = null;
 
-        	#endregion
+        #endregion
 
         #region Construction
-		public BuildContentTool(IOutputter outputter)
+		public BuildContentTool()
 		{
-			this.Output = new OutputHelper(outputter);
 		}
 
         #endregion
 
-		[CommandCommandLineArgument("mode", Description = "Mode to execute in.  Can be build, clean, help, new.", Commands = "help,build,clean,new")]
+		[CommandCommandLineArgument(Description = "Mode to execute in.  Can be build, clean, help, new.", Commands = "help,build,clean,new")]
 		public string Command { get; set; }
 
 		[DefaultCommandLineArgument(
-			"default", Description = "Input .content data file", ValueHint = "<content-file>", 
+			Description = "Input .content data file", ValueHint = "<content-file>", 
             Initializer = typeof(BuildContentTool), MethodName="ParseCommandLineFilePath",
 			Commands = "build,help,clean,new")]
 		public ParsedPath ContentPath { get; set; }
@@ -71,47 +68,13 @@ namespace Playroom
 		[CommandLineArgument("nologo", Description = "Suppress display of logo/banner", Commands = "build, clean")]
 		public bool NoLogo { get; set; }
 
-		public OutputHelper Output { get; set; }
-
-		private CommandLineParser parser;
-
-		public CommandLineParser Parser
-		{
-			get
-			{
-				if (parser == null)
-					parser = new CommandLineParser(this.GetType());
-
-				return parser;
-			}
-		}
-
-		public int ExitCode
-		{
-			get
-			{
-				return Output.HasOutputErrors ? 1 : 0;
-			}
-		}
-
-		public static ParsedPath ParseCommandLineFilePath(string value)
-		{
-			return new ParsedPath(value, PathType.File);
-		}
-
-		public void Execute()
+		public override void Execute()
 		{
 			try
 			{
 				if (!NoLogo)
 					Console.WriteLine(Parser.LogoBanner);
 				
-				if (!runningFromCommandLine)
-				{
-					Parser.GetTargetArguments(this);
-					Output.Message(MessageImportance.Normal, Parser.CommandName + Parser.Arguments);
-				}
-
 				bool hasContentFile = !String.IsNullOrEmpty(ContentPath);
 
 				if ((!hasContentFile && this.Command == "help") ||
@@ -123,7 +86,7 @@ namespace Playroom
 				
 				if (!hasContentFile)
 				{
-					Output.Error("A .content file must be specified");
+					WriteError("A .content file must be specified");
 					return;
 				}
 				
@@ -137,11 +100,11 @@ namespace Playroom
 
 				if (!File.Exists(this.ContentPath))
 				{
-					Output.Error("Content file '{0}' does not exist", this.ContentPath);
+					WriteError("Content file '{0}' does not exist", this.ContentPath);
 					return;
 				}
 				
-				buildContext = new BuildContext(this.Output, this.Properties, this.ContentPath);
+				buildContext = new BuildContext(this.Properties, this.ContentPath);
 
 				ApplyCompilerSettingsExtensions();
 
@@ -164,14 +127,14 @@ namespace Playroom
 					Build(buildTargets);
 				}
 
-				Output.Message(MessageImportance.Normal, "Done");
+				WriteMessage("Done");
 			}
 			catch (Exception e)
 			{
 				do
 				{
 					ContentFileException cfe = e as ContentFileException;
-					Mark? mark;
+					TextLocation? mark = null;
 
 					if (cfe != null)
 					{
@@ -180,9 +143,9 @@ namespace Playroom
 
 					// If we started showing content file errors, keep going... 
 					if (mark.HasValue)
-						Output.Error(ContentPath, mark.Value.Line + 1, mark.Value.Index + 1, e.Message);
+						WriteError(ContentPath, mark.Value.Line + 1, mark.Value.Column + 1, e.Message);
 					else
-						Output.Error(e.Message);
+						WriteError(e.Message);
 #if DEBUG
 					// Gotta have this in debug builds
 					Console.WriteLine(e.StackTrace);
@@ -282,11 +245,11 @@ namespace Playroom
 
 		private void WriteProperties(PropertyCollection properties)
 		{
-			Output.Message(MessageImportance.Low, "  Properties:");
+			WriteMessage("  Properties:");
 
 			foreach (KeyValuePair<string, string> pair in properties)
 			{
-				Output.Message(MessageImportance.Low, "    {0} = {1}", pair.Key, pair.Value);
+				WriteMessage("    {0} = {1}", pair.Key, pair.Value);
 			}
 		}
 
@@ -401,10 +364,10 @@ namespace Playroom
 			foreach (var compilerClass in buildContext.CompilerClasses)
 			{
 				// Get the compiler setup entry for this compiler if there is one
-				ContentFileV4.CompilerSettings rawSetup = buildContext.ContentFile.Settings.FirstOrDefault(s => compilerClass.Name.EndsWith(s.Name.Value));
+				ContentFileV4.CompilerSetting rawSetup = buildContext.ContentFile.CompilerSettings.FirstOrDefault(s => compilerClass.Name.EndsWith(s.Name.Value));
 				
 				// If there are extensions in the settings try and set the Extensions property
-				if (rawSetup == null || rawSetup.Extensions.Count == 0)
+				if (rawSetup == null || rawSetup.CompilerExtensions.Count == 0)
 				{
 					if (compilerClass.ExtensionsProperty.CanWrite)
 						// TODO: Make this a ContentFileException pointing to the Compilers section
@@ -422,10 +385,10 @@ namespace Playroom
 				{
 					List<CompilerExtension> extensions = new List<CompilerExtension>();
 					
-					for (int i = 0; i < rawSetup.Extensions.Count; i++)
+					for (int i = 0; i < rawSetup.CompilerExtensions.Count; i++)
 					{
-						ContentFileV4.CompilerExtensions rawExtensions = rawSetup.Extensions[i];
-						extensions.Add(new CompilerExtension(rawExtensions.Inputs.Value, rawExtensions.Outputs.Value));
+						var rawExtensions = rawSetup.CompilerExtensions[i];
+						extensions.Add(new CompilerExtension(rawExtensions.Inputs, rawExtensions.Outputs));
 					}
 					
 					compilerClass.ExtensionsProperty.SetValue(compilerClass.Instance, extensions, null);
@@ -442,7 +405,7 @@ namespace Playroom
 			foreach (var compilerClass in buildContext.CompilerClasses)
 			{
 				// Get the compiler setup entry for this compiler if there is one
-				ContentFileV4.CompilerSettings rawCompilerSettings = buildContext.ContentFile.Settings.FirstOrDefault(s => compilerClass.Name.EndsWith(s.Name.Value));
+				var rawCompilerSettings = buildContext.ContentFile.CompilerSettings.FirstOrDefault(s => compilerClass.Name.EndsWith(s.Name.Value));
 
 				ApplyParameters(
 					rawCompilerSettings.Name, 
@@ -454,11 +417,11 @@ namespace Playroom
 		}
 		
 		private void ApplyParameters(
-			YamlNode yamlParentNode, 
+			TsonNode parentNode, 
 			string compilerName, 
 			object instance, 
 			Dictionary<string, AttributedProperty> attrProps, 
-			List<ContentFileV4.NameValue> rawNameValues)
+			TsonObjectNode parameterNode)
 		{
 			HashSet<string> required = 
 				new HashSet<string>(
@@ -466,59 +429,54 @@ namespace Playroom
 					where s.Value.Attribute.Optional == false
 					select s.Key);
 			
-			for (int i = 0; i < rawNameValues.Count; i++)
+            foreach (var keyValue in parameterNode.KeyValues)
 			{
-				ContentFileV4.NameValue rawNameValue = rawNameValues[i];
-				string rawName = rawNameValue.Name.Value;
-				string rawValue = rawNameValue.Value.Value;
+				var keyNode = keyValue.Key;
+				var valueNode = keyValue.Value;
 				AttributedProperty attrProp;
 				
-				attrProps.TryGetValue(rawName, out attrProp);
+                attrProps.TryGetValue(keyNode.Value, out attrProp);
 				
 				if (attrProp == null)
 				{
-					Output.Warning("Supplied parameter '{0}' is not applicable to the '{1}' compiler".CultureFormat(rawName, compilerName));
+					WriteWarning("Supplied parameter '{0}' is not applicable to the '{1}' compiler".CultureFormat(keyNode.Value, compilerName));
 					continue;
 				}
 				
 				PropertyInfo propertyInfo = attrProp.Property;
 				
 				if (!propertyInfo.CanWrite)
-					throw new ContentFileException(yamlParentNode, "Unable to write to the '{0}' property of '{1}' compiler".CultureFormat(rawName, compilerName));
+                    throw new ContentFileException(parentNode, "Unable to write to the '{0}' property of '{1}' compiler".CultureFormat(keyNode.Value, compilerName));
 				
 				object obj = null;
 
-				if (propertyInfo.PropertyType == typeof(int))
+				if (propertyInfo.PropertyType == typeof(double))
 				{
-					try
-					{
-						obj = int.Parse(rawValue);
-					}
-					catch
-					{
-						throw new ContentFileException(rawNameValue.Name, "Unable to parse value '{0}' as Int32".CultureFormat(rawValue));
-					}
+                    var numberNode = valueNode as TsonNumberNode;
+
+                    if (numberNode == null)
+                        throw new ContentFileException(valueNode, "TSON node for '{0}' is not a number".CultureFormat(keyNode.Value));
+
+                    obj = numberNode.Value;
 				}
-				else if (propertyInfo.PropertyType == typeof(double))
-				{
-					try
-					{
-						obj = double.Parse(rawValue);
-					}
-					catch
-					{
-						throw new ContentFileException(rawNameValue.Name, "Unable to parse value '{0}' as Double".CultureFormat(rawValue));
-					}
-				}
-				else if (propertyInfo.PropertyType == typeof(string))
-				{
-					obj = rawValue;
-				}
+                else if (propertyInfo.PropertyType == typeof(string))
+                {
+                    var numberNode = valueNode as TsonStringNode;
+
+                    if (numberNode == null)
+                        throw new ContentFileException(valueNode, "TSON node for '{0}' is not a string".CultureFormat(keyNode.Value));
+
+                    obj = numberNode.Value;
+                }
+                else if (propertyInfo.PropertyType == typeof(bool))
+                {
+                    obj = ((TsonBooleanNode)valueNode).Value;
+                }
 				else
 				{
 					throw new ContentFileException(
-						rawNameValue.Name, 
-						"Setting '{0}' parameter for compiler '{1}' must be int, double or string".CultureFormat(rawName, compilerName));
+						parameterNode, 
+                        "Setting '{0}' parameter for compiler '{1}' must be bool, double or string".CultureFormat(keyNode.Value, compilerName));
 				}
 				
 				try
@@ -527,15 +485,15 @@ namespace Playroom
 				}
 				catch (Exception e)
 				{
-					throw new ContentFileException(rawNameValue.Value, "Error setting compiler property", e);
+					throw new ContentFileException(keyValue.Key, "Error setting compiler property", e);
 				}
 				
-				required.Remove(rawName);
+				required.Remove(keyNode.Value);
 			}
 
 			if (required.Count != 0)
 				throw new ContentFileException(
-					yamlParentNode, 
+					parentNode, 
 					"Required parameter '{0}' of compiler '{1}' was not set".CultureFormat(required.First(), compilerName));
 		}
 
@@ -543,14 +501,14 @@ namespace Playroom
 		{
 			foreach (var buildTarget in buildTargets)
 			{
-				Output.Message("Cleaning target '{0}'", buildTarget.Name);
+				WriteMessage("Cleaning target '{0}'", buildTarget.Name);
 
 				foreach (var outputPath in buildTarget.OutputPaths)
 				{
 					if (File.Exists(outputPath))
 					{
 						File.Delete(outputPath);
-						Output.Message("\tDeleted '{0}'", outputPath);
+						WriteMessage("\tDeleted '{0}'", outputPath);
 					}
 				}
 			}
@@ -560,7 +518,7 @@ namespace Playroom
 			if (File.Exists(hashPath))
 			{
 				File.Delete(hashPath);
-				Output.Message("Deleted content hash file '{0}'", hashPath);
+				WriteMessage("Deleted content hash file '{0}'", hashPath);
 			}
 		}
 
@@ -601,7 +559,7 @@ namespace Playroom
 				{
 					msg += Environment.NewLine + "  " + output;
 				}
-				Output.Message(MessageImportance.Normal, msg);
+				WriteMessage(msg);
 
 				if (ShowProperties)
 				{
@@ -630,7 +588,7 @@ namespace Playroom
 				catch (TargetInvocationException e)
 				{
 					throw new ContentFileException(
-						buildTarget.Start, "Unable to compile target '{0}'".CultureFormat(buildTarget.Name), e.InnerException);
+						buildTarget.RawTarget.Name, "Unable to compile target '{0}'".CultureFormat(buildTarget.Name), e.InnerException);
 				}
 
 				// Ensure that the output files were generated
@@ -639,7 +597,7 @@ namespace Playroom
 					if (!File.Exists(outputFile))
 					{
 						throw new ContentFileException(
-							buildTarget.Start, "Output file '{0}' was not generated".CultureFormat(outputFile));
+                            buildTarget.RawTarget.Name, "Output file '{0}' was not generated".CultureFormat(outputFile));
 					}
 				}
 			}
@@ -656,14 +614,9 @@ namespace Playroom
 			{
 				try
 				{
-					var deserializer = new YamlDeserializer<ContentFileHashesFile>();
-					ContentFileHashesFile hashes;
+                    var hashes = TsonSerializer.Deserialize<ContentFileHashesFile>(
+                        File.ReadAllText(buildContext.ContentFileHashesPath));
 					
-					using (StreamReader reader = new StreamReader(buildContext.ContentFileHashesPath))
-					{
-						hashes = deserializer.Deserialize(reader);
-					}
-
 					oldGlobalHash = hashes.Global;
 
 					foreach (var hash in hashes.Targets)
@@ -681,8 +634,6 @@ namespace Playroom
 
 		private void WriteNewContentFileHashes(List<BuildTarget> buildTargets)
 		{
-			var serializer = new YamlSerializer();
-
 			ContentFileHashesFile hashes = new ContentFileHashesFile()
 			{
 				Global = buildContext.GlobalHash,
@@ -691,14 +642,13 @@ namespace Playroom
 
 			try
 			{
-				using (StreamWriter writer = new StreamWriter(buildContext.ContentFileHashesPath))
-				{
-					serializer.Serialize(writer, hashes);
-				}
+                var tson = TsonSerializer.Serialize(hashes);
+				
+                File.WriteAllText(buildContext.ContentFileHashesPath, tson);
 			}
 			catch
 			{
-				Output.Warning("Unable to write content hash file '{0}'".CultureFormat(buildContext.ContentFileHashesPath));
+				WriteWarning("Unable to write content hash file '{0}'".CultureFormat(buildContext.ContentFileHashesPath));
 			}
 		}
 
@@ -739,20 +689,6 @@ namespace Playroom
 			}
 
 			return newestInputFile > oldestOutputFile;
-		}
-
-        #endregion
-
-        #region IProcessCommandLine Members
-
-		public void ProcessCommandLine(string[] args)
-		{
-			this.runningFromCommandLine = true;
-
-#if OSX
-			Parser.CommandName = "mono BuildContent.exe";
-#endif
-			Parser.ParseAndSetTarget(args, this);
 		}
 
         #endregion

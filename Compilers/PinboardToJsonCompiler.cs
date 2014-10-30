@@ -5,9 +5,7 @@ using System.Text;
 using System.Xml;
 using System.IO;
 using System.Drawing;
-using System.Json;
 using ToolBelt;
-using YamlDotNet.RepresentationModel.Serialization;
 
 namespace Playroom.Compilers
 {
@@ -28,10 +26,10 @@ namespace Playroom.Compilers
 		public void Compile()
 		{
 			if (Target.InputPaths.Count != 1)
-				throw new ContentFileException(Target.Start, "One input file expected");
+				throw new ContentFileException(Target.RawTarget.Name, "One input file expected");
 			
 			if (Target.OutputPaths.Count != 1)
-				throw new ContentFileException(Target.Start, "One output file expected");
+				throw new ContentFileException(Target.RawTarget.Name, "One output file expected");
 			
 			ParsedPath pinboardPath = Target.InputPaths[0];
 			ParsedPath jsonPath = Target.OutputPaths[0];
@@ -50,14 +48,8 @@ namespace Playroom.Compilers
 				Directory.CreateDirectory(jsonPath.VolumeAndDirectory);
 			}
 
-			var serializer = new YamlSerializer();
-
-			using (StreamWriter writer = new StreamWriter(jsonPath))
-			{
-				serializer.Serialize(
-					writer, rectangles, 
-                    YamlSerializerFlags.DisableAliases | YamlSerializerFlags.JsonCompatible);
-			}
+            // TODO: Write out the file
+            throw new NotImplementedException();
         }
 
         #endregion

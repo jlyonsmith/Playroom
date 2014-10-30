@@ -1,35 +1,52 @@
-%YAML 1.1
----
-Version: 4
+Version: 4,
 
-CompilerAssemblies:
-  - $(BuildContentDir)\Playroom.Compilers.dll
+CompilerAssemblies: 
+[ 
+  $(BuildContentDir)/Playroom.Compilers.dll 
+],
 
-CompilerSettings:
-  - Name:  Playroom.CopyCompiler
-    Extensions:
-      - { Inputs: .Txt, outputs: .txt }
+CompilerSettings: 
+{
+  Name:  Playroom.CopyCompiler
+  Extensions:
+    { Inputs: [.txt], outputs: [.txt] }
+},
 
-Properties:
+Properties: 
+{
   Test: 123
+},
 
-Targets:
-#  - Name:    T5
-#    Inputs:  [$(OutputDir)\F5.txt]
-#    Outputs: [$(InputDir)\F1.txt]
+Targets: 
+[
+  # Uncomment T5 to create circular dependency
+  #{ 
+  #  Name:    T5
+  #  Inputs:  [$(OutputDir)/F5.txt]
+  #  Outputs: [$(InputDir)/F1.txt]
+  #},
 
-  - Name:    T4
-    Inputs:  [$(OutputDir)\F2.txt]
-    Outputs: [$(OutputDir)\F5.txt]
+  {
+    Name:    T4
+    Inputs:  [$(OutputDir)/F2.txt]
+    Outputs: [$(OutputDir)/F5.txt]
+  },
 
-  - Name:    T3
-    Inputs:  [$(OutputDir)\F3.txt]
-    Outputs: [$(OutputDir)\F4.txt]
+  {
+    Name:    T3
+    Inputs:  [$(OutputDir)/F3.txt]
+    Outputs: [$(OutputDir)/F4.txt]
+  },
 
-  - Name:    T2
-    Inputs:  [$(OutputDir)\F2.txt]
-    Outputs: [$(OutputDir)\F3.txt]
+  {
+    Name:    T2
+    Inputs:  [$(OutputDir)/F2.txt]
+    Outputs: [$(OutputDir)/F3.txt]
+  },
 
-  - Name:    T1
-    Inputs:  [$(InputDir)\F1.txt]
-    Outputs: [$(OutputDir)\F2.txt]
+  {
+    Name:    T1
+    Inputs:  [$(InputDir)/F1.txt]
+    Outputs: [$(OutputDir)/F2.txt]
+  }
+]

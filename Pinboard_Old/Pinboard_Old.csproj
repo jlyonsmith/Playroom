@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2BB0DDC3-2982-4CEC-9E13-00479E1DE30E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -63,10 +63,7 @@
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="MainWindow.cs" />
     <Compile Include="gtk-gui\MainWindow.cs" />
-    <Compile Include="Main.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="ColorComponentPicker.cs" />
     <Compile Include="ColorComponentPicker.Designer.cs" />
     <Compile Include="MainForm.cs" />
@@ -86,7 +83,6 @@
     <None Include="app.config" />
     <None Include="ColorComponentPicker.resx" />
     <None Include="MainForm.resx" />
-    <None Include="Pinboard.csproj" />
     <None Include="Pinboard.ico" />
     <None Include="PinboardControl.resx" />
     <None Include="PropertiesForm.resx" />

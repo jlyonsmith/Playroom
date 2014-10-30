@@ -3,6 +3,7 @@ using System.Linq;
 using ToolBelt;
 using System.Collections.Generic;
 using System.IO;
+using TsonLibrary;
 
 namespace Playroom
 {
@@ -11,11 +12,17 @@ namespace Playroom
 		private string input;
 		private string output;
 
-		public CompilerExtension(IEnumerable<ParsedPath> inputPaths, IEnumerable<ParsedPath> outputPaths)
-		{
-			Input = String.Join(PathUtility.PathSeparator, inputPaths.Select<ParsedPath, string>(f => f.Extension));
-			Output = String.Join(PathUtility.PathSeparator, outputPaths.Select<ParsedPath, string>(f => f.Extension));
-		}
+        public CompilerExtension(IEnumerable<ParsedPath> inputPaths, IEnumerable<ParsedPath> outputPaths)
+        {
+            Input = String.Join(PathUtility.PathSeparator, inputPaths.Select<ParsedPath, string>(p => p.Extension));
+            Output = String.Join(PathUtility.PathSeparator, outputPaths.Select<ParsedPath, string>(p => p.Extension));
+        }
+
+        public CompilerExtension(IEnumerable<TsonStringNode> inputPaths, IEnumerable<TsonStringNode> outputPaths)
+        {
+            Input = String.Join(PathUtility.PathSeparator, inputPaths.Select<TsonStringNode, string>(n => Path.GetExtension(n.Value)));
+            Output = String.Join(PathUtility.PathSeparator, outputPaths.Select<TsonStringNode, string>(n => Path.GetExtension(n.Value)));
+        }
 
 		public CompilerExtension(string input, string output)
 		{

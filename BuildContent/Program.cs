@@ -13,24 +13,27 @@ namespace BuildContent
     {
         public static int Main(string[] args)
         {
-            BuildContentTool tool = new BuildContentTool(new ConsoleOutputter());
+            BuildContentTool tool = new BuildContentTool();
 
             try
             {
 		        ((IProcessCommandLine)tool).ProcessCommandLine(args);
 
 				tool.Execute();
+
+                return tool.HasOutputErrors ? 1 : 0;
             }
             catch (Exception e)
             {
-#if DEBUG
-				tool.Output.Error(e.ToString());
-#else
-				tool.Output.Error(e.Message);
-#endif
-			}
+                while (e != null)
+                {
+                    ConsoleUtility.WriteMessage(MessageType.Error, e.ToString());
+                    e = e.InnerException;
+                }
 
-            return tool.ExitCode;
+                return 1;
+            }
+
         }
     }
 }

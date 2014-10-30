@@ -130,7 +130,7 @@ namespace Playroom
 				string attribute = element.GetAttribute("name");
 				if ((attribute == null) || (attribute.Length == 0))
 				{
-					this.Context.Output.Warning("Resource skipped. Empty name attribute: {0}".CultureFormat(element.OuterXml));
+                    this.Context.WriteWarning("Resource skipped. Empty name attribute: {0}".CultureFormat(element.OuterXml));
 					continue;
 				}
 				
@@ -150,7 +150,7 @@ namespace Playroom
 					}
 					catch (Exception exception)
 					{
-						this.Context.Output.Warning("Resource skipped. Could not load type {0}: {1}".CultureFormat(typeName, exception.Message));
+						this.Context.WriteWarning("Resource skipped. Could not load type {0}: {1}".CultureFormat(typeName, exception.Message));
 						continue;
 					}
 				}
@@ -168,7 +168,7 @@ namespace Playroom
 					}
 					if (stringResourceValue == null)
 					{
-						this.Context.Output.Warning("Resource skipped.  Empty value attribute: {0}".CultureFormat(element.OuterXml));
+						this.Context.WriteWarning("Resource skipped.  Empty value attribute: {0}".CultureFormat(element.OuterXml));
 						continue;
 					}
 					item = new ResourceItem(attribute, stringResourceValue);

@@ -5,7 +5,6 @@ using System.Text;
 using ToolBelt;
 using System.IO;
 using System.Xml;
-using YamlDotNet.RepresentationModel.Serialization;
 
 namespace Playroom
 {
@@ -89,12 +88,8 @@ namespace Playroom
 				Directory.CreateDirectory(pngdefPath.VolumeAndDirectory);
 			}
 
-			var serializer = new YamlSerializer();
-			
-			using (StreamWriter writer = new StreamWriter(pngdefPath))
-			{
-				serializer.Serialize(writer, pdfInfo, YamlSerializerFlags.JsonCompatible);
-			}
+            // Write the output file
+            throw new NotImplementedException();
 		}
 
 		void CreateNupSvg(IEnumerable<ParsedPath> svgPaths, ParsedPath nUpSvgPath, int numRows, int numCols)

@@ -11,6 +11,7 @@
     <RootNamespace>BuildContent</RootNamespace>
     <AssemblyName>BuildContent</AssemblyName>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -51,6 +52,9 @@
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml" />
+    <Reference Include="ToolBelt">
+      <HintPath>..\packages\ToolBelt.2.0.11010.0\lib\net45\ToolBelt.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -59,11 +63,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="CopyExtraFiles.sh" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy /d $(SolutionDir)\Squish2\$(Configuration)\Squish.dll $(ProjectDir)$(OutDir)</PostBuildEvent>
-  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Playroom\Playroom.csproj">
       <Project>{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}</Project>

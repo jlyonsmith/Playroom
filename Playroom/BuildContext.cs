@@ -6,7 +6,6 @@ using System.IO;
 using ToolBelt;
 using System.Reflection;
 using System.Security.Cryptography;
-using YamlDotNet.RepresentationModel;
 using System.Linq;
 
 namespace Playroom
@@ -14,7 +13,6 @@ namespace Playroom
     public class BuildContext
     {
 		public ParsedPath ContentFilePath { get; private set; }
-		public OutputHelper Output { get; private set; }
 		internal string GlobalHash { get; private set; }
 		internal Dictionary<string, string> TargetHashes { get; private set; }
 		internal PropertyCollection Properties { get; set; }
@@ -24,15 +22,14 @@ namespace Playroom
 		internal DateTime ContentFileWriteTime { get; set; }
 		internal DateTime NewestAssemblyWriteTime { get; set; }
 
-		public BuildContext(OutputHelper output, string properties, ParsedPath contentFilePath)
+		public BuildContext(String properties, ParsedPath contentFilePath)
 		{
-			Output = output;
 			ContentFilePath = contentFilePath;
 
 			ContentFile = new ContentFileV4();
 			ContentFile.Load(ContentFilePath);
 			
-			Output.Message(MessageImportance.Low, "Read content file '{0}'", ContentFilePath);
+			WriteMessage("Read content file '{0}'", ContentFilePath);
 			
 			Properties = new PropertyCollection();
 
@@ -46,7 +43,7 @@ namespace Playroom
 			Properties.Set("OutputDir", contentFilePath.VolumeAndDirectory);
 
 			// Now override with from content file
-			Properties.AddFromList(ContentFile.Properties.Select(p => new KeyValuePair<string, string>(p.Name.Value, p.Value.Value)));
+            Properties.AddFromList(ContentFile.Properties.Select(nv => new KeyValuePair<string, string>(nv.Name.Value, nv.Value.Value)));
 
 			// Now override with command line
 			Properties.AddFromString(properties);
@@ -62,32 +59,38 @@ namespace Playroom
 			ContentFileHashesPath = new ParsedPath(Properties.GetRequiredValue("ContentHashesFile"), PathType.File).MakeFullPath();
 			ContentFileWriteTime = File.GetLastWriteTime(this.ContentFilePath);
 
+            // Create a hash of all the things than can affect the build
+
 			SHA1 sha1 = SHA1.Create();
 			StringBuilder sb = new StringBuilder();
 			
-			foreach (var rawAssembly in ContentFile.Assemblies)
+			foreach (var rawAssembly in ContentFile.CompilerAssemblies)
 			{
-				sb.Append(rawAssembly);
+				sb.Append(rawAssembly.Value);
 			}
+
 			foreach (var rawProperty in ContentFile.Properties)
 			{
-				sb.Append(rawProperty.Name);
-				sb.Append(rawProperty.Value);
+				sb.Append(rawProperty.Name.Value);
+				sb.Append(rawProperty.Value.Value);
 			}
-			foreach (ContentFileV4.CompilerSettings rawCompilerSettings in this.ContentFile.Settings)
+			foreach (var rawCompilerSettings in this.ContentFile.CompilerSettings)
 			{
 				sb.Append(rawCompilerSettings.Name);
 
-				foreach (var property in rawCompilerSettings.Extensions)
+				foreach (var extension in rawCompilerSettings.CompilerExtensions)
 				{
-					sb.Append(property.Inputs);
-					sb.Append(property.Outputs);
+                    foreach (var input in extension.Inputs)
+                        sb.Append(input.Value);
+
+                    foreach (var output in extension.Outputs)
+                        sb.Append(output.Value);
 				}
 
-				foreach (var property in rawCompilerSettings.Parameters)
+				foreach (var parameter in rawCompilerSettings.Parameters.KeyValues)
 				{
-					sb.Append(property.Name);
-					sb.Append(property.Value);
+					sb.Append(parameter.Key.Value);
+                    sb.Append(parameter.Value.ToString());
 				}
 			}
 			
@@ -96,6 +99,21 @@ namespace Playroom
 			LoadCompilerClasses();
 		}
 
+        public void WriteMessage (string format, params object[] args)
+        {
+            ConsoleUtility.WriteMessage(MessageType.Normal, format, args);
+        }
+
+        public void WriteError (string format, params object[] args)
+        {
+            ConsoleUtility.WriteMessage(MessageType.Error, format, args);
+        }
+
+        public void WriteWarning (string format, params object[] args)
+        {
+            ConsoleUtility.WriteMessage(MessageType.Warning, format, args);
+        }
+
 		private void LoadCompilerClasses()
 		{
 			CompilerClasses = new List<CompilerClass>();
@@ -103,7 +121,7 @@ namespace Playroom
 
 			ParsedPathList assemblyPaths = new ParsedPathList();
 			
-			foreach (var rawAssembly in ContentFile.Assemblies)
+			foreach (var rawAssembly in ContentFile.CompilerAssemblies)
 			{
 				ParsedPath pathSpec = null;
 				
@@ -134,7 +152,7 @@ namespace Playroom
 				}
 				catch (Exception e)
 				{
-					throw new ContentFileException(this.ContentFile.Assemblies[i], e);
+					throw new ContentFileException(this.ContentFile.CompilerAssemblies[i], e);
 				}
 				
 				Type[] types;
@@ -154,7 +172,7 @@ namespace Playroom
 						message += Environment.NewLine + "   " + ex.Message;
 					
 					// Not being able to reflect on classes in the compiler assembly is a critical error
-					throw new ContentFileException(this.ContentFile.Assemblies[i], message, e);
+					throw new ContentFileException(this.ContentFile.CompilerAssemblies[i], message, e);
 				}
 				
 				int compilerCount = 0;
@@ -168,7 +186,7 @@ namespace Playroom
 					if (interfaceType == null)
 						continue;
 
-					CompilerClass compilerClass = new CompilerClass(this.ContentFile.Assemblies[i], assembly, type, interfaceType);
+					CompilerClass compilerClass = new CompilerClass(this.ContentFile.CompilerAssemblies[i], assembly, type, interfaceType);
 						
 					CompilerClasses.Add(compilerClass);
 					compilerCount++;
@@ -179,7 +197,7 @@ namespace Playroom
 				if (dateTime > NewestAssemblyWriteTime)
 					NewestAssemblyWriteTime = dateTime;
 
-				Output.Message(MessageImportance.Normal, "Loaded {0} compilers from assembly '{1}'".CultureFormat(compilerCount, assembly.Location));
+                WriteMessage("Loaded {0} compilers from assembly '{1}'".CultureFormat(compilerCount, assembly.Location));
 			}
 		}
 	}
