@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Version>
-  <Major>2</Major>
-  <Minor>0</Minor>
-  <Build>20212</Build>
-  <Revision>0</Revision>
-  <StartYear>2012</StartYear>
   <Files>
     <File>BuildContent/Properties/AssemblyInfo.cs</File>
-    <File>Pinboard/Properties/AssemblyInfo.cs</File>
+    <File>Test/BuildContentTests/Properties/AssemblyInfo.cs</File>
     <File>Playroom/Properties/AssemblyInfo.cs</File>
   </Files>
+  <Major>3</Major>
+  <Minor>0</Minor>
+  <Build>11031</Build>
+  <Revision>0</Revision>
+  <StartYear>2014</StartYear>
 </Version>

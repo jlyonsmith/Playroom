@@ -26,7 +26,7 @@
     <Commandlineparameters>build ~/Projects/Spider/Spider/RawContent/Spider.iOS.content -p:ProjectDir=.\;OutputDir=./Content</Commandlineparameters>
     <CustomCommands>
       <CustomCommands>
-        <Command type="BeforeExecute" command="/bin/bash CopyExtraFiles.sh" workingdir="${ProjectDir}" />
+        <Command type="BeforeExecute" command="/bin/bash copyExtraFiles.sh" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
     <ConsolePause>False</ConsolePause>
@@ -62,8 +62,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="CopyExtraFiles.sh" />
     <None Include="packages.config" />
+    <None Include="copyExtraFiles.sh" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

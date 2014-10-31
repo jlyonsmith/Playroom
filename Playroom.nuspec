@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>Playroom</id>
+    <version>3.0.0.0</version>
+    <authors>jlyonsmith</authors>
+    <owners>jlyonsmith</owners>
+    <licenseUrl>http://github.com/jlyonsmith/Playroom/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>http://github.com/jlyonsmith/Playroom</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Game content creation and compilation tools</description>
+    <releaseNotes>Version 3.0 uses TSON format content files.</releaseNotes>
+    <copyright>Copyright (C) 2014 John Lyon-Smith</copyright>
+    <tags>content game opengl sprite string monogame mono osx</tags>
+  </metadata>
+  <files>
+    <file src="BuildContent/bin/Release/Playroom.dll" target="lib/net45" /> 
+    <file src="BuildContent/bin/Release/Playroom.Compilers.dll" target="lib/net45" /> 
+    <file src="BuildContent/bin/Release/BuildContent.exe" target="lib/net45" /> 
+  </files>
+</package>

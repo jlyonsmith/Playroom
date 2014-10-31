@@ -22,7 +22,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RawContent", "RawContent", 
 		Test\RawContent\F1.txt = Test\RawContent\F1.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildContentTests", "Test\BuildContentTests\BuildContentTests.csproj", "{82172AA6-70B0-4AE7-B1E8-73DBAC543628}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E1FA1B02-BCCA-4265-8B68-7246E5F3FEAA}"
+	ProjectSection(SolutionItems) = preProject
+		Playroom.version = Playroom.version
+		Playroom.version.config = Playroom.version.config
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playroom.Compilers", "Compilers\Playroom.Compilers.csproj", "{1D531486-0385-4E9E-AB1B-755CEFF3A445}"
 EndProject
@@ -40,6 +46,10 @@ Global
 		{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}.Debug|x86.Build.0 = Debug|x86
 		{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}.Release|x86.ActiveCfg = Release|x86
 		{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}.Release|x86.Build.0 = Release|x86
+		{82172AA6-70B0-4AE7-B1E8-73DBAC543628}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{82172AA6-70B0-4AE7-B1E8-73DBAC543628}.Debug|x86.Build.0 = Debug|Any CPU
+		{82172AA6-70B0-4AE7-B1E8-73DBAC543628}.Release|x86.ActiveCfg = Release|Any CPU
+		{82172AA6-70B0-4AE7-B1E8-73DBAC543628}.Release|x86.Build.0 = Release|Any CPU
 		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Debug|x86.ActiveCfg = Debug|x86
 		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Debug|x86.Build.0 = Debug|x86
 		{95B09EAB-7C4F-409C-B099-328C0DA3AF80}.Release|x86.ActiveCfg = Release|x86
@@ -47,6 +57,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FEB7E5A8-73FC-4112-AFBD-D72CD03060B4} = {6BE02424-B483-44A3-8C1A-9819FC704D0B}
+		{82172AA6-70B0-4AE7-B1E8-73DBAC543628} = {6BE02424-B483-44A3-8C1A-9819FC704D0B}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = BuildContent\BuildContent.csproj
