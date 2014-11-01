@@ -23,10 +23,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Commandlineparameters>build ~/Projects/Spider/Spider/RawContent/Spider.iOS.content -p:ProjectDir=.\;OutputDir=./Content</Commandlineparameters>
+    <Commandlineparameters>build ~/Projects/Jamoki/Playroom/Test/RawContent/TestContent2.content -p:ProjectDir=.\;OutputDir=./Content</Commandlineparameters>
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeExecute" command="/bin/bash copyExtraFiles.sh" workingdir="${ProjectDir}" />
+        <Command type="AfterBuild" command="/usr/bin/make CONFIG=${ProjectConfigName}" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
     <ConsolePause>False</ConsolePause>
@@ -44,6 +45,7 @@
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeExecute" />
+        <Command type="AfterBuild" command="/usr/bin/make CONFIG=${ProjectConfigName}" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -53,7 +55,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml" />
     <Reference Include="ToolBelt">
-      <HintPath>..\packages\ToolBelt.2.0.11010.0\lib\net45\ToolBelt.dll</HintPath>
+      <HintPath>..\packages\ToolBelt.2.0.11101.0\lib\net45\ToolBelt.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -62,8 +64,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
     <None Include="copyExtraFiles.sh" />
+    <None Include="Scripts\buildContent.sh" />
+    <None Include="makefile" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -71,5 +75,8 @@
       <Project>{6DC4FE71-7E81-4BC7-B9DD-DD6A271682CA}</Project>
       <Name>Playroom</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Scripts\" />
   </ItemGroup>
 </Project>

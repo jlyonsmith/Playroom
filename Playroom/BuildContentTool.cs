@@ -37,10 +37,9 @@ namespace Playroom
 		public string Command { get; set; }
 
 		[DefaultCommandLineArgument(
-			Description = "Input .content data file", ValueHint = "<content-file>", 
-            Initializer = typeof(BuildContentTool), MethodName="ParseCommandLineFilePath",
+			Description = "Input .content data file", ValueHint = "<content-file>",
 			Commands = "build,help,clean,new")]
-		public ParsedPath ContentPath { get; set; }
+		public ParsedFilePath ContentPath { get; set; }
 
 		[CommandLineArgument(
 			"properties", ShortName = "p", Description = "Additional properties to set", 
@@ -89,7 +88,7 @@ namespace Playroom
 					return;
 				}
 				
-				this.ContentPath = this.ContentPath.MakeFullPath();
+                this.ContentPath = new ParsedFilePath(this.ContentPath.MakeFullPath());
 
 				if (this.Command == "new")
 				{
@@ -130,21 +129,27 @@ namespace Playroom
 			}
 			catch (Exception e)
 			{
+                TextLocation? mark = null;
+
 				do
 				{
-					ContentFileException cfe = e as ContentFileException;
-					TextLocation? mark = null;
+                    ContentFileException cfe = e as ContentFileException;
+                    TsonParseException tpe = e as TsonParseException;
 
-					if (cfe != null)
-					{
-						mark = cfe.Start;
-					}
+                    if (cfe != null)
+                    {
+                        mark = cfe.ErrorLocation;
+                    } 
+                    else if (tpe != null)
+                    {
+                        mark = tpe.ErrorLocation;
+                    }
 
 					// If we started showing content file errors, keep going... 
 					if (mark.HasValue)
-						WriteError(ContentPath, mark.Value.Line + 1, mark.Value.Column + 1, e.Message);
+                        WriteErrorWithLine(ContentPath, mark.Value.Line + 1, mark.Value.Column + 1, e.Message);
 					else
-						WriteError(e.Message);
+						ConsoleUtility.WriteMessage(MessageType.Error, e.Message);
 #if DEBUG
 					// Gotta have this in debug builds
 					Console.WriteLine(e.StackTrace);
@@ -155,6 +160,11 @@ namespace Playroom
 		}
 
         #region Private Methods
+
+        private void WriteErrorWithLine(string fileName, int line, int column, string message)
+        {
+            ConsoleUtility.WriteMessage(MessageType.Error, "{0}({1},{2}): {3}", fileName, line, column, message);
+        }
 
 		private void CreateContentFileFromTemplate()
 		{

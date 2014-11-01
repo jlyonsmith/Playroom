@@ -4,10 +4,11 @@
     <File>BuildContent/Properties/AssemblyInfo.cs</File>
     <File>Test/BuildContentTests/Properties/AssemblyInfo.cs</File>
     <File>Playroom/Properties/AssemblyInfo.cs</File>
+    <File>Compilers/Properties/AssemblyInfo.cs</File>
   </Files>
   <Major>3</Major>
   <Minor>0</Minor>
-  <Build>11031</Build>
+  <Build>11101</Build>
   <Revision>0</Revision>
   <StartYear>2014</StartYear>
 </Version>

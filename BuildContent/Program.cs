@@ -25,12 +25,7 @@ namespace BuildContent
             }
             catch (Exception e)
             {
-                while (e != null)
-                {
-                    ConsoleUtility.WriteMessage(MessageType.Error, e.ToString());
-                    e = e.InnerException;
-                }
-
+                ConsoleUtility.WriteMessage(MessageType.Error, e.ToString());
                 return 1;
             }
 

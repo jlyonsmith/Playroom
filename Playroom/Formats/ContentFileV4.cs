@@ -63,12 +63,12 @@ namespace Playroom
 			}
 			catch (Exception e)
 			{
-				TsonParseException ye = e as TsonParseException;
+                TsonParseException tpe = e as TsonParseException;
 				ContentFileException cfe = e as ContentFileException;
 
-				if (ye != null)
+				if (tpe != null)
 				{
-                    throw new ContentFileException("Bad TSON", ye);
+                    throw new ContentFileException("Bad TSON", tpe);
 				}
 				else if (cfe != null)
 				{

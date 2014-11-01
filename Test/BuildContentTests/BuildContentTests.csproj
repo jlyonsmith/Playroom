@@ -38,7 +38,7 @@
       <HintPath>..\..\packages\Toaster.2.1.10716.0\lib\net45\Toast.exe</HintPath>
     </Reference>
     <Reference Include="ToolBelt">
-      <HintPath>..\..\packages\Toaster.2.1.10716.0\lib\net45\ToolBelt.dll</HintPath>
+      <HintPath>..\..\packages\ToolBelt.2.0.11101.0\lib\net45\ToolBelt.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

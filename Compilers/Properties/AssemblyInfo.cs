@@ -6,9 +6,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Playroom Content Build Tools")]
-[assembly: AssemblyCopyright("Copyright © 2012, John Lyon-Smith.")]
+[assembly: AssemblyCopyright("Copyright © 2012, Jamoki LLC.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.10829.1")]
+[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyFileVersion("3.0.11101.0")]
 
